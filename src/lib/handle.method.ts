@@ -14,13 +14,14 @@ const createMethod = (method: string) => {
     ) {
       const HandleError = ref.get("error", descriptor.value);
       const fn = descriptor.value;
-      descriptor.value = function (req: Request, res: Response) {
-        try {
-          target.constructor.prototype[propertyKey] = fn;
-          res.json(target.constructor.prototype[propertyKey](req, res));
-        } catch {
-          res.json(HandleError);
-        }
+      descriptor.value = async function (req: Request, res: Response) {
+        target.constructor.prototype[propertyKey] = fn;
+        await new Promise((resolve, reject) => {
+          resolve(target.constructor.prototype[propertyKey](req, res));
+          reject(HandleError);
+        }).then((response) => {
+          res.json(response);
+        });
       };
       SerivceMap.set(URL, {
         fn: descriptor.value,

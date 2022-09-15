@@ -6,6 +6,7 @@ import { TESTCONTROLLER } from "./Test/test.controller";
 export const options: HandleProxyOptions = {
   controller: [FishController, TESTCONTROLLER],
   base: "/api",
+  port: 3000,
 };
 
 Service.clear();

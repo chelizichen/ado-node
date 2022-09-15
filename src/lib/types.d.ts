@@ -10,5 +10,6 @@ export type ServerOptions = {
 export type HandleProxyOptions = {
   controller: Array<BaseController>;
   base: string;
+  port: number;
 };
 export type AppServer = (Options: ServerOptions) => void;

@@ -1,4 +1,3 @@
-import Service from "../lib/handle.service";
 import { HandleProxyOptions } from "../lib/types";
 import { Date917Controller } from "./Date917/Date917.controller";
 import { FishController } from "./Fish/fish.controller";
@@ -9,5 +8,3 @@ export const options: HandleProxyOptions = {
   base: "/api",
   port: 3000,
 };
-
-Service.clear();

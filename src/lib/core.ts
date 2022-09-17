@@ -11,7 +11,14 @@ import Service from "./handle.service";
 import { AppServer } from "./types";
 import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
-
+import {
+  Mapper,
+  Select,
+  Connect,
+  Update,
+  Insert,
+  Delete,
+} from "./handle.mapper";
 export {
   Inject,
   Controller,
@@ -22,6 +29,12 @@ export {
   Service,
   GenereateRouter,
   Error,
+  Mapper,
+  Select,
+  Connect,
+  Update,
+  Insert,
+  Delete,
 };
 
 export type { Query, Body, ServerOptions, AppServer };

@@ -8,6 +8,12 @@ import {
   Service,
   GenereateRouter,
   Error,
+  Mapper,
+  Select,
+  Connect,
+  Update,
+  Insert,
+  Delete,
 } from "./lib/core";
 export {
   Inject,
@@ -19,4 +25,10 @@ export {
   Service,
   GenereateRouter,
   Error,
+  Mapper,
+  Select,
+  Connect,
+  Update,
+  Insert,
+  Delete,
 };

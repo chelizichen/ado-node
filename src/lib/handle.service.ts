@@ -14,5 +14,7 @@ export default SerivceMap;
 export function GenereateRouter(Controller: BaseController): IRouter {
   const URL = ref.get("BaseUrl", Controller.prototype);
   const GetService = new Controller(URL, SerivceMap);
+  // console.log("SerivceMap", SerivceMap);
+
   return GetService.Boost();
 }

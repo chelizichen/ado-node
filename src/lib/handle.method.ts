@@ -22,11 +22,15 @@ const createMethod = (method: string) => {
         }).then((response) => {
           res.json(response);
         });
+        // const baseUrl = ref.get("BaseUrl", target.constructor.prototype);
+        // console.log(baseUrl);
       };
+
       SerivceMap.set(URL, {
         fn: descriptor.value,
         method,
       });
+      // console.log("SerivceMap1", SerivceMap);
     };
   };
 };

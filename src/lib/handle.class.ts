@@ -6,8 +6,12 @@ export class HandleController {
   ) {}
   Boost(): IRouter {
     const app: IRouter = express.Router();
+    // console.log(this.Service);
+
     this.Service.forEach((service, URL) => {
       URL = this.Base + URL;
+      console.log("URL", URL);
+
       if (service.method == "Get") {
         app.get(URL, service.fn);
       }

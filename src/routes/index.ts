@@ -7,4 +7,5 @@ export const options: HandleProxyOptions = {
   controller: [FishController, TESTCONTROLLER, Date917Controller],
   base: "/api",
   port: 3000,
+  staticDist: "dist/app",
 };

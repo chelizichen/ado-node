@@ -14,6 +14,7 @@ import {
   Update,
   Insert,
   Delete,
+  Pipe,
 } from "./lib/core";
 export {
   Inject,
@@ -31,4 +32,5 @@ export {
   Update,
   Insert,
   Delete,
+  Pipe,
 };

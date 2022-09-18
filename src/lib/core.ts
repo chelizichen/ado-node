@@ -11,6 +11,8 @@ import Service from "./handle.service";
 import { AppServer } from "./types";
 import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
+import { Pipe } from "./handle.pipe";
+
 import {
   Mapper,
   Select,
@@ -35,6 +37,7 @@ export {
   Update,
   Insert,
   Delete,
+  Pipe,
 };
 
 export type { Query, Body, ServerOptions, AppServer };

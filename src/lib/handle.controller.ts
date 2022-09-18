@@ -1,4 +1,5 @@
-import { ref } from "../utils/core";
+import { ref } from "./handle.reflect";
+
 import { GenereateRouter } from "./core";
 import SerivceMap from "./handle.service";
 

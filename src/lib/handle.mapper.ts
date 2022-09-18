@@ -1,4 +1,4 @@
-import { ref } from "../utils/reflect";
+import { ref } from "./handle.reflect";
 import * as mysql from "mysql";
 
 const Connect = (coon: mysql.Connection): ClassDecorator => {

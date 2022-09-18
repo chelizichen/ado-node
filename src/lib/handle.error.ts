@@ -1,4 +1,5 @@
-import { ref } from "../utils/core";
+import { ref } from "./handle.reflect";
+
 export type ErrorType<E = string, Code = number> = {
   message: E;
   code?: Code;

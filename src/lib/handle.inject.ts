@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { ref } from "../utils/core";
+import { ref } from "./handle.reflect";
 
 /**
  * @description 在 Controller 层自动注入方法

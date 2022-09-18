@@ -11,6 +11,7 @@ export type HandleProxyOptions = {
   controller: Array<BaseController>;
   base: string;
   port: number;
+  staticDist: string;
 };
 export type AppServer = (Options: ServerOptions) => void;
 

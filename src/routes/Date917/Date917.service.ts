@@ -9,7 +9,6 @@ class Date917Service {
   public async a1() {
     const opt = ["19"];
     const ret = await this.Date917Mapper.userList(opt);
-    console.log("ret", ret);
     return ret;
   }
 }

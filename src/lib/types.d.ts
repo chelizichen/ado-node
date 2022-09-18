@@ -13,3 +13,5 @@ export type HandleProxyOptions = {
   port: number;
 };
 export type AppServer = (Options: ServerOptions) => void;
+
+export type Coon = {};

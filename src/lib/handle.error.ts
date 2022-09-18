@@ -1,5 +1,5 @@
 import { ref } from "../utils/core";
-type ErrorType<E = string, Code = number> = {
+export type ErrorType<E = string, Code = number> = {
   message: E;
   code?: Code;
   force?: boolean;

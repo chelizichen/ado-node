@@ -1,5 +1,6 @@
 import { Connect, Mapper, Select } from "../../lib/handle.mapper";
 import * as mysql from "mysql";
+import { Update } from "../../../dist";
 
 const config = {
   host: "localhost",
@@ -19,6 +20,7 @@ type selectOptions = any[];
 /**
  * @Mapper 数据库操作层
  * @Connect 数据库链接
+ * @Select 用于提示sql
  */
 
 @Mapper()
@@ -26,6 +28,9 @@ type selectOptions = any[];
 class Date917Mapper {
   @Select(`select * from  user where id = ? `)
   public async userList(_options: selectOptions) {}
+
+  @Update(``)
+  public async update() {}
 }
 
 export { Date917Mapper };

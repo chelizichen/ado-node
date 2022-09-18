@@ -5,37 +5,43 @@
 ### 案例
 
 #### Controller 控制层
+
+####  @Controller 控制器
+####   @Inject() 注入依赖
+####   @Get() @Post() 
+####   @Error() 用于提前定义错误与强制停用接口
+
 ```
-import { Controller, HandleController, Inject, Post } from "../../lib/core";
-import { FishAbstract, FishType } from "./fish.abstract";
-import { FishService } from "./fish.service";
-import { BuyerService } from "./buyer.service";
-
-@Controller("/fish")
-export class FishController extends HandleController implements FishAbstract {
-@Inject(FishService)
-FishService!: FishService;
-
-@Inject(BuyerService)
-BuyerService!: BuyerService;
-
-@Post("/eat")
-public eat(req: FishType["eat"], _res?: Response) {
-const { id, weight } = req.body;
-const ret = this.FishService.eat(weight, id);
-if (ret.canEat) {
-return ret;
-} else {
-return this.BuyerService.buy(weight, id);
-}
-}
-
-@Post("/test")
-public sell(_req: FishType["sell"], _res?: Response): any {
-return {
-msg: "hello",
-};
-}
+@Controller("/app")
+class AppController implyments HanldeController{
+    
+    @Inject(AppService)
+    AppService!:AppService
+    
+    @Get("/list")
+    public async getUser(){
+        return await this.AppService.getUser()
+    }
+    
+    @Post("/update")
+    @Pipe( func )
+    public async update(req:Body<{ DTO }>,res:Response){
+        const { ...xxx } = req.body
+        const ret = this.AppService.update(...xxx)  
+        return ret
+    }
+    
+    @Get("/delete")
+    @Error({
+        force:true
+    })
+    public async delete(){
+        return ....
+    }
+    
+    
+    
+    
 }
 ```
 
@@ -44,42 +50,30 @@ msg: "hello",
  可以用Collect 收集多个 Service 注入进 Controller
 
 ````
-import {Collect} from "../../lib/core";
-
 @Collect()
-export class FishService{
-	eat(weight:number,id:number){
-		if(weight>20){
-			return {
-				id,
-				weight,
-				message:`the ${id} fish can eat`,
-				canEat:true
-			}
-		}else {
-			return {
-				id,
-				weight,
-				message:`the ${id} fish can't eat`
-			}
-		}
-	}
-}
+class AppService {
+  @Inject(AppMapper)
+  AppMapper!: AppMapper;
 
+  public async getList() {
+    const opt = ["1"];
+    const ret = await this.AppMapper.getUser(opt);
+    return ret;
+  }
+}
 
 ````
 
-#### Type
-对于类型 我们可以使用 @Body 或者 @Query 进行约束
+#### Mapper 层
+#### @Mapper() 用来收集Mapper 服务
+#### @Connect() 用来收集 数据库连接服务
+#### @Select() 用来写sql 语句
 ````
-
-export type FishType = {
-	eat:Body<{ id: number, weight: number }>
-	sell:Body<{ id: number, money: string }>
-}
-export abstract class FishAbstract{
-	abstract eat(req:FishType['eat'],_res?:Response):any
-	abstract sell(req:FishType['sell'],_res?:Response):any
+@Mapper()
+@Connect(coon)
+class AppMappper {
+  @Select(`select * from  user where id = ? `)
+  public async getUser(_options: selectOptions) {}
 }
 
 ````
@@ -87,8 +81,8 @@ export abstract class FishAbstract{
 #### Server Options 加载配置
 ````
 export const options: HandleProxyOptions = {
-  controller: [FishController],
-  base: "/api",
+  controller: [AppController],
+  base: "/app",
   port: 3000,
 };
 ````
@@ -96,8 +90,8 @@ export const options: HandleProxyOptions = {
 
 #### Run 
 ````
-import createServer from "./lib/server";
-import { options } from "./routes";
+import createServer from "";
+import { options } from "";
 
 createServer(options);
 

@@ -1,11 +1,12 @@
-import express, { IRouter } from "express";
+// import express, { IRouter } from "express";
+import * as express from "express";
 export class HandleController {
   constructor(
     public readonly Base: string,
     public readonly Service: Map<string, { method: "Get" | "Post"; fn: any }>
   ) {}
-  Boost(): IRouter {
-    const app: IRouter = express.Router();
+  Boost(): express.IRouter {
+    const app: express.IRouter = express.Router();
     this.Service.forEach((service, URL) => {
       URL = this.Base + URL;
       if (service.method == "Get") {

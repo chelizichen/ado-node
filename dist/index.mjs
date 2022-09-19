@@ -799,7 +799,7 @@ var Get = createMethod("Get");
 var Post = createMethod("Post");
 
 // lib/handle.class.ts
-import express from "express";
+import * as express from "express";
 var HandleController = class {
   constructor(Base, Service) {
     this.Base = Base;

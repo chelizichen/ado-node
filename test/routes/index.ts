@@ -1,4 +1,4 @@
-import { HandleProxyOptions } from "../lib/types";
+import { HandleProxyOptions } from "../../lib/types";
 import { Date917Controller } from "./Date917/Date917.controller";
 import { FishController } from "./Fish/fish.controller";
 import { TESTCONTROLLER } from "./Test/test.controller";

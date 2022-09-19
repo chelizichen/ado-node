@@ -1,8 +1,8 @@
-import { HandleController } from "../../lib/handle.class";
-import { Controller } from "../../lib/handle.controller";
-import { Inject } from "../../lib/handle.inject";
-import { Get } from "../../lib/handle.method";
-import { Pipe } from "../../lib/handle.pipe";
+import { HandleController } from "../../../lib/handle.class";
+import { Controller } from "../../../lib/handle.controller";
+import { Inject } from "../../../lib/handle.inject";
+import { Get } from "../../../lib/handle.method";
+import { Pipe } from "../../../lib/handle.pipe";
 import { useIdPipe, userNamePipe } from "./Date917.pipe";
 import { Date917Service } from "./Date917.service";
 

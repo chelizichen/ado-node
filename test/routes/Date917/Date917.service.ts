@@ -1,4 +1,4 @@
-import { Collect, Inject } from "../../lib/handle.inject";
+import { Collect, Inject } from "../../../lib/handle.inject";
 import { Date917Mapper } from "./Date917.mapper";
 
 @Collect()

@@ -1,6 +1,5 @@
-import { Connect, Mapper, Select } from "../../lib/handle.mapper";
+import { Connect, Mapper, Select, Update } from "../../../lib/handle.mapper";
 import * as mysql from "mysql";
-import { Update } from "../../../dist";
 
 const config = {
   host: "localhost",

@@ -1,6 +1,6 @@
-import { HandleController } from "../../lib/handle.class";
-import { Controller } from "../../lib/handle.controller";
-import { Get } from "../../lib/handle.method";
+import { HandleController } from "../../../lib/handle.class";
+import { Controller } from "../../../lib/handle.controller";
+import { Get } from "../../../lib/handle.method";
 
 @Controller("/test")
 export class TESTCONTROLLER extends HandleController {

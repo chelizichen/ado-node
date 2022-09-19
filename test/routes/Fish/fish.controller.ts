@@ -1,4 +1,4 @@
-import { Controller, HandleController, Inject, Post } from "../../lib/core";
+import { Controller, HandleController, Inject, Post } from "../../../lib/core";
 import { FishAbstract, FishType } from "./fish.abstract";
 import { FishService } from "./fish.service";
 import { BuyerService } from "./buyer.service";

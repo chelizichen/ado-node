@@ -1,4 +1,4 @@
-import { Query } from "../../lib/core";
+import { Query } from "../../../lib/core";
 
 export function useIdPipe(req: Query<{ id: number }>) {
   if (req.query.id > 20) {

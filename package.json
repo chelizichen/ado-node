@@ -8,8 +8,7 @@
     "type": "git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "ts-node-dev --project tsconfig.server.json src/server",
+    "test": "ts-node-dev --project tsconfig.server.json test/server",
     "build": "tsc --project tsconfig.server.json"
   },
   "keywords": [

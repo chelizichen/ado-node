@@ -1,23 +1,23 @@
-import {Collect} from "../../lib/core";
+import { Collect } from "../../../lib/core";
 
 @Collect()
-export class FishService{
-	eat(weight:number,id:number){
-		if(weight>20){
-			return {
-				id,
-				weight,
-				message:`the ${id} fish can eat`,
-				canEat:true
-			}
-		}else {
-			return {
-				id,
-				weight,
-				message:`the ${id} fish can't eat`
-			}
-		}
-	}
+export class FishService {
+  eat(weight: number, id: number) {
+    if (weight > 20) {
+      return {
+        id,
+        weight,
+        message: `the ${id} fish can eat`,
+        canEat: true,
+      };
+    } else {
+      return {
+        id,
+        weight,
+        message: `the ${id} fish can't eat`,
+      };
+    }
+  }
 }
 
 // @Collect()

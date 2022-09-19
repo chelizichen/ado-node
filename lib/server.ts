@@ -20,4 +20,4 @@ function createServer(options: HandleProxyOptions) {
   });
 }
 
-export default createServer;
+export { createServer };

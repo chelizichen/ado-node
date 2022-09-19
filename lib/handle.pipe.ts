@@ -1,3 +1,4 @@
+// @ts-nocheck
 type usePipe = (req: any) => void;
 const Pipe = <T extends usePipe | usePipe[]>(fn: T): MethodDecorator => {
   return function (

@@ -12,7 +12,7 @@ import { AppServer } from "./types";
 import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
 import { Pipe } from "./handle.pipe";
-
+import { createServer } from "./server";
 import {
   Mapper,
   Select,
@@ -38,6 +38,7 @@ export {
   Insert,
   Delete,
   Pipe,
+  createServer,
 };
 
 export type { Query, Body, ServerOptions, AppServer };

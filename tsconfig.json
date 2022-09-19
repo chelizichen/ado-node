@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "CommonJS",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleResolution": "Node",
     "strict": true,
@@ -22,4 +22,5 @@
     "paths": {
     },
   },
+  "include": ["/**/*.ts","/test/routes/**/*.ts"]
 }

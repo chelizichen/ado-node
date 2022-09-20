@@ -13,6 +13,7 @@ import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
 import { Pipe } from "./handle.pipe";
 import { createServer } from "./server";
+import { ref } from "./handle.reflect";
 import { Mapper, Select, Connect, Update, Insert, Delete } from "./handle.mapper";
-export { Inject, Controller, Collect, Get, Post, HandleController, Service, GenereateRouter, Error, Mapper, Select, Connect, Update, Insert, Delete, Pipe, createServer, };
+export { Inject, Controller, Collect, Get, Post, HandleController, Service, GenereateRouter, Error, Mapper, Select, Connect, Update, Insert, Delete, Pipe, createServer, ref, };
 export type { Query, Body, ServerOptions, AppServer };

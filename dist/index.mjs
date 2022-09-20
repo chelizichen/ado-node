@@ -874,8 +874,8 @@ var Pipe = (fn) => {
 import express2 from "express";
 function createServer(options) {
   const app = express2();
-  const { port, staticDist } = options;
   app.use(express2.json());
+  const { port, staticDist } = options;
   const { base, controller } = options;
   controller.forEach((el) => {
     const router = ref.get(el);
@@ -938,7 +938,8 @@ export {
   Select,
   handle_service_default as Service,
   Update,
-  createServer
+  createServer,
+  ref
 };
 /*! *****************************************************************************
 Copyright (C) Microsoft. All rights reserved.

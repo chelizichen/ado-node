@@ -16,6 +16,7 @@ import {
   Delete,
   Pipe,
   createServer,
+  ref,
 } from "./lib/core";
 export {
   Inject,
@@ -35,4 +36,5 @@ export {
   Delete,
   Pipe,
   createServer,
+  ref,
 };

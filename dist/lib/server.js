@@ -8,8 +8,8 @@ const express_1 = __importDefault(require("express"));
 const handle_reflect_1 = require("./handle.reflect");
 function createServer(options) {
     const app = (0, express_1.default)();
-    const { port, staticDist } = options;
     app.use(express_1.default.json());
+    const { port, staticDist } = options;
     const { base, controller } = options;
     controller.forEach((el) => {
         const router = handle_reflect_1.ref.get(el);

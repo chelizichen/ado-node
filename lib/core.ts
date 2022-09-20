@@ -13,6 +13,7 @@ import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
 import { Pipe } from "./handle.pipe";
 import { createServer } from "./server";
+import { ref } from "./handle.reflect";
 import {
   Mapper,
   Select,
@@ -39,6 +40,7 @@ export {
   Delete,
   Pipe,
   createServer,
+  ref,
 };
 
 export type { Query, Body, ServerOptions, AppServer };

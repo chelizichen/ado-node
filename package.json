@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/mysql": "^2.15.21",
-    "ado-node": "^1.1.9",
+    "ado-node": "^1.2.2",
     "express": "^4.18.1",
     "mysql": "^2.18.1"
   },

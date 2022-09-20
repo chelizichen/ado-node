@@ -11,7 +11,7 @@
     "dev:server": "ts-node-dev src/index.js",
     "dev:client": "webpack serve --config ./config/webpack.dev.js",
     "build": "NODE_ENV=production npm run build:server & npm run build:client",
-    "build:server": " tsc --project tsconfig.server.json && cp -r src/views dist/views ",
+    "build:server": " tsc --project tsconfig.server.json & cp -r src/views dist/views ",
     "build:client": "webpack --config ./config/webpack.prod.js"
   },
   "keywords": [],

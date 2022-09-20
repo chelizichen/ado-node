@@ -1,5 +1,5 @@
 const path = require('path')
-const {VueLoaderPlugin} = require('vue-loader')
+const { VueLoaderPlugin } = require('vue-loader')
 module.exports = {
   entry: '/src/client/index.js', // 加载是在外层加载的
   output: {
@@ -9,7 +9,7 @@ module.exports = {
   mode: 'production',
   // devtool:"source-map",
   plugins: [
-     new VueLoaderPlugin()
+    new VueLoaderPlugin(),
   ],
     module: {
      rules: [
@@ -36,7 +36,17 @@ module.exports = {
           // compiles Less to CSS
           "vue-loader",
         ],
-      },
+        },
+        {
+          test: /\.(t|j)s$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              cacheDirectory: true,
+            },
+          },
+        }
     ],
   },
 }

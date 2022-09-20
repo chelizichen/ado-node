@@ -8,16 +8,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development  npm run dev:server & npm run dev:client ",
-    "dev:server": "nodemon src/index.js",
+    "dev:server": "ts-node-dev src/index.js",
     "dev:client": "webpack serve --config ./config/webpack.dev.js",
     "build": "NODE_ENV=production npm run build:server & npm run build:client",
-    "build:server": " cp -r src/index.js dist/index.js && cp -r src/views dist/views ",
+    "build:server": " tsc --project tsconfig.server.json && cp -r src/views dist/views ",
     "build:client": "webpack --config ./config/webpack.prod.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ado-node": "^1.2.2",
     "commander": "^9.4.0",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
@@ -26,6 +27,8 @@
     "nodemon": "^2.0.19",
     "path-browserify": "^1.0.1",
     "ts-loader": "^9.3.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.3",
     "vue": "^3.2.37",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0"

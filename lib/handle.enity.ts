@@ -1,60 +1,21 @@
 import { ref } from "./handle.reflect";
-import SerivceMap from "./handle.service";
-import * as mysql from "mysql";
-function getCurdUrl(CurdUrl: string) {
-  return {
-    get: {
-      list: `${CurdUrl}/list`,
-      del: `${CurdUrl}/del`,
-      get: `${CurdUrl}/get`,
-    },
-    post: {
-      modify: `${CurdUrl}/modify`,
-      insert: `${CurdUrl}/insert`,
-    },
-  };
-}
+
 const Enity: ClassDecorator = (target: Function) => {
-  ref.def(target.name + "DTO", target.prototype, target.prototype);
+  ref.def(target.name + "Enity", target.prototype, target.prototype);
 };
 
-const Curd = (
-  CurdUrl: string,
-  Enity: Function,
-  coon: mysql.Connection
-): MethodDecorator => {
-  return function (
-    _target: Object,
-    _propertyKey: string | symbol,
-    _descriptor: PropertyDescriptor
-  ) {
-    const url = getCurdUrl(CurdUrl);
-    const selectTest = curd_list(Enity);
-    function demo(_req: Request, res: Response) {
-      new Promise((resolve, reject) => {
-        coon.query(selectTest, function (err, res) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(res);
-          }
-        });
-      }).then((ret) => {
-        // @ts-ignore
-        res.json(ret);
-      });
-    }
-    SerivceMap.set(url.get.list, {
-      fn: demo,
-      method: "Get",
-    });
-  };
+const Key: PropertyDecorator = (
+  target: Object,
+  propertyKey: string | symbol
+) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
 };
-
-function curd_list(_dto: Function) {
-  return `select * from user`;
-}
-
+const Keyword: PropertyDecorator = (
+  target: Object,
+  propertyKey: string | symbol
+) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
 // const Number = (defaultValue?: string) => {
 //   return function (target: Object, propertyKey: string | symbol) {
 //     if (typeof defaultValue !== "number") {
@@ -74,4 +35,4 @@ function curd_list(_dto: Function) {
 // const Email = (defaultValue?: string): PropertyDecorator => {
 //   return function (target: Object, propertyKey: string | symbol) {};
 // };
-export { Enity, Curd };
+export { Enity, Key, Keyword };

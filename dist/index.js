@@ -42,6 +42,7 @@ __export(ado_node_exports, {
   Select: () => Select,
   Service: () => handle_service_default,
   Update: () => Update,
+  createSSRServer: () => createSSRServer,
   createServer: () => createServer,
   ref: () => ref
 });
@@ -921,6 +922,7 @@ var Pipe = (fn) => {
 
 // lib/server.ts
 var import_express = __toESM(require("express"));
+var import_path = __toESM(require("path"));
 function createServer(options) {
   const app = (0, import_express.default)();
   app.use(import_express.default.json());
@@ -928,9 +930,28 @@ function createServer(options) {
   const { base, controller } = options;
   controller.forEach((el) => {
     const router = ref.get(el);
+    console.log("router", router);
     app.use(base, router);
   });
   app.use(import_express.default.static(staticDist));
+  app.listen(port, () => {
+    console.log(`c http://localhost:${port}`);
+  });
+}
+function createSSRServer(options) {
+  const app = (0, import_express.default)();
+  app.use(import_express.default.json());
+  const { port, staticDist } = options;
+  const { base, controller } = options;
+  controller.forEach((el) => {
+    const router = ref.get(el);
+    console.log("router", router);
+    app.use(base, router);
+  });
+  app.use(import_express.default.static(staticDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(import_path.default.join(__dirname, "app/index.html"));
+  });
   app.listen(port, () => {
     console.log(`c http://localhost:${port}`);
   });
@@ -988,6 +1009,7 @@ var Insert = Select;
   Select,
   Service,
   Update,
+  createSSRServer,
   createServer,
   ref
 });

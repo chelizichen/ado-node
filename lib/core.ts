@@ -12,7 +12,7 @@ import { AppServer } from "./types";
 import { GenereateRouter } from "./handle.service";
 import { Error } from "./handle.error";
 import { Pipe } from "./handle.pipe";
-import { createServer } from "./server";
+import { createServer, createSSRServer } from "./server";
 import { ref } from "./handle.reflect";
 import {
   Mapper,
@@ -41,6 +41,7 @@ export {
   Pipe,
   createServer,
   ref,
+  createSSRServer,
 };
 
 export type { Query, Body, ServerOptions, AppServer };

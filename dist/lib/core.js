@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ref = exports.createServer = exports.Pipe = exports.Delete = exports.Insert = exports.Update = exports.Connect = exports.Select = exports.Mapper = exports.Error = exports.GenereateRouter = exports.Service = exports.HandleController = exports.Post = exports.Get = exports.Collect = exports.Controller = exports.Inject = void 0;
+exports.createSSRServer = exports.ref = exports.createServer = exports.Pipe = exports.Delete = exports.Insert = exports.Update = exports.Connect = exports.Select = exports.Mapper = exports.Error = exports.GenereateRouter = exports.Service = exports.HandleController = exports.Post = exports.Get = exports.Collect = exports.Controller = exports.Inject = void 0;
 const handle_inject_1 = require("./handle.inject");
 Object.defineProperty(exports, "Inject", { enumerable: true, get: function () { return handle_inject_1.Inject; } });
 const handle_inject_2 = require("./handle.inject");
@@ -26,6 +26,7 @@ const handle_pipe_1 = require("./handle.pipe");
 Object.defineProperty(exports, "Pipe", { enumerable: true, get: function () { return handle_pipe_1.Pipe; } });
 const server_1 = require("./server");
 Object.defineProperty(exports, "createServer", { enumerable: true, get: function () { return server_1.createServer; } });
+Object.defineProperty(exports, "createSSRServer", { enumerable: true, get: function () { return server_1.createSSRServer; } });
 const handle_reflect_1 = require("./handle.reflect");
 Object.defineProperty(exports, "ref", { enumerable: true, get: function () { return handle_reflect_1.ref; } });
 const handle_mapper_1 = require("./handle.mapper");

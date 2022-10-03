@@ -872,6 +872,7 @@ var Pipe = (fn) => {
 
 // lib/server.ts
 import express2 from "express";
+import path from "path";
 function createServer(options) {
   const app = express2();
   app.use(express2.json());
@@ -879,9 +880,28 @@ function createServer(options) {
   const { base, controller } = options;
   controller.forEach((el) => {
     const router = ref.get(el);
+    console.log("router", router);
     app.use(base, router);
   });
   app.use(express2.static(staticDist));
+  app.listen(port, () => {
+    console.log(`c http://localhost:${port}`);
+  });
+}
+function createSSRServer(options) {
+  const app = express2();
+  app.use(express2.json());
+  const { port, staticDist } = options;
+  const { base, controller } = options;
+  controller.forEach((el) => {
+    const router = ref.get(el);
+    console.log("router", router);
+    app.use(base, router);
+  });
+  app.use(express2.static(staticDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(__dirname, "app/index.html"));
+  });
   app.listen(port, () => {
     console.log(`c http://localhost:${port}`);
   });
@@ -938,6 +958,7 @@ export {
   Select,
   handle_service_default as Service,
   Update,
+  createSSRServer,
   createServer,
   ref
 };

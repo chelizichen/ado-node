@@ -17,6 +17,7 @@ import {
   Pipe,
   createServer,
   ref,
+  createSSRServer,
 } from "./lib/core";
 export {
   Inject,
@@ -37,4 +38,5 @@ export {
   Pipe,
   createServer,
   ref,
+  createSSRServer,
 };

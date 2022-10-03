@@ -1,3 +1,4 @@
 import { HandleProxyOptions } from "./types";
 declare function createServer(options: HandleProxyOptions): void;
-export { createServer };
+declare function createSSRServer(options: HandleProxyOptions): void;
+export { createServer, createSSRServer };

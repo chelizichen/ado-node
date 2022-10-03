@@ -1,4 +1,3 @@
-// @ts-nocheck
 import SerivceMap from "./handle.service";
 import { Request, Response } from "express";
 

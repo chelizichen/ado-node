@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ref } from "./handle.reflect";
 import SerivceMap from "./handle.service";
 import * as mysql from "mysql";
@@ -19,33 +18,20 @@ const Enity: ClassDecorator = (target: Function) => {
   ref.def(target.name + "DTO", target.prototype, target.prototype);
 };
 
-const Curd = (CurdUrl: string, Enity: Function): MethodDecorator => {
+const Curd = (
+  CurdUrl: string,
+  Enity: Function,
+  coon: mysql.Connection
+): MethodDecorator => {
   return function (
-    target: Object,
+    _target: Object,
     _propertyKey: string | symbol,
-    descriptor: PropertyDescriptor
+    _descriptor: PropertyDescriptor
   ) {
     const url = getCurdUrl(CurdUrl);
     const selectTest = curd_list(Enity);
-    const coon: mysql.Connection = ref.get(
-      "coon",
-      target.constructor.prototype
-    );
-    async function demo(req, res) {
-      const config = {
-        host: "localhost",
-        user: "root",
-        password: "12345678",
-        database: "boot", //所用数据库
-        port: "3306",
-      };
-      const coon = mysql.createConnection({
-        host: config.host,
-        user: config.user,
-        password: config.password,
-        database: config.database,
-      });
-      const ret = await new Promise((resolve, reject) => {
+    function demo(_req: Request, res: Response) {
+      new Promise((resolve, reject) => {
         coon.query(selectTest, function (err, res) {
           if (err) {
             reject(err);
@@ -53,8 +39,10 @@ const Curd = (CurdUrl: string, Enity: Function): MethodDecorator => {
             resolve(res);
           }
         });
+      }).then((ret) => {
+        // @ts-ignore
+        res.json(ret);
       });
-      res.json(ret);
     }
     SerivceMap.set(url.get.list, {
       fn: demo,

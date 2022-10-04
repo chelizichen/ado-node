@@ -16,6 +16,8 @@ const Keyword: PropertyDecorator = (
 ) => {
   ref.def("keyword", propertyKey, target.constructor.prototype);
 };
+
+const EnityTable = new Map();
 // const Number = (defaultValue?: string) => {
 //   return function (target: Object, propertyKey: string | symbol) {
 //     if (typeof defaultValue !== "number") {
@@ -35,4 +37,4 @@ const Keyword: PropertyDecorator = (
 // const Email = (defaultValue?: string): PropertyDecorator => {
 //   return function (target: Object, propertyKey: string | symbol) {};
 // };
-export { Enity, Key, Keyword };
+export { Enity, Key, Keyword, EnityTable };

@@ -3,6 +3,7 @@ import SerivceMap from "./handle.service";
 import * as mysql from "mysql";
 import { Request, Response } from "express";
 import { ref } from "./handle.reflect";
+import { EnityTable } from "./handle.enity";
 
 const Curd = (
   CurdUrl: string,
@@ -63,8 +64,8 @@ const Curd = (
         res.json(ret);
       });
     }
-    function getAddRet(_req: Request, res: Response) {
-      const options = "";
+    function getAddRet(req: Request, res: Response) {
+      const options = req.body;
       const UpdateSql = createAddSql(Enity, options);
       new Promise((resolve, reject) => {
         coon.query(UpdateSql, function (err, res) {
@@ -79,7 +80,7 @@ const Curd = (
         res.json(ret);
       });
     }
-    function getModifySql(_req: Request, res: Response) {
+    function getUpdateRet(_req: Request, res: Response) {
       const options = "";
       const ListSql = createModifySql(Enity, options);
       new Promise((resolve, reject) => {
@@ -108,7 +109,7 @@ const Curd = (
       method: "Get",
     });
     SerivceMap.set(url.post.modify, {
-      fn: getModifySql,
+      fn: getUpdateRet,
       method: "Post",
     });
     SerivceMap.set(url.post.add, {
@@ -156,12 +157,26 @@ function createDelSql(Enity: Function, options: any) {
   return `select * from ${Enity.name} where id = ${options.id}`;
 }
 function createAddSql(Enity: Function, options: any) {
-  console.log("Enity", Enity);
-  const fields = Object.getOwnPropertyNames(new Enity());
-  console.log(fields);
-  return "select * from user";
+  let fields: Array<string> = EnityTable.get(Enity.name);
+  if (!fields) {
+    fields = Object.getOwnPropertyNames(new Enity());
+    EnityTable.set(Enity.name, fields);
+  }
+  const key = ref.get("key", Enity.prototype);
+  const opt = fields.filter((el) => el != key);
+  const val = opt.map((el) => {
+    return options[el];
+  });
+  return `insert into ${
+    Enity.name
+  }(${opt.toString()}) values  (${val.toString()})`;
 }
 function createModifySql(Enity: Function, options: any) {
+  let fields = EnityTable.get(Enity.name);
+  if (!fields) {
+    fields = Object.getOwnPropertyNames(new Enity());
+    EnityTable.set(Enity.name, fields);
+  }
   return "select * from user";
 }
 

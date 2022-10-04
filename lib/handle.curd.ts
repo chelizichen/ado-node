@@ -25,6 +25,7 @@ const Curd = (
           if (err) {
             reject(err);
           } else {
+            console.log(res);
             resolve(res);
           }
         });
@@ -136,22 +137,32 @@ function createCurdUrl(CurdUrl: string) {
 function createListSql(Enity: ClassConstructor, options: any) {
   const keyword = ref.get("keyword", Enity.prototype);
   if (options.keyword && options.page && options.size) {
-    return `select * from ${Enity.name} where ${keyword} like '%${
-      options.keyword
-    }%' limit ${options.page - 1},${options.size}`;
+    return `
+      select SQL_CALC_FOUND_ROWS * from ${Enity.name} where ${keyword} like 
+     '%${options.keyword}%' limit ${options.page - 1},${options.size};
+      SELECT FOUND_ROWS() as total;
+    `;
   }
   if (options.page && options.size) {
-    return `select * from ${Enity.name} limit ${options.page - 1},${
-      options.size
-    }`;
-  }
-  if (options.keyword && !options.page && !options.size) {
-    const sql = `select * from ${Enity.name} where ${keyword} like '%${options.keyword}%' limit 0,10;SELECT FOUND_ROWS() as total;`;
-    console.log(sql);
-
+    const sql = `
+      select SQL_CALC_FOUND_ROWS * from ${Enity.name} limit 
+      ${options.page - 1},${options.size} ;
+      SELECT FOUND_ROWS() as total;
+    `;
     return sql;
   }
-  return `SELECT SQL_CALC_FOUND_ROWS * from ${Enity.name} limit 0,10;`;
+  if (options.keyword && !options.page && !options.size) {
+    const sql = `
+      select  SQL_CALC_FOUND_ROWS * from ${Enity.name} 
+      where ${keyword} like '%${options.keyword}%' limit 0,10 ;
+      SELECT FOUND_ROWS() as total;
+    `;
+    return sql;
+  }
+  return `
+    SELECT  * from ${Enity.name} limit 0,10;
+    SELECT FOUND_ROWS() as total;
+  `;
 }
 function createGetSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);

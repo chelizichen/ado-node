@@ -21,6 +21,7 @@ export const coon = mysql.createConnection({
   user: config.user,
   password: config.password,
   database: config.database,
+  multipleStatements: true,
 });
 
 @Controller("/app917")

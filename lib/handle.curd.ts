@@ -1,13 +1,14 @@
-// @ts-nocheck
 import SerivceMap from "./handle.service";
 import * as mysql from "mysql";
 import { Request, Response } from "express";
 import { ref } from "./handle.reflect";
 import { EnityTable } from "./handle.enity";
 
+type ClassConstructor = new (...args: any[]) => void;
+
 const Curd = (
   CurdUrl: string,
-  Enity: Function,
+  Enity: ClassConstructor,
   coon: mysql.Connection
 ): MethodDecorator => {
   return function (
@@ -82,7 +83,7 @@ const Curd = (
     }
     function getUpdateRet(req: Request, res: Response) {
       const options = req.body;
-      const ListSql = createUpdate(Enity, options);
+      const ListSql = createUpdateSql(Enity, options);
       new Promise((resolve, reject) => {
         coon.query(ListSql, function (err, res) {
           if (err) {
@@ -132,7 +133,7 @@ function createCurdUrl(CurdUrl: string) {
     },
   };
 }
-function createListSql(Enity: Function, options: any) {
+function createListSql(Enity: ClassConstructor, options: any) {
   const keyword = ref.get("keyword", Enity.prototype);
   if (options.keyword && options.page && options.size) {
     return `select * from ${Enity.name} where ${keyword} like '%${
@@ -149,14 +150,14 @@ function createListSql(Enity: Function, options: any) {
   }
   return `select * from ${Enity.name} limit 0,10`;
 }
-function createGetSql(Enity: Function, options: any) {
+function createGetSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);
   return `select * from ${Enity.name} where ${key} = ${options.id}`;
 }
-function createDelSql(Enity: Function, options: any) {
+function createDelSql(Enity: ClassConstructor, options: any) {
   return `select * from ${Enity.name} where id = ${options.id}`;
 }
-function createAddSql(Enity: Function, options: any) {
+function createAddSql(Enity: ClassConstructor, options: any) {
   let fields: Array<string> = EnityTable.get(Enity.name);
   if (!fields) {
     fields = Object.getOwnPropertyNames(new Enity());
@@ -171,7 +172,7 @@ function createAddSql(Enity: Function, options: any) {
     Enity.name
   }(${opt.toString()}) values  (${val.toString()})`;
 }
-function createUpdate(Enity: Function, options: any) {
+function createUpdateSql(Enity: ClassConstructor, options: any) {
   let fields: Array<string> = EnityTable.get(Enity.name);
   if (!fields) {
     fields = Object.getOwnPropertyNames(new Enity());
@@ -186,7 +187,7 @@ function createUpdate(Enity: Function, options: any) {
   });
   const keySqlVal = `${key} = ${options[key]}`;
   const sqlVal = val.reduce((pre, item, index) => {
-    const itemName = Object.getOwnPropertyNames(item);
+    const itemName: any = Object.getOwnPropertyNames(item);
     const itemValue = item[itemName];
     let sql;
     if (index == val.length - 1) {

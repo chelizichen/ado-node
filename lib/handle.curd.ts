@@ -146,9 +146,12 @@ function createListSql(Enity: ClassConstructor, options: any) {
     }`;
   }
   if (options.keyword && !options.page && !options.size) {
-    return `select * from ${Enity.name} where ${keyword} like '%${options.keyword}%' limit 0,10`;
+    const sql = `select * from ${Enity.name} where ${keyword} like '%${options.keyword}%' limit 0,10;SELECT FOUND_ROWS() as total;`;
+    console.log(sql);
+
+    return sql;
   }
-  return `select * from ${Enity.name} limit 0,10`;
+  return `SELECT SQL_CALC_FOUND_ROWS * from ${Enity.name} limit 0,10;`;
 }
 function createGetSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);

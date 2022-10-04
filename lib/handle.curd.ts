@@ -80,9 +80,9 @@ const Curd = (
         res.json(ret);
       });
     }
-    function getUpdateRet(_req: Request, res: Response) {
-      const options = "";
-      const ListSql = createModifySql(Enity, options);
+    function getUpdateRet(req: Request, res: Response) {
+      const options = req.body;
+      const ListSql = createUpdate(Enity, options);
       new Promise((resolve, reject) => {
         coon.query(ListSql, function (err, res) {
           if (err) {
@@ -127,7 +127,7 @@ function createCurdUrl(CurdUrl: string) {
       get: `${CurdUrl}/get`,
     },
     post: {
-      modify: `${CurdUrl}/modify`,
+      modify: `${CurdUrl}/update`,
       add: `${CurdUrl}/add`,
     },
   };
@@ -171,13 +171,33 @@ function createAddSql(Enity: Function, options: any) {
     Enity.name
   }(${opt.toString()}) values  (${val.toString()})`;
 }
-function createModifySql(Enity: Function, options: any) {
-  let fields = EnityTable.get(Enity.name);
+function createUpdate(Enity: Function, options: any) {
+  let fields: Array<string> = EnityTable.get(Enity.name);
   if (!fields) {
     fields = Object.getOwnPropertyNames(new Enity());
     EnityTable.set(Enity.name, fields);
   }
-  return "select * from user";
+  const key = ref.get("key", Enity.prototype);
+  const opt = fields.filter((el) => el != key);
+  const val = opt.map((el) => {
+    return {
+      [el]: options[el],
+    };
+  });
+  const keySqlVal = `${key} = ${options[key]}`;
+  const sqlVal = val.reduce((pre, item, index) => {
+    const itemName = Object.getOwnPropertyNames(item);
+    const itemValue = item[itemName];
+    let sql;
+    if (index == val.length - 1) {
+      sql = `${itemName} = ${itemValue}`;
+    } else {
+      sql = `${itemName} = ${itemValue},`;
+    }
+    return pre + sql;
+  }, "");
+  const sql = `Update ${Enity.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+  return sql;
 }
 
 export { Curd };

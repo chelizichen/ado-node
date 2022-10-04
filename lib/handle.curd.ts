@@ -152,10 +152,11 @@ function createListSql(Enity: ClassConstructor, options: any) {
 }
 function createGetSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);
-  return `select * from ${Enity.name} where ${key} = ${options.id}`;
+  return `select * from ${Enity.name} where ${key} = ${options[key]}`;
 }
 function createDelSql(Enity: ClassConstructor, options: any) {
-  return `select * from ${Enity.name} where id = ${options.id}`;
+  const key = ref.get("key", Enity.prototype);
+  return `DELETE  from ${Enity.name} where ${key} = ${options[key]}`;
 }
 function createAddSql(Enity: ClassConstructor, options: any) {
   let fields: Array<string> = EnityTable.get(Enity.name);

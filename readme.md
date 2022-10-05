@@ -88,6 +88,48 @@ export const options: HandleProxyOptions = {
 ````
 
 
+
+
+#### date 10.5 update
+***
+新增一键添加接口功能 
+
+新增
+* @Curd(curdurl , enityClass , mysqlConn ) 
+* @Enity 用来定义实体类
+* @Key 用来定义主键
+* @Keyword 用来定义模糊查询的参数
+* @UseCache 用来定义Redis 缓存实例
+````
+const coon = mysql.createConnection({
+  host: config.host,
+  user: config.user,
+  password: config.password,
+  database: config.database,
+  multipleStatements: true,
+});
+
+@Controller("/shadow")
+class ShadowController extends HandleController {
+
+  @UseCache(createClient())
+  Redis!: any;
+  
+  @Curd("/member", Member, coon)
+  public async fundCurd() {}
+}
+
+@Enity
+export class Member {
+  @Key
+  id!: number;
+  @Keyword
+  name!: string;
+  sex!: string;
+}
+
+````
+
 #### Run 
 ````
 import createServer from "";

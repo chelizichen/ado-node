@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = exports.Get = void 0;
-// @ts-nocheck
 const handle_service_1 = __importDefault(require("./handle.service"));
 /**
  * @Prarams Method Like GET POST

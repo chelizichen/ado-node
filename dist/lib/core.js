@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSSRServer = exports.ref = exports.createServer = exports.Pipe = exports.Delete = exports.Insert = exports.Update = exports.Connect = exports.Select = exports.Mapper = exports.Error = exports.GenereateRouter = exports.Service = exports.HandleController = exports.Post = exports.Get = exports.Collect = exports.Controller = exports.Inject = void 0;
+exports.Keyword = exports.Key = exports.Enity = exports.Curd = exports.createSSRServer = exports.ref = exports.createServer = exports.Pipe = exports.Delete = exports.Insert = exports.Update = exports.Connect = exports.Select = exports.Mapper = exports.Error = exports.GenereateRouter = exports.Service = exports.HandleController = exports.Post = exports.Get = exports.Collect = exports.Controller = exports.Inject = void 0;
 const handle_inject_1 = require("./handle.inject");
 Object.defineProperty(exports, "Inject", { enumerable: true, get: function () { return handle_inject_1.Inject; } });
 const handle_inject_2 = require("./handle.inject");
@@ -36,4 +36,10 @@ Object.defineProperty(exports, "Connect", { enumerable: true, get: function () {
 Object.defineProperty(exports, "Update", { enumerable: true, get: function () { return handle_mapper_1.Update; } });
 Object.defineProperty(exports, "Insert", { enumerable: true, get: function () { return handle_mapper_1.Insert; } });
 Object.defineProperty(exports, "Delete", { enumerable: true, get: function () { return handle_mapper_1.Delete; } });
+const handle_curd_1 = require("./handle.curd");
+Object.defineProperty(exports, "Curd", { enumerable: true, get: function () { return handle_curd_1.Curd; } });
+const handle_enity_1 = require("./handle.enity");
+Object.defineProperty(exports, "Enity", { enumerable: true, get: function () { return handle_enity_1.Enity; } });
+Object.defineProperty(exports, "Key", { enumerable: true, get: function () { return handle_enity_1.Key; } });
+Object.defineProperty(exports, "Keyword", { enumerable: true, get: function () { return handle_enity_1.Keyword; } });
 //# sourceMappingURL=core.js.map

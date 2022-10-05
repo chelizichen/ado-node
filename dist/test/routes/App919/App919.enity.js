@@ -6,18 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.App919Mapper = void 0;
-const handle_mapper_1 = require("../../../lib/handle.mapper");
-const App917_controller_1 = require("../App917/App917.controller");
-let App919Mapper = class App919Mapper {
-    getList() { }
+exports.Fund_Star = void 0;
+const handle_enity_1 = require("../../../lib/handle.enity");
+let Fund_Star = class Fund_Star {
+    id;
+    fund_name;
 };
 __decorate([
-    (0, handle_mapper_1.Select)("select * from user")
-], App919Mapper.prototype, "getList", null);
-App919Mapper = __decorate([
-    (0, handle_mapper_1.Mapper)(),
-    (0, handle_mapper_1.Connect)(App917_controller_1.coon)
-], App919Mapper);
-exports.App919Mapper = App919Mapper;
-//# sourceMappingURL=App919.mapper.js.map
+    handle_enity_1.Key
+], Fund_Star.prototype, "id", void 0);
+__decorate([
+    handle_enity_1.Keyword
+], Fund_Star.prototype, "fund_name", void 0);
+Fund_Star = __decorate([
+    handle_enity_1.Enity
+], Fund_Star);
+exports.Fund_Star = Fund_Star;
+//# sourceMappingURL=App919.enity.js.map

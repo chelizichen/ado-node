@@ -6,18 +6,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.App919Mapper = void 0;
-const handle_mapper_1 = require("../../../lib/handle.mapper");
-const App917_controller_1 = require("../App917/App917.controller");
-let App919Mapper = class App919Mapper {
-    getList() { }
+exports.Ret = exports.user = void 0;
+const handle_enity_1 = require("../../../lib/handle.enity");
+let user = class user {
+    id;
+    phone;
+    username;
+    password;
 };
 __decorate([
-    (0, handle_mapper_1.Select)("select * from user")
-], App919Mapper.prototype, "getList", null);
-App919Mapper = __decorate([
-    (0, handle_mapper_1.Mapper)(),
-    (0, handle_mapper_1.Connect)(App917_controller_1.coon)
-], App919Mapper);
-exports.App919Mapper = App919Mapper;
-//# sourceMappingURL=App919.mapper.js.map
+    handle_enity_1.Key
+], user.prototype, "id", void 0);
+__decorate([
+    handle_enity_1.Keyword
+], user.prototype, "username", void 0);
+user = __decorate([
+    handle_enity_1.Enity
+], user);
+exports.user = user;
+class Ret {
+    static Message(code, msg, data) {
+        return {
+            code,
+            msg,
+            data,
+        };
+    }
+}
+exports.Ret = Ret;
+//# sourceMappingURL=App917.enity.js.map

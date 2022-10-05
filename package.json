@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "ts-decorator for express server",
   "exports": {
     ".": {
@@ -29,6 +29,7 @@
     "@types/mysql": "^2.15.21",
     "express": "^4.18.1",
     "mysql": "^2.18.1",
+    "redis": "^4.3.1",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {

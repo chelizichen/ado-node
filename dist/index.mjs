@@ -809,6 +809,7 @@ var HandleController = class {
     const app = express.Router();
     this.Service.forEach((service, URL) => {
       URL = this.Base + URL;
+      console.log("URL", URL);
       if (service.method == "Get") {
         app.get(URL, service.fn);
       }
@@ -873,17 +874,18 @@ var Pipe = (fn) => {
 // lib/server.ts
 import express2 from "express";
 import path from "path";
-function createServer(options) {
+function createServer(options, SSRFunc) {
   const app = express2();
   app.use(express2.json());
-  const { port, staticDist } = options;
-  const { base, controller } = options;
+  const { port, staticDist, controller, base } = options;
   controller.forEach((el) => {
     const router = ref.get(el);
-    console.log("router", router);
     app.use(base, router);
   });
   app.use(express2.static(staticDist));
+  if (SSRFunc) {
+    SSRFunc(app);
+  }
   app.listen(port, () => {
     console.log(`c http://localhost:${port}`);
   });
@@ -941,17 +943,253 @@ var Select = (sql) => {
 var Update = Select;
 var Delete = Select;
 var Insert = Select;
+
+// lib/handle.enity.ts
+var Enity = (target) => {
+  ref.def(target.name + "Enity", target.prototype, target.prototype);
+};
+var Key = (target, propertyKey) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Keyword = (target, propertyKey) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
+var EnityTable = /* @__PURE__ */ new Map();
+
+// lib/handle.curd.ts
+var Curd = (CurdUrl, Enity2, coon) => {
+  return function(_target, _propertyKey, _descriptor) {
+    const url = createCurdUrl(CurdUrl);
+    function getListRet(req, res) {
+      const options = req.query;
+      const ListSql = createListSql(Enity2, options);
+      new Promise((resolve, reject) => {
+        coon.query(ListSql, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            const data = {
+              data: res2[0],
+              total: res2[1][0].total,
+              code: 0,
+              msg: "success"
+            };
+            resolve(data);
+          }
+        });
+      }).then((ret) => {
+        res.json(ret);
+      });
+    }
+    function getGetRet(req, res) {
+      const options = req.query;
+      const GetSql = createGetSql(Enity2, options);
+      new Promise((resolve, reject) => {
+        coon.query(GetSql, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            const data = {
+              data: res2[0],
+              total: res2[1][0].total,
+              code: 0,
+              msg: "success"
+            };
+            resolve(data);
+          }
+        });
+      }).then((ret) => {
+        res.json(ret);
+      });
+    }
+    function getDelRet(req, res) {
+      const options = req.query;
+      const DelSql = createDelSql(Enity2, options);
+      new Promise((resolve, reject) => {
+        coon.query(DelSql, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            if (res2.affectedRows > 0) {
+              const data = {
+                affect: res2.affectedRows,
+                code: 0,
+                msg: "success"
+              };
+              resolve(data);
+            } else {
+              const data = {
+                affect: res2.affectedRows,
+                code: -1,
+                msg: "error"
+              };
+              resolve(data);
+            }
+          }
+        });
+      }).then((ret) => {
+        res.json(ret);
+      });
+    }
+    function getAddRet(req, res) {
+      const options = req.body;
+      const UpdateSql = createAddSql(Enity2, options);
+      new Promise((resolve, reject) => {
+        coon.query(UpdateSql, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res2);
+          }
+        });
+      }).then((ret) => {
+        res.json(ret);
+      });
+    }
+    function getUpdateRet(req, res) {
+      const options = req.body;
+      const ListSql = createUpdateSql(Enity2, options);
+      new Promise((resolve, reject) => {
+        coon.query(ListSql, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res2);
+          }
+        });
+      }).then((ret) => {
+        res.json(ret);
+      });
+    }
+    handle_service_default.set(url.get.get, {
+      fn: getGetRet,
+      method: "Get"
+    });
+    handle_service_default.set(url.get.list, {
+      fn: getListRet,
+      method: "Get"
+    });
+    handle_service_default.set(url.get.del, {
+      fn: getDelRet,
+      method: "Get"
+    });
+    handle_service_default.set(url.post.modify, {
+      fn: getUpdateRet,
+      method: "Post"
+    });
+    handle_service_default.set(url.post.add, {
+      fn: getAddRet,
+      method: "Post"
+    });
+  };
+};
+function createCurdUrl(CurdUrl) {
+  return {
+    get: {
+      list: `${CurdUrl}/list`,
+      del: `${CurdUrl}/del`,
+      get: `${CurdUrl}/get`
+    },
+    post: {
+      modify: `${CurdUrl}/update`,
+      add: `${CurdUrl}/add`
+    }
+  };
+}
+function createListSql(Enity2, options) {
+  const keyword = ref.get("keyword", Enity2.prototype);
+  if (options.keyword && options.page && options.size) {
+    return `
+      select SQL_CALC_FOUND_ROWS * from ${Enity2.name} where ${keyword} like 
+     '%${options.keyword}%' limit ${options.page - 1},${options.size};
+      SELECT FOUND_ROWS() as total;
+    `;
+  }
+  if (options.page && options.size) {
+    const sql = `
+      select SQL_CALC_FOUND_ROWS * from ${Enity2.name} limit 
+      ${options.page - 1},${options.size} ;
+      SELECT FOUND_ROWS() as total;
+    `;
+    return sql;
+  }
+  if (options.keyword && !options.page && !options.size) {
+    const sql = `
+      select  SQL_CALC_FOUND_ROWS * from ${Enity2.name} 
+      where ${keyword} like '%${options.keyword}%' limit 0,10 ;
+      SELECT FOUND_ROWS() as total;
+    `;
+    return sql;
+  }
+  return `
+    SELECT  * from ${Enity2.name} limit 0,10;
+    SELECT FOUND_ROWS() as total;
+  `;
+}
+function createGetSql(Enity2, options) {
+  const key = ref.get("key", Enity2.prototype);
+  return `select SQL_CALC_FOUND_ROWS * from ${Enity2.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+}
+function createDelSql(Enity2, options) {
+  const key = ref.get("key", Enity2.prototype);
+  return `DELETE  from ${Enity2.name} where ${key} = ${options[key]}`;
+}
+function createAddSql(Enity2, options) {
+  let fields = EnityTable.get(Enity2.name);
+  if (!fields) {
+    fields = Object.getOwnPropertyNames(new Enity2());
+    EnityTable.set(Enity2.name, fields);
+  }
+  const key = ref.get("key", Enity2.prototype);
+  const opt = fields.filter((el) => el != key);
+  const val = opt.map((el) => {
+    return options[el];
+  });
+  return `insert into ${Enity2.name}(${opt.toString()}) values  (${val.toString()})`;
+}
+function createUpdateSql(Enity2, options) {
+  let fields = EnityTable.get(Enity2.name);
+  if (!fields) {
+    fields = Object.getOwnPropertyNames(new Enity2());
+    EnityTable.set(Enity2.name, fields);
+  }
+  const key = ref.get("key", Enity2.prototype);
+  const opt = fields.filter((el) => el != key);
+  const val = opt.map((el) => {
+    return {
+      [el]: options[el]
+    };
+  });
+  const keySqlVal = `${key} = ${options[key]}`;
+  const sqlVal = val.reduce((pre, item, index) => {
+    const itemName = Object.getOwnPropertyNames(item);
+    const itemValue = item[itemName];
+    let sql2;
+    if (index == val.length - 1) {
+      sql2 = `${itemName} = ${itemValue}`;
+    } else {
+      sql2 = `${itemName} = ${itemValue},`;
+    }
+    return pre + sql2;
+  }, "");
+  const sql = `Update ${Enity2.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+  return sql;
+}
 export {
   Collect,
   Connect,
   Controller,
+  Curd,
   Delete,
+  Enity,
   Error,
   GenereateRouter,
   Get,
   HandleController,
   Inject,
   Insert,
+  Key,
+  Keyword,
   Mapper,
   Pipe,
   Post,

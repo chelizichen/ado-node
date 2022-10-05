@@ -4,10 +4,12 @@ import { Curd } from "../../../lib/handle.curd";
 import { Inject } from "../../../lib/handle.inject";
 import { Get } from "../../../lib/handle.method";
 import { Pipe } from "../../../lib/handle.pipe";
-import { user } from "./App917.enity";
+import { Ret, user } from "./App917.enity";
 import { useIdPipe, userNamePipe } from "./App917.pipe";
 import { App917Service } from "./App917.service";
 import * as mysql from "mysql";
+import { UseCache } from "../../../lib/handle.cache";
+import { createClient } from "redis";
 
 const config = {
   host: "localhost",
@@ -28,6 +30,9 @@ export const coon = mysql.createConnection({
 class App917Controller extends HandleController {
   @Inject(App917Service)
   App917Service!: App917Service;
+
+  @UseCache(createClient())
+  Redis!: any;
 
   @Get("/a1")
   public async a1() {
@@ -53,12 +58,8 @@ class App917Controller extends HandleController {
   @Get("/c1")
   @Pipe(useIdPipe)
   public async c1(_req: any, _res: any) {
-    const ret = await this.App917Service.a1();
-    return {
-      Msg: "测试中",
-      Code: 0,
-      ret,
-    };
+    const data = await this.App917Service.a1();
+    return Ret.Message(0, "ok", data);
   }
 
   @Curd("/user", user, coon)

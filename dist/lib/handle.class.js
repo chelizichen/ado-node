@@ -37,6 +37,7 @@ class HandleController {
         const app = express.Router();
         this.Service.forEach((service, URL) => {
             URL = this.Base + URL;
+            console.log("URL", URL);
             if (service.method == "Get") {
                 app.get(URL, service.fn);
             }

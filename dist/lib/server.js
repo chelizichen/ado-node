@@ -7,17 +7,18 @@ exports.createSSRServer = exports.createServer = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const handle_reflect_1 = require("./handle.reflect");
-function createServer(options) {
+function createServer(options, SSRFunc) {
     const app = (0, express_1.default)();
     app.use(express_1.default.json());
-    const { port, staticDist } = options;
-    const { base, controller } = options;
+    const { port, staticDist, controller, base } = options;
     controller.forEach((el) => {
         const router = handle_reflect_1.ref.get(el);
-        console.log("router", router);
         app.use(base, router);
     });
     app.use(express_1.default.static(staticDist));
+    if (SSRFunc) {
+        SSRFunc(app);
+    }
     app.listen(port, () => {
         console.log(`c http://localhost:${port}`);
     });

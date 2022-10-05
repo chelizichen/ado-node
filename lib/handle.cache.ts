@@ -28,5 +28,9 @@ export function getCachekey(type: string, table: string, options: any) {
   if (type == "get") {
     return `get&table:${table}&${options.key}:${options.value}`;
   }
+
+  if (type == "update") {
+    return `get&table:${table}&${options.key}:${options.value}`;
+  }
   return "";
 }

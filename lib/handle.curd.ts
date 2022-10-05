@@ -36,7 +36,7 @@ const Curd = (
         res.json(_data);
       } else {
         new Promise((resolve, reject) => {
-          coon.query(ListSql, function (err, res) {
+          coon.query(ListSql, async function (err, res) {
             if (err) {
               reject(err);
             } else {
@@ -46,12 +46,12 @@ const Curd = (
                 code: CODE.SUCCESS,
                 message: MESSAGE.SUCCESS,
               };
-              client.hSet(Enity.name, cacheKey, JSON.stringify(data));
+              await client.hSet(Enity.name, cacheKey, JSON.stringify(data));
+              await client.expire(Enity.name, 120);
               resolve(data);
             }
           });
         }).then((ret) => {
-          // @ts-ignore
           res.json(ret);
         });
       }
@@ -98,7 +98,6 @@ const Curd = (
       const key = ref.get("key", Enity.prototype);
       options.key = key;
       options.value = options[key];
-      console.log(options);
       const cacheKey = getCachekey("get", Enity.name, options);
       new Promise((resolve, reject) => {
         coon.query(DelSql, function (err, res) {
@@ -131,16 +130,20 @@ const Curd = (
     async function getAddRet(req: Request, res: Response) {
       const options = req.body;
       const UpdateSql = createAddSql(Enity, options);
+      const key = ref.get("key", Enity.prototype);
+      options.key = key;
+      options.value = options[key];
+      const cacheKey = getCachekey("update", Enity.name, options);
       new Promise((resolve, reject) => {
         coon.query(UpdateSql, function (err, res) {
           if (err) {
             reject(err);
           } else {
+            client.hDel(Enity.name, cacheKey);
             resolve(res);
           }
         });
       }).then((ret) => {
-        // @ts-ignore
         res.json(ret);
       });
     }
@@ -155,8 +158,11 @@ const Curd = (
             resolve(res);
           }
         });
-      }).then((ret) => {
-        // @ts-ignore
+      }).then(async (ret) => {
+        const keys = await client.hKeys(Enity.name);
+        keys.forEach((el) => {
+          client.hDel(Enity.name, el);
+        });
         res.json(ret);
       });
     }

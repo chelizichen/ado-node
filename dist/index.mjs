@@ -909,6 +909,31 @@ function createSSRServer(options) {
   });
 }
 
+// lib/constant.ts
+var CONSTANT = {
+  Redis: "REDISCACHE"
+};
+var CommonClass = class {
+};
+var CODE = /* @__PURE__ */ ((CODE2) => {
+  CODE2[CODE2["CACHE"] = 10] = "CACHE";
+  CODE2[CODE2["SUCCESS"] = 0] = "SUCCESS";
+  CODE2[CODE2["ERROR"] = -1] = "ERROR";
+  CODE2[CODE2["FIELDERROR"] = -2] = "FIELDERROR";
+  CODE2[CODE2["TYPEERROR"] = -3] = "TYPEERROR";
+  CODE2[CODE2["NOTFOUND"] = -4] = "NOTFOUND";
+  return CODE2;
+})(CODE || {});
+var MESSAGE = /* @__PURE__ */ ((MESSAGE2) => {
+  MESSAGE2["CACHE"] = "cache";
+  MESSAGE2["SUCCESS"] = "success";
+  MESSAGE2["ERROR"] = "error";
+  MESSAGE2["FIELDERROR"] = "missing field";
+  MESSAGE2["TypeError"] = "type error";
+  MESSAGE2["NOTFOUND"] = "not found";
+  return MESSAGE2;
+})(MESSAGE || {});
+
 // lib/handle.mapper.ts
 var Connect = (coon) => {
   return function(target) {
@@ -956,55 +981,120 @@ var Keyword = (target, propertyKey) => {
 };
 var EnityTable = /* @__PURE__ */ new Map();
 
+// lib/handle.cache.ts
+var UseCache = (RedisClinet) => {
+  return async function(target, propertyKey) {
+    ref.def(CONSTANT.Redis, RedisClinet, CommonClass.prototype);
+    target.constructor.prototype[propertyKey] = RedisClinet;
+    await RedisClinet.connect();
+  };
+};
+function getCachekey(type, table, options) {
+  if (type == "list") {
+    if (options.key && options.page && options.size) {
+      return `list&table:${table}&key:${options.key}&page:${options.page}&size:${options.size}`;
+    }
+    if (!options.key && options.page && options.size) {
+      return `list&table:${table}&key:null&page:${options.page}&size:${options.size}`;
+    }
+    if (options.key && !options.page && !options.size) {
+      return `list&table:${table}&key:${options.key}&page:1&size:10`;
+    }
+    if (!options.key && !options.page && !options.size) {
+      return `list&table:${table}&key:null&page:1&size:10`;
+    }
+  }
+  if (type == "get") {
+    return `get&table:${table}&${options.key}:${options.value}`;
+  }
+  if (type == "update") {
+    return `get&table:${table}&${options.key}:${options.value}`;
+  }
+  return "";
+}
+
 // lib/handle.curd.ts
 var Curd = (CurdUrl, Enity2, coon) => {
   return function(_target, _propertyKey, _descriptor) {
+    const client = ref.get(
+      CONSTANT.Redis,
+      CommonClass.prototype
+    );
     const url = createCurdUrl(CurdUrl);
-    function getListRet(req, res) {
+    async function getListRet(req, res) {
       const options = req.query;
       const ListSql = createListSql(Enity2, options);
-      new Promise((resolve, reject) => {
-        coon.query(ListSql, function(err, res2) {
-          if (err) {
-            reject(err);
-          } else {
-            const data = {
-              data: res2[0],
-              total: res2[1][0].total,
-              code: 0,
-              msg: "success"
-            };
-            resolve(data);
-          }
+      const cacheKey = getCachekey("list", Enity2.name, options);
+      const data = await client.hGet(Enity2.name, cacheKey);
+      if (data) {
+        const _data = JSON.parse(data);
+        _data.code = 10 /* CACHE */;
+        _data.message = "cache" /* CACHE */;
+        res.json(_data);
+      } else {
+        new Promise((resolve, reject) => {
+          coon.query(ListSql, async function(err, res2) {
+            if (err) {
+              reject(err);
+            } else {
+              const data2 = {
+                data: res2[0],
+                total: res2[1][0].total,
+                code: 0 /* SUCCESS */,
+                message: "success" /* SUCCESS */
+              };
+              await client.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
+              await client.expire(Enity2.name, 120);
+              resolve(data2);
+            }
+          });
+        }).then((ret) => {
+          res.json(ret);
         });
-      }).then((ret) => {
-        res.json(ret);
-      });
+      }
     }
-    function getGetRet(req, res) {
+    async function getGetRet(req, res) {
       const options = req.query;
       const GetSql = createGetSql(Enity2, options);
-      new Promise((resolve, reject) => {
-        coon.query(GetSql, function(err, res2) {
-          if (err) {
-            reject(err);
-          } else {
-            const data = {
-              data: res2[0],
-              total: res2[1][0].total,
-              code: 0,
-              msg: "success"
-            };
-            resolve(data);
-          }
+      const key = ref.get("key", Enity2.prototype);
+      options.key = key;
+      options.value = options[key];
+      const cacheKey = getCachekey("get", Enity2.name, options);
+      const data = await client.hGet(Enity2.name, cacheKey);
+      if (data) {
+        console.log("cacheKey", cacheKey);
+        const _data = JSON.parse(data);
+        _data.code = 10 /* CACHE */;
+        _data.message = "cache" /* CACHE */;
+        res.json(_data);
+      } else {
+        new Promise((resolve, reject) => {
+          coon.query(GetSql, function(err, res2) {
+            if (err) {
+              reject(err);
+            } else {
+              const data2 = {
+                data: res2[0],
+                total: res2[1][0].total,
+                code: 0 /* SUCCESS */,
+                message: 0 /* SUCCESS */
+              };
+              client.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
+              resolve(data2);
+            }
+          });
+        }).then((ret) => {
+          res.json(ret);
         });
-      }).then((ret) => {
-        res.json(ret);
-      });
+      }
     }
-    function getDelRet(req, res) {
+    async function getDelRet(req, res) {
       const options = req.query;
       const DelSql = createDelSql(Enity2, options);
+      const key = ref.get("key", Enity2.prototype);
+      options.key = key;
+      options.value = options[key];
+      const cacheKey = getCachekey("get", Enity2.name, options);
       new Promise((resolve, reject) => {
         coon.query(DelSql, function(err, res2) {
           if (err) {
@@ -1013,15 +1103,16 @@ var Curd = (CurdUrl, Enity2, coon) => {
             if (res2.affectedRows > 0) {
               const data = {
                 affect: res2.affectedRows,
-                code: 0,
-                msg: "success"
+                code: 0 /* SUCCESS */,
+                msg: "success" /* SUCCESS */
               };
+              client.hDel(Enity2.name, cacheKey);
               resolve(data);
             } else {
               const data = {
                 affect: res2.affectedRows,
-                code: -1,
-                msg: "error"
+                code: -1 /* ERROR */,
+                msg: "error" /* ERROR */
               };
               resolve(data);
             }
@@ -1031,14 +1122,19 @@ var Curd = (CurdUrl, Enity2, coon) => {
         res.json(ret);
       });
     }
-    function getAddRet(req, res) {
+    async function getAddRet(req, res) {
       const options = req.body;
       const UpdateSql = createAddSql(Enity2, options);
+      const key = ref.get("key", Enity2.prototype);
+      options.key = key;
+      options.value = options[key];
+      const cacheKey = getCachekey("update", Enity2.name, options);
       new Promise((resolve, reject) => {
         coon.query(UpdateSql, function(err, res2) {
           if (err) {
             reject(err);
           } else {
+            client.hDel(Enity2.name, cacheKey);
             resolve(res2);
           }
         });
@@ -1046,7 +1142,7 @@ var Curd = (CurdUrl, Enity2, coon) => {
         res.json(ret);
       });
     }
-    function getUpdateRet(req, res) {
+    async function getUpdateRet(req, res) {
       const options = req.body;
       const ListSql = createUpdateSql(Enity2, options);
       new Promise((resolve, reject) => {
@@ -1057,7 +1153,11 @@ var Curd = (CurdUrl, Enity2, coon) => {
             resolve(res2);
           }
         });
-      }).then((ret) => {
+      }).then(async (ret) => {
+        const keys = await client.hKeys(Enity2.name);
+        keys.forEach((el) => {
+          client.hDel(Enity2.name, el);
+        });
         res.json(ret);
       });
     }
@@ -1176,6 +1276,8 @@ function createUpdateSql(Enity2, options) {
   return sql;
 }
 export {
+  CODE,
+  CONSTANT,
   Collect,
   Connect,
   Controller,
@@ -1190,12 +1292,14 @@ export {
   Insert,
   Key,
   Keyword,
+  MESSAGE,
   Mapper,
   Pipe,
   Post,
   Select,
   handle_service_default as Service,
   Update,
+  UseCache,
   createSSRServer,
   createServer,
   ref

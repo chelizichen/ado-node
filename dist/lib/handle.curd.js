@@ -7,58 +7,91 @@ exports.Curd = void 0;
 const handle_service_1 = __importDefault(require("./handle.service"));
 const handle_reflect_1 = require("./handle.reflect");
 const handle_enity_1 = require("./handle.enity");
+const constant_1 = require("./constant");
+const handle_cache_1 = require("./handle.cache");
 const Curd = (CurdUrl, Enity, coon) => {
     return function (_target, _propertyKey, _descriptor) {
+        const client = handle_reflect_1.ref.get(constant_1.CONSTANT.Redis, constant_1.CommonClass.prototype);
         const url = createCurdUrl(CurdUrl);
-        function getListRet(req, res) {
+        async function getListRet(req, res) {
             const options = req.query;
             const ListSql = createListSql(Enity, options);
-            new Promise((resolve, reject) => {
-                coon.query(ListSql, function (err, res) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        const data = {
-                            data: res[0],
-                            total: res[1][0].total,
-                            code: 0,
-                            msg: "success",
-                        };
-                        resolve(data);
-                    }
+            const cacheKey = (0, handle_cache_1.getCachekey)("list", Enity.name, options);
+            const data = await client.hGet(Enity.name, cacheKey);
+            if (data) {
+                const _data = JSON.parse(data);
+                _data.code = constant_1.CODE.CACHE;
+                _data.message = constant_1.MESSAGE.CACHE;
+                res.json(_data);
+            }
+            else {
+                new Promise((resolve, reject) => {
+                    coon.query(ListSql, async function (err, res) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            const data = {
+                                data: res[0],
+                                total: res[1][0].total,
+                                code: constant_1.CODE.SUCCESS,
+                                message: constant_1.MESSAGE.SUCCESS,
+                            };
+                            await client.hSet(Enity.name, cacheKey, JSON.stringify(data));
+                            await client.expire(Enity.name, 120);
+                            resolve(data);
+                        }
+                    });
+                }).then((ret) => {
+                    res.json(ret);
                 });
-            }).then((ret) => {
-                // @ts-ignore
-                res.json(ret);
-            });
+            }
         }
-        function getGetRet(req, res) {
+        async function getGetRet(req, res) {
             const options = req.query;
             const GetSql = createGetSql(Enity, options);
-            new Promise((resolve, reject) => {
-                coon.query(GetSql, function (err, res) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        const data = {
-                            data: res[0],
-                            total: res[1][0].total,
-                            code: 0,
-                            msg: "success",
-                        };
-                        resolve(data);
-                    }
+            const key = handle_reflect_1.ref.get("key", Enity.prototype);
+            options.key = key;
+            options.value = options[key];
+            const cacheKey = (0, handle_cache_1.getCachekey)("get", Enity.name, options);
+            const data = await client.hGet(Enity.name, cacheKey);
+            if (data) {
+                console.log("cacheKey", cacheKey);
+                const _data = JSON.parse(data);
+                _data.code = constant_1.CODE.CACHE;
+                _data.message = constant_1.MESSAGE.CACHE;
+                res.json(_data);
+            }
+            else {
+                new Promise((resolve, reject) => {
+                    coon.query(GetSql, function (err, res) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            const data = {
+                                data: res[0],
+                                total: res[1][0].total,
+                                code: constant_1.CODE.SUCCESS,
+                                message: constant_1.CODE.SUCCESS,
+                            };
+                            client.hSet(Enity.name, cacheKey, JSON.stringify(data));
+                            resolve(data);
+                        }
+                    });
+                }).then((ret) => {
+                    // @ts-ignore
+                    res.json(ret);
                 });
-            }).then((ret) => {
-                // @ts-ignore
-                res.json(ret);
-            });
+            }
         }
-        function getDelRet(req, res) {
+        async function getDelRet(req, res) {
             const options = req.query;
             const DelSql = createDelSql(Enity, options);
+            const key = handle_reflect_1.ref.get("key", Enity.prototype);
+            options.key = key;
+            options.value = options[key];
+            const cacheKey = (0, handle_cache_1.getCachekey)("get", Enity.name, options);
             new Promise((resolve, reject) => {
                 coon.query(DelSql, function (err, res) {
                     if (err) {
@@ -68,16 +101,17 @@ const Curd = (CurdUrl, Enity, coon) => {
                         if (res.affectedRows > 0) {
                             const data = {
                                 affect: res.affectedRows,
-                                code: 0,
-                                msg: "success",
+                                code: constant_1.CODE.SUCCESS,
+                                msg: constant_1.MESSAGE.SUCCESS,
                             };
+                            client.hDel(Enity.name, cacheKey);
                             resolve(data);
                         }
                         else {
                             const data = {
                                 affect: res.affectedRows,
-                                code: -1,
-                                msg: "error",
+                                code: constant_1.CODE.ERROR,
+                                msg: constant_1.MESSAGE.ERROR,
                             };
                             resolve(data);
                         }
@@ -88,24 +122,28 @@ const Curd = (CurdUrl, Enity, coon) => {
                 res.json(ret);
             });
         }
-        function getAddRet(req, res) {
+        async function getAddRet(req, res) {
             const options = req.body;
             const UpdateSql = createAddSql(Enity, options);
+            const key = handle_reflect_1.ref.get("key", Enity.prototype);
+            options.key = key;
+            options.value = options[key];
+            const cacheKey = (0, handle_cache_1.getCachekey)("update", Enity.name, options);
             new Promise((resolve, reject) => {
                 coon.query(UpdateSql, function (err, res) {
                     if (err) {
                         reject(err);
                     }
                     else {
+                        client.hDel(Enity.name, cacheKey);
                         resolve(res);
                     }
                 });
             }).then((ret) => {
-                // @ts-ignore
                 res.json(ret);
             });
         }
-        function getUpdateRet(req, res) {
+        async function getUpdateRet(req, res) {
             const options = req.body;
             const ListSql = createUpdateSql(Enity, options);
             new Promise((resolve, reject) => {
@@ -117,8 +155,11 @@ const Curd = (CurdUrl, Enity, coon) => {
                         resolve(res);
                     }
                 });
-            }).then((ret) => {
-                // @ts-ignore
+            }).then(async (ret) => {
+                const keys = await client.hKeys(Enity.name);
+                keys.forEach((el) => {
+                    client.hDel(Enity.name, el);
+                });
                 res.json(ret);
             });
         }

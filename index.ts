@@ -22,6 +22,10 @@ import {
   Enity,
   Key,
   Keyword,
+  CODE,
+  MESSAGE,
+  CONSTANT,
+  UseCache,
 } from "./lib/core";
 export {
   Inject,
@@ -47,4 +51,8 @@ export {
   Enity,
   Key,
   Keyword,
+  CODE,
+  MESSAGE,
+  CONSTANT,
+  UseCache,
 };

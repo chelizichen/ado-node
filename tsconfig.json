@@ -23,4 +23,5 @@
     "paths": {
     },
   },
+  "exclude": ["test"]
 }

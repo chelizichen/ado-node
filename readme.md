@@ -129,6 +129,66 @@ export class Member {
 }
 
 ````
+Redis 的秒杀案例
+````
+@Controller("/product")
+class ProductController extends HandleController {
+  
+  @UseCache(createClient())
+  Redis!: RedisClientType;
+  
+  @Post("/seckill")
+  public async SecKill(
+    req: Body<{ uId: string; proId: string }>,
+    _res: Response
+  ) {
+    const body = req.body;
+    const getRest = await this.App917Service.getRestKey(this.Redis, body.proId);
+    const getUserKey = await this.App917Service.getUserKey(
+      this.Redis,
+      body.uId
+    );
+    if (getRest.total === null) {
+      return {
+        msg: "还没开始",
+      };
+    }
+    const hasMember = await this.Redis.sIsMember(getUserKey, body.uId);
+    if (hasMember) {
+      return {
+        msg: "您已秒杀成功，不能重复操作",
+      };
+    }
+    if (getRest.total <= 0) {
+      return {
+        msg: "已无库存",
+      };
+    }
+    if (getRest.total >= 1) {
+      await this.Redis.decr(getRest.key);
+      await this.Redis.sAdd(getUserKey, body.uId);
+      return {
+        msg: "秒杀成功",
+      };
+    }
+    return Ret.Message(0, "success", "data");
+  }
+
+  @Post("/addProd")
+  public async addProd(
+    req: Body<{ proId: string; total: string }>,
+    _res: Response
+  ) {
+    const key = `sk:${req.body.proId}:qt`;
+    await this.Redis.set(key, req.body.total);
+    return {
+      msg: "设置成功",
+    };
+  }
+
+}
+````
+````````
 
 #### Run 
 ````

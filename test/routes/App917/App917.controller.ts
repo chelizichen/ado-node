@@ -72,10 +72,7 @@ class App917Controller extends HandleController {
     _res: Response
   ) {
     const body = req.body;
-    // console.log(this.Redis);
-    // 1 获取库存
     const getRest = await this.App917Service.getRestKey(this.Redis, body.proId);
-    // 2 获取用户
     const getUserKey = await this.App917Service.getUserKey(
       this.Redis,
       body.uId
@@ -85,20 +82,17 @@ class App917Controller extends HandleController {
         msg: "还没开始",
       };
     }
-    // 4 判断用户是否重复操作
     const hasMember = await this.Redis.sIsMember(getUserKey, body.uId);
     if (hasMember) {
       return {
         msg: "您已秒杀成功，不能重复操作",
       };
     }
-    // 5 如果库存数量少于1 则停止操作
     if (getRest.total <= 0) {
       return {
         msg: "已无库存",
       };
     }
-
     if (getRest.total >= 1) {
       await this.Redis.decr(getRest.key);
       await this.Redis.sAdd(getUserKey, body.uId);
@@ -106,8 +100,6 @@ class App917Controller extends HandleController {
         msg: "秒杀成功",
       };
     }
-    // 6 确认操作 并且付款到账以后 并入数据库里面生成数据
-
     return Ret.Message(0, "success", "data");
   }
   @Post("/addProd")

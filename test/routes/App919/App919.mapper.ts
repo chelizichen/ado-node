@@ -1,8 +1,8 @@
 import { Connect, Mapper, Select } from "../../../lib/handle.mapper";
-import { coon } from "../App917/App917.controller";
+import { commonClass } from "../../config/common";
 
 @Mapper()
-@Connect(coon)
+@Connect("mysql", commonClass)
 class App919Mapper {
   @Select("select * from user")
   public getList() {}

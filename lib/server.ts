@@ -3,10 +3,7 @@ import path from "path";
 import { ref } from "./handle.reflect";
 import { HandleProxyOptions } from "./types";
 
-function createServer(
-  options: HandleProxyOptions,
-  SSRFunc?: (app: Express) => void
-) {
+function createServer(options: HandleProxyOptions) {
   const app: Express = express();
   app.use(express.json());
   const { port, staticDist, controller, base } = options;
@@ -15,10 +12,6 @@ function createServer(
     app.use(base, router);
   });
   app.use(express.static(staticDist));
-
-  if (SSRFunc) {
-    SSRFunc(app);
-  }
   app.listen(port, () => {
     console.log(`c http://localhost:${port}`);
   });

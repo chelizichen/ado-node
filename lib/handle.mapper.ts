@@ -1,9 +1,10 @@
 import { ref } from "./handle.reflect";
 import * as mysql from "mysql";
 
-const Connect = (coon: mysql.Connection): ClassDecorator => {
+const Connect = (dbname: string, coon: Function): ClassDecorator => {
   return function (target: Function) {
-    ref.def("coon", coon, target.prototype);
+    const connInst = ref.get(dbname, coon.prototype);
+    ref.def("coon", connInst, target.prototype);
   };
 };
 
@@ -20,10 +21,11 @@ const Select = (sql: string) => {
     descriptor: PropertyDescriptor
   ) {
     descriptor.value = async function (options: string[]) {
-      const coon: mysql.Connection = ref.get(
+      const coon: mysql.Connection = await ref.get(
         "coon",
         target.constructor.prototype
       );
+
       const res = await new Promise((resolve, reject) => {
         coon.query(sql, options, function (err, res) {
           if (err) {

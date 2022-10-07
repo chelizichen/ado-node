@@ -1,12 +1,27 @@
-import { RedisClientType } from "redis";
-import { CommonClass, CONSTANT } from "./constant";
+// import { RedisClientType } from "redis";
 import { ref } from "./handle.reflect";
 
-export const UseCache = (RedisClinet: RedisClientType): PropertyDecorator => {
+export const CreateCache = (cacheName: string): MethodDecorator => {
+  return function (
+    target: Object,
+    _propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ) {
+    const val = descriptor.value;
+    ref.def(cacheName, val, target.constructor.prototype);
+  };
+};
+
+export const UseCache = (
+  cacheName: string,
+  commonClass: Function
+): PropertyDecorator => {
   return async function (target: Object, propertyKey: string | symbol) {
-    ref.def(CONSTANT.Redis, RedisClinet, CommonClass.prototype);
-    target.constructor.prototype[propertyKey] = RedisClinet;
-    await RedisClinet.connect();
+    const CacheInst = ref.get(cacheName, commonClass.prototype);
+    target.constructor.prototype[propertyKey] = CacheInst;
+    CacheInst().then((res: any) => {
+      target.constructor.prototype[propertyKey] = res;
+    });
   };
 };
 

@@ -1,42 +1,48 @@
 import SerivceMap from "./handle.service";
-import * as mysql from "mysql";
 import { Request, Response } from "express";
 import { ref } from "./handle.reflect";
 import { EnityTable } from "./handle.enity";
-import { CODE, CommonClass, CONSTANT, MESSAGE } from "./constant";
-import { RedisClientType } from "@redis/client";
+import { CODE, MESSAGE } from "./constant";
 import { getCachekey } from "./handle.cache";
-
+import * as mysql from "mysql";
 export type ClassConstructor = new (...args: any[]) => void;
 
 const Curd = (
   CurdUrl: string,
   Enity: ClassConstructor,
-  coon: mysql.Connection
+  db: {
+    name: string;
+    obj: Function;
+  },
+  cache: {
+    name: string;
+    obj: Function;
+  }
 ): MethodDecorator => {
   return function (
     _target: Object,
     _propertyKey: string | symbol,
     _descriptor: PropertyDescriptor
   ) {
-    const client = ref.get(
-      CONSTANT.Redis,
-      CommonClass.prototype
-    ) as RedisClientType;
+    const client = ref.get(cache.name, cache.obj.prototype);
+    const coon = ref.get(db.name, db.obj.prototype) as mysql.Connection;
     const url = createCurdUrl(CurdUrl);
     async function getListRet(req: Request, res: Response) {
       const options = req.query;
       const ListSql = createListSql(Enity, options);
       const cacheKey = getCachekey("list", Enity.name, options);
-      const data = await client.hGet(Enity.name, cacheKey);
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      const data = await LinkRedis.hGet(Enity.name, cacheKey);
       if (data) {
         const _data = JSON.parse(data);
         _data.code = CODE.CACHE;
         _data.message = MESSAGE.CACHE;
         res.json(_data);
       } else {
-        new Promise((resolve, reject) => {
-          coon.query(ListSql, async function (err, res) {
+        new Promise(async (resolve, reject) => {
+          const _conn = await coon;
+          await _conn.query(ListSql, async function (err, res) {
             if (err) {
               reject(err);
             } else {
@@ -46,8 +52,8 @@ const Curd = (
                 code: CODE.SUCCESS,
                 message: MESSAGE.SUCCESS,
               };
-              await client.hSet(Enity.name, cacheKey, JSON.stringify(data));
-              await client.expire(Enity.name, 120);
+              await LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
+              await LinkRedis.expire(Enity.name, 120);
               resolve(data);
             }
           });
@@ -63,16 +69,18 @@ const Curd = (
       options.key = key;
       options.value = options[key];
       const cacheKey = getCachekey("get", Enity.name, options);
-      const data = await client.hGet(Enity.name, cacheKey);
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      const data = await LinkRedis.hGet(Enity.name, cacheKey);
       if (data) {
-        console.log("cacheKey", cacheKey);
         const _data = JSON.parse(data);
         _data.code = CODE.CACHE;
         _data.message = MESSAGE.CACHE;
         res.json(_data);
       } else {
-        new Promise((resolve, reject) => {
-          coon.query(GetSql, function (err, res) {
+        new Promise(async (resolve, reject) => {
+          const _conn = await coon;
+          _conn.query(GetSql, function (err, res) {
             if (err) {
               reject(err);
             } else {
@@ -82,12 +90,11 @@ const Curd = (
                 code: CODE.SUCCESS,
                 message: CODE.SUCCESS,
               };
-              client.hSet(Enity.name, cacheKey, JSON.stringify(data));
+              LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
               resolve(data);
             }
           });
         }).then((ret) => {
-          // @ts-ignore
           res.json(ret);
         });
       }
@@ -98,9 +105,12 @@ const Curd = (
       const key = ref.get("key", Enity.prototype);
       options.key = key;
       options.value = options[key];
+      const LinkRedis = await client();
+      LinkRedis.connect();
       const cacheKey = getCachekey("get", Enity.name, options);
-      new Promise((resolve, reject) => {
-        coon.query(DelSql, function (err, res) {
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(DelSql, function (err, res) {
           if (err) {
             reject(err);
           } else {
@@ -110,7 +120,7 @@ const Curd = (
                 code: CODE.SUCCESS,
                 msg: MESSAGE.SUCCESS,
               };
-              client.hDel(Enity.name, cacheKey);
+              LinkRedis.hDel(Enity.name, cacheKey);
               resolve(data);
             } else {
               const data = {
@@ -123,7 +133,6 @@ const Curd = (
           }
         });
       }).then((ret) => {
-        // @ts-ignore
         res.json(ret);
       });
     }
@@ -134,12 +143,15 @@ const Curd = (
       options.key = key;
       options.value = options[key];
       const cacheKey = getCachekey("update", Enity.name, options);
-      new Promise((resolve, reject) => {
-        coon.query(UpdateSql, function (err, res) {
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(UpdateSql, function (err, res) {
           if (err) {
             reject(err);
           } else {
-            client.hDel(Enity.name, cacheKey);
+            LinkRedis.hDel(Enity.name, cacheKey);
             resolve(res);
           }
         });
@@ -160,7 +172,7 @@ const Curd = (
         });
       }).then(async (ret) => {
         const keys = await client.hKeys(Enity.name);
-        keys.forEach((el) => {
+        keys.forEach((el: any) => {
           client.hDel(Enity.name, el);
         });
         res.json(ret);

@@ -1,7 +1,6 @@
 export const CONSTANT = {
   Redis: "REDISCACHE",
 };
-export class CommonClass {}
 
 export enum CODE {
   CACHE = 10, // 缓存策略

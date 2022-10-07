@@ -1,9 +1,3 @@
-import {
-  Query,
-  Body,
-  ServerOptions,
-  AppServer,
-  ClassConstructor,
-} from "./lib/core";
+import { Query, Body, ClassConstructor } from "./lib/core";
 
-export type { Query, Body, ServerOptions, AppServer, ClassConstructor };
+export type { Query, Body, ClassConstructor };

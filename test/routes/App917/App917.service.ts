@@ -1,5 +1,5 @@
 import { RedisClientType } from "@redis/client";
-import { Collect, Inject } from "../../../lib/handle.inject";
+import { Collect, Inject } from "../../../lib/ioc/ioc";
 import { App917Mapper } from "./App917.mapper";
 
 @Collect()

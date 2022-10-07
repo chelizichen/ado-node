@@ -1,5 +1,4 @@
-import { Query } from "../../../lib/core";
-
+import { Query } from "../../../index.d";
 export function useIdPipe(req: Query<{ id: number }>) {
   if (req.query.id > 20) {
     throw new Error("id 值不能大于 20");

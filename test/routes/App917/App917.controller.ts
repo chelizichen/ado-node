@@ -1,13 +1,13 @@
-import { HandleController } from "../../../lib/handle.class";
-import { Controller } from "../../../lib/handle.controller";
-import { Curd } from "../../../lib/handle.curd";
-import { Inject } from "../../../lib/handle.inject";
-import { Get, Post } from "../../../lib/handle.method";
-import { Pipe } from "../../../lib/handle.pipe";
+import { HandleController } from "../../../lib/ioc/class";
+import { Controller } from "../../../lib/ioc/controller";
+import { Curd } from "../../../lib/oper/curd";
+import { Inject } from "../../../lib/ioc/ioc";
+import { Get, Post } from "../../../lib/method/method";
+import { Pipe } from "../../../lib/pipe/pipe";
 import { Ret, user } from "./App917.enity";
 import { useIdPipe, userNamePipe } from "./App917.pipe";
 import { App917Service } from "./App917.service";
-import { UseCache } from "../../../lib/handle.cache";
+import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
 import { commonClass } from "../../config/common";
@@ -45,18 +45,7 @@ class App917Controller extends HandleController {
     const data = await this.App917Service.a1();
     return Ret.Message(0, "ok", data);
   }
-  @Curd(
-    "/user",
-    user,
-    {
-      name: "mysql",
-      obj: commonClass,
-    },
-    {
-      name: "redis",
-      obj: commonClass,
-    }
-  )
+  @Curd("/user", user, ["mysql", "redis"], commonClass)
   public async CurdUser() {}
   @Post("/seckill")
   public async SecKill(
@@ -111,10 +100,6 @@ class App917Controller extends HandleController {
 
   @Get("/testr")
   public async testRedis() {
-    // @ts-ignore
-    // const redisInst = await this.Redis();
-    // console.log("this.Redis", this.Redis);
-    // console.log("redisInst", redisInst);
     console.log(this.Redis);
 
     return {

@@ -1,4 +1,4 @@
-import { Connect, Mapper, Select, Update } from "../../../lib/handle.mapper";
+import { Mapper, Select, Update, Connect } from "../../../index";
 import { commonClass } from "../../config/common";
 /**
  * @Mapper 数据库操作层

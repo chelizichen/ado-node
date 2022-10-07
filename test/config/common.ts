@@ -1,6 +1,6 @@
 import { createClient } from "redis";
-import { CreateCache } from "../../lib/handle.cache";
-import { CreateDb } from "../../lib/handle.db";
+import { CreateCache } from "../../lib/store/cache";
+import { CreateDb } from "../../lib/store/db";
 import * as mysql from "mysql";
 class commonClass {
   @CreateCache("redis")

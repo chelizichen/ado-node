@@ -1,4 +1,4 @@
-import { Connect, Mapper, Select } from "../../../lib/handle.mapper";
+import { Mapper, Connect, Select } from "../../../index";
 import { commonClass } from "../../config/common";
 
 @Mapper()

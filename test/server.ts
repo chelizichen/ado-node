@@ -1,4 +1,4 @@
-import { createServer } from "../lib/server";
+import { createServer } from "../lib/method/server";
 import { options } from "./routes";
 
 createServer(options);

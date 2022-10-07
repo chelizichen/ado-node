@@ -1,8 +1,5 @@
-import { Controller } from "../../../dist";
-import { UseCache } from "../../../lib/handle.cache";
-import { HandleController } from "../../../lib/handle.class";
 import { RedisClientType } from "redis";
-import { Get } from "../../../lib/core";
+import { Controller, UseCache, HandleController, Get } from "../../../index";
 import { commonClass } from "../../config/common";
 
 @Controller("/app106")

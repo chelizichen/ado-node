@@ -1,4 +1,4 @@
-import { Enity, Key, Keyword } from "../../../lib/handle.enity";
+import { Enity, Key, Keyword } from "../../../index";
 
 @Enity
 export class Fund_Star {

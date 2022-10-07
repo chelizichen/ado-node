@@ -31,6 +31,8 @@ __export(ado_node_exports, {
   Collect: () => Collect,
   Connect: () => Connect,
   Controller: () => Controller,
+  CreateCache: () => CreateCache,
+  CreateDb: () => CreateDb,
   Curd: () => Curd,
   Delete: () => Delete,
   Enity: () => Enity,
@@ -47,7 +49,6 @@ __export(ado_node_exports, {
   Pipe: () => Pipe,
   Post: () => Post,
   Select: () => Select,
-  Service: () => handle_service_default,
   Update: () => Update,
   UseCache: () => UseCache,
   createSSRServer: () => createSSRServer,
@@ -55,6 +56,29 @@ __export(ado_node_exports, {
   ref: () => ref
 });
 module.exports = __toCommonJS(ado_node_exports);
+
+// lib/constant/constant.ts
+var CONSTANT = {
+  Redis: "REDISCACHE"
+};
+var CODE = /* @__PURE__ */ ((CODE2) => {
+  CODE2[CODE2["CACHE"] = 10] = "CACHE";
+  CODE2[CODE2["SUCCESS"] = 0] = "SUCCESS";
+  CODE2[CODE2["ERROR"] = -1] = "ERROR";
+  CODE2[CODE2["FIELDERROR"] = -2] = "FIELDERROR";
+  CODE2[CODE2["TYPEERROR"] = -3] = "TYPEERROR";
+  CODE2[CODE2["NOTFOUND"] = -4] = "NOTFOUND";
+  return CODE2;
+})(CODE || {});
+var MESSAGE = /* @__PURE__ */ ((MESSAGE2) => {
+  MESSAGE2["CACHE"] = "cache";
+  MESSAGE2["SUCCESS"] = "success";
+  MESSAGE2["ERROR"] = "error";
+  MESSAGE2["FIELDERROR"] = "missing field";
+  MESSAGE2["TypeError"] = "type error";
+  MESSAGE2["NOTFOUND"] = "not found";
+  return MESSAGE2;
+})(MESSAGE || {});
 
 // ../../../node_modules/reflect-metadata/Reflect.js
 var Reflect2;
@@ -778,7 +802,7 @@ var Reflect2;
   });
 })(Reflect2 || (Reflect2 = {}));
 
-// lib/handle.reflect.ts
+// lib/ioc/ref.ts
 var ref = {
   def: function(key, value, target) {
     if (key instanceof Function) {
@@ -802,61 +826,20 @@ var ref = {
   }
 };
 
-// lib/handle.inject.ts
-var Inject = (InjectTarget) => {
-  return function(target, propertyKey) {
-    const Service = ref.get(InjectTarget);
-    target.constructor.prototype[propertyKey] = Service;
-  };
-};
-var Collect = () => {
-  return function(target) {
-    ref.def(target, target.prototype);
-  };
-};
-
-// lib/handle.service.ts
-var SerivceMap = /* @__PURE__ */ new Map();
-var handle_service_default = SerivceMap;
-function GenereateRouter(Controller2) {
-  const URL = ref.get("BaseUrl", Controller2.prototype);
-  const GetService = new Controller2(URL, SerivceMap);
-  return GetService.Boost();
-}
-
-// lib/handle.controller.ts
-var Controller = (BaseUrl) => {
-  return (target) => {
-    ref.def("BaseUrl", BaseUrl, target.prototype);
-    ref.def(target, GenereateRouter(target.prototype.constructor));
-    handle_service_default.clear();
-  };
-};
-
-// lib/handle.method.ts
-var createMethod = (method) => {
-  return (URL) => {
-    return function(target, propertyKey, descriptor) {
-      const fn = descriptor.value;
-      descriptor.value = async function(req, res) {
-        target.constructor.prototype[propertyKey] = fn;
-        await new Promise((resolve) => {
-          resolve(target.constructor.prototype[propertyKey](req, res));
-        }).then((response) => {
-          res.json(response);
-        });
+// lib/error/error.ts
+var Error2 = (e) => {
+  return function(_target, _propertyKey, descriptor) {
+    if (e.force) {
+      descriptor.value = function(_req, res) {
+        const { message, code } = e;
+        res.json({ message, code });
       };
-      handle_service_default.set(URL, {
-        fn: descriptor.value,
-        method
-      });
-    };
+    }
+    ref.def("error", e, descriptor.value);
   };
 };
-var Get = createMethod("Get");
-var Post = createMethod("Post");
 
-// lib/handle.class.ts
+// lib/ioc/class.ts
 var express = __toESM(require("express"));
 var HandleController = class {
   constructor(Base, Service) {
@@ -879,60 +862,63 @@ var HandleController = class {
   }
 };
 
-// lib/handle.error.ts
-var Error2 = (e) => {
-  return function(_target, _propertyKey, descriptor) {
-    if (e.force) {
-      descriptor.value = function(_req, res) {
-        const { message, code } = e;
-        res.json({ message, code });
-      };
-    }
-    ref.def("error", e, descriptor.value);
+// lib/ioc/service.ts
+var SerivceMap = /* @__PURE__ */ new Map();
+function GenereateRouter(Controller2) {
+  const URL = ref.get("BaseUrl", Controller2.prototype);
+  const GetService = new Controller2(URL, SerivceMap);
+  return GetService.Boost();
+}
+
+// lib/ioc/controller.ts
+var Controller = (BaseUrl) => {
+  return (target) => {
+    ref.def("BaseUrl", BaseUrl, target.prototype);
+    ref.def(target, GenereateRouter(target.prototype.constructor));
+    SerivceMap.clear();
   };
 };
 
-// lib/handle.pipe.ts
-var Pipe = (fn) => {
-  return function(target, propertyKey, descriptor) {
-    const method = descriptor.value;
-    descriptor.value = async function(req, res) {
-      let isNext;
-      try {
-        if (typeof fn === "function") {
-          isNext = fn(req);
-        }
-        if (fn instanceof Array) {
-          fn.forEach((fns) => {
-            if (isNext === false) {
-              return;
-            } else {
-              isNext = fns(req) === void 0 ? void 0 : false;
-            }
-          });
-        }
-        if (isNext === void 0) {
-          target.constructor.prototype[propertyKey] = method;
-          await new Promise((resolve) => {
-            resolve(target.constructor.prototype[propertyKey](req, res));
-          }).then((response) => {
-            res.json(response);
-          });
-        }
-      } catch (e) {
-        res.json({
-          Message: e.toString(),
-          Code: -1
+// lib/ioc/ioc.ts
+var Inject = (InjectTarget) => {
+  return function(target, propertyKey) {
+    const Service = ref.get(InjectTarget);
+    target.constructor.prototype[propertyKey] = Service;
+  };
+};
+var Collect = () => {
+  return function(target) {
+    ref.def(target, target.prototype);
+  };
+};
+
+// lib/method/method.ts
+var createMethod = (method) => {
+  return (URL) => {
+    return function(target, propertyKey, descriptor) {
+      const fn = descriptor.value;
+      descriptor.value = async function(req, res) {
+        target.constructor.prototype[propertyKey] = fn;
+        await new Promise((resolve) => {
+          resolve(target.constructor.prototype[propertyKey](req, res));
+        }).then((response) => {
+          res.json(response);
         });
-      }
+      };
+      SerivceMap.set(URL, {
+        fn: descriptor.value,
+        method
+      });
     };
   };
 };
+var Get = createMethod("Get");
+var Post = createMethod("Post");
 
-// lib/server.ts
+// lib/method/server.ts
 var import_express = __toESM(require("express"));
 var import_path = __toESM(require("path"));
-function createServer(options, SSRFunc) {
+function createServer(options) {
   const app = (0, import_express.default)();
   app.use(import_express.default.json());
   const { port, staticDist, controller, base } = options;
@@ -941,9 +927,6 @@ function createServer(options, SSRFunc) {
     app.use(base, router);
   });
   app.use(import_express.default.static(staticDist));
-  if (SSRFunc) {
-    SSRFunc(app);
-  }
   app.listen(port, () => {
     console.log(`c http://localhost:${port}`);
   });
@@ -967,84 +950,20 @@ function createSSRServer(options) {
   });
 }
 
-// lib/constant.ts
-var CONSTANT = {
-  Redis: "REDISCACHE"
-};
-var CommonClass = class {
-};
-var CODE = /* @__PURE__ */ ((CODE2) => {
-  CODE2[CODE2["CACHE"] = 10] = "CACHE";
-  CODE2[CODE2["SUCCESS"] = 0] = "SUCCESS";
-  CODE2[CODE2["ERROR"] = -1] = "ERROR";
-  CODE2[CODE2["FIELDERROR"] = -2] = "FIELDERROR";
-  CODE2[CODE2["TYPEERROR"] = -3] = "TYPEERROR";
-  CODE2[CODE2["NOTFOUND"] = -4] = "NOTFOUND";
-  return CODE2;
-})(CODE || {});
-var MESSAGE = /* @__PURE__ */ ((MESSAGE2) => {
-  MESSAGE2["CACHE"] = "cache";
-  MESSAGE2["SUCCESS"] = "success";
-  MESSAGE2["ERROR"] = "error";
-  MESSAGE2["FIELDERROR"] = "missing field";
-  MESSAGE2["TypeError"] = "type error";
-  MESSAGE2["NOTFOUND"] = "not found";
-  return MESSAGE2;
-})(MESSAGE || {});
-
-// lib/handle.mapper.ts
-var Connect = (coon) => {
-  return function(target) {
-    ref.def("coon", coon, target.prototype);
-  };
-};
-var Mapper = () => {
-  return function(target) {
-    ref.def(target, target.prototype);
-  };
-};
-var Select = (sql) => {
+// lib/store/cache.ts
+var CreateCache = (cacheName) => {
   return function(target, _propertyKey, descriptor) {
-    descriptor.value = async function(options) {
-      const coon = ref.get(
-        "coon",
-        target.constructor.prototype
-      );
-      const res = await new Promise((resolve, reject) => {
-        coon.query(sql, options, function(err, res2) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(res2);
-          }
-        });
-      });
-      return res;
-    };
+    const val = descriptor.value;
+    ref.def(cacheName, val, target.constructor.prototype);
   };
 };
-var Update = Select;
-var Delete = Select;
-var Insert = Select;
-
-// lib/handle.enity.ts
-var Enity = (target) => {
-  ref.def(target.name + "Enity", target.prototype, target.prototype);
-};
-var Key = (target, propertyKey) => {
-  ref.def("key", propertyKey, target.constructor.prototype);
-};
-var Keyword = (target, propertyKey) => {
-  ref.def("keyword", propertyKey, target.constructor.prototype);
-};
-var EnityTable = /* @__PURE__ */ new Map();
-
-// lib/handle.cache.ts
-var UseCache = (RedisClinet) => {
+var UseCache = (cacheName, commonClass) => {
   return async function(target, propertyKey) {
-    ref.def(CONSTANT.Redis, RedisClinet, CommonClass.prototype);
-    target.constructor.prototype[propertyKey] = RedisClinet;
-    await RedisClinet.connect();
+    const CacheInst = ref.get(cacheName, commonClass.prototype);
+    target.constructor.prototype[propertyKey] = CacheInst;
+    CacheInst().then((res) => {
+      target.constructor.prototype[propertyKey] = res;
+    });
   };
 };
 function getCachekey(type, table, options) {
@@ -1071,27 +990,40 @@ function getCachekey(type, table, options) {
   return "";
 }
 
-// lib/handle.curd.ts
-var Curd = (CurdUrl, Enity2, coon) => {
+// lib/store/enity.ts
+var Enity = (target) => {
+  ref.def(target.name + "Enity", target.prototype, target.prototype);
+};
+var Key = (target, propertyKey) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Keyword = (target, propertyKey) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
+var EnityTable = /* @__PURE__ */ new Map();
+
+// lib/oper/curd.ts
+var Curd = (CurdUrl, Enity2, store, commonClass) => {
   return function(_target, _propertyKey, _descriptor) {
-    const client = ref.get(
-      CONSTANT.Redis,
-      CommonClass.prototype
-    );
+    const coon = ref.get(store[0], commonClass.prototype);
+    const client = ref.get(store[1], commonClass.prototype);
     const url = createCurdUrl(CurdUrl);
     async function getListRet(req, res) {
       const options = req.query;
       const ListSql = createListSql(Enity2, options);
       const cacheKey = getCachekey("list", Enity2.name, options);
-      const data = await client.hGet(Enity2.name, cacheKey);
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      const data = await LinkRedis.hGet(Enity2.name, cacheKey);
       if (data) {
         const _data = JSON.parse(data);
         _data.code = 10 /* CACHE */;
         _data.message = "cache" /* CACHE */;
         res.json(_data);
       } else {
-        new Promise((resolve, reject) => {
-          coon.query(ListSql, async function(err, res2) {
+        new Promise(async (resolve, reject) => {
+          const _conn = await coon;
+          await _conn.query(ListSql, async function(err, res2) {
             if (err) {
               reject(err);
             } else {
@@ -1101,8 +1033,8 @@ var Curd = (CurdUrl, Enity2, coon) => {
                 code: 0 /* SUCCESS */,
                 message: "success" /* SUCCESS */
               };
-              await client.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
-              await client.expire(Enity2.name, 120);
+              await LinkRedis.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
+              await LinkRedis.expire(Enity2.name, 120);
               resolve(data2);
             }
           });
@@ -1118,16 +1050,18 @@ var Curd = (CurdUrl, Enity2, coon) => {
       options.key = key;
       options.value = options[key];
       const cacheKey = getCachekey("get", Enity2.name, options);
-      const data = await client.hGet(Enity2.name, cacheKey);
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      const data = await LinkRedis.hGet(Enity2.name, cacheKey);
       if (data) {
-        console.log("cacheKey", cacheKey);
         const _data = JSON.parse(data);
         _data.code = 10 /* CACHE */;
         _data.message = "cache" /* CACHE */;
         res.json(_data);
       } else {
-        new Promise((resolve, reject) => {
-          coon.query(GetSql, function(err, res2) {
+        new Promise(async (resolve, reject) => {
+          const _conn = await coon;
+          _conn.query(GetSql, function(err, res2) {
             if (err) {
               reject(err);
             } else {
@@ -1137,7 +1071,7 @@ var Curd = (CurdUrl, Enity2, coon) => {
                 code: 0 /* SUCCESS */,
                 message: 0 /* SUCCESS */
               };
-              client.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
+              LinkRedis.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
               resolve(data2);
             }
           });
@@ -1152,9 +1086,12 @@ var Curd = (CurdUrl, Enity2, coon) => {
       const key = ref.get("key", Enity2.prototype);
       options.key = key;
       options.value = options[key];
+      const LinkRedis = await client();
+      LinkRedis.connect();
       const cacheKey = getCachekey("get", Enity2.name, options);
-      new Promise((resolve, reject) => {
-        coon.query(DelSql, function(err, res2) {
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(DelSql, function(err, res2) {
           if (err) {
             reject(err);
           } else {
@@ -1164,7 +1101,7 @@ var Curd = (CurdUrl, Enity2, coon) => {
                 code: 0 /* SUCCESS */,
                 msg: "success" /* SUCCESS */
               };
-              client.hDel(Enity2.name, cacheKey);
+              LinkRedis.hDel(Enity2.name, cacheKey);
               resolve(data);
             } else {
               const data = {
@@ -1187,12 +1124,15 @@ var Curd = (CurdUrl, Enity2, coon) => {
       options.key = key;
       options.value = options[key];
       const cacheKey = getCachekey("update", Enity2.name, options);
-      new Promise((resolve, reject) => {
-        coon.query(UpdateSql, function(err, res2) {
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(UpdateSql, function(err, res2) {
           if (err) {
             reject(err);
           } else {
-            client.hDel(Enity2.name, cacheKey);
+            LinkRedis.hDel(Enity2.name, cacheKey);
             resolve(res2);
           }
         });
@@ -1219,23 +1159,23 @@ var Curd = (CurdUrl, Enity2, coon) => {
         res.json(ret);
       });
     }
-    handle_service_default.set(url.get.get, {
+    SerivceMap.set(url.get.get, {
       fn: getGetRet,
       method: "Get"
     });
-    handle_service_default.set(url.get.list, {
+    SerivceMap.set(url.get.list, {
       fn: getListRet,
       method: "Get"
     });
-    handle_service_default.set(url.get.del, {
+    SerivceMap.set(url.get.del, {
       fn: getDelRet,
       method: "Get"
     });
-    handle_service_default.set(url.post.modify, {
+    SerivceMap.set(url.post.modify, {
       fn: getUpdateRet,
       method: "Post"
     });
-    handle_service_default.set(url.post.add, {
+    SerivceMap.set(url.post.add, {
       fn: getAddRet,
       method: "Post"
     });
@@ -1333,6 +1273,87 @@ function createUpdateSql(Enity2, options) {
   const sql = `Update ${Enity2.name} Set ${sqlVal} WHERE ${keySqlVal}`;
   return sql;
 }
+
+// lib/pipe/pipe.ts
+var Pipe = (fn) => {
+  return function(target, propertyKey, descriptor) {
+    const method = descriptor.value;
+    descriptor.value = async function(req, res) {
+      let isNext;
+      try {
+        if (typeof fn === "function") {
+          isNext = fn(req);
+        }
+        if (fn instanceof Array) {
+          fn.forEach((fns) => {
+            if (isNext === false) {
+              return;
+            } else {
+              isNext = fns(req) === void 0 ? void 0 : false;
+            }
+          });
+        }
+        if (isNext === void 0) {
+          target.constructor.prototype[propertyKey] = method;
+          await new Promise((resolve) => {
+            resolve(target.constructor.prototype[propertyKey](req, res));
+          }).then((response) => {
+            res.json(response);
+          });
+        }
+      } catch (e) {
+        res.json({
+          Message: e.toString(),
+          Code: -1
+        });
+      }
+    };
+  };
+};
+
+// lib/store/db.ts
+var CreateDb = (dbname) => {
+  return function(target, _propertyKey, descriptor) {
+    const val = descriptor.value();
+    ref.def(dbname, val, target.constructor.prototype);
+  };
+};
+
+// lib/store/mapper.ts
+var Connect = (dbname, coon) => {
+  return function(target) {
+    const connInst = ref.get(dbname, coon.prototype);
+    ref.def("coon", connInst, target.prototype);
+  };
+};
+var Mapper = () => {
+  return function(target) {
+    ref.def(target, target.prototype);
+  };
+};
+var Select = (sql) => {
+  return function(target, _propertyKey, descriptor) {
+    descriptor.value = async function(options) {
+      const coon = await ref.get(
+        "coon",
+        target.constructor.prototype
+      );
+      const res = await new Promise((resolve, reject) => {
+        coon.query(sql, options, function(err, res2) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res2);
+          }
+        });
+      });
+      return res;
+    };
+  };
+};
+var Update = Select;
+var Delete = Select;
+var Insert = Select;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   CODE,
@@ -1340,6 +1361,8 @@ function createUpdateSql(Enity2, options) {
   Collect,
   Connect,
   Controller,
+  CreateCache,
+  CreateDb,
   Curd,
   Delete,
   Enity,
@@ -1356,7 +1379,6 @@ function createUpdateSql(Enity2, options) {
   Pipe,
   Post,
   Select,
-  Service,
   Update,
   UseCache,
   createSSRServer,

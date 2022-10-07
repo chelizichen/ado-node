@@ -1,5 +1,5 @@
 import { IRouter, Request } from "express";
-import { HandleController } from "./handle.class";
+import { HandleController } from "./ioc/class";
 export type Query<T> = Request<any, any, any, T, any>;
 export type Body<T> = Request<any, any, T, any, any>;
 type BaseController = typeof HandleController;
@@ -14,5 +14,3 @@ export type HandleProxyOptions = {
   staticDist: string;
 };
 export type AppServer = (Options: ServerOptions) => void;
-
-export type Coon = {};

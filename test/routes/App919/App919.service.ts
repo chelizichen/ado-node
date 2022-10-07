@@ -1,4 +1,4 @@
-import { Inject, Collect } from "../../../lib/handle.inject";
+import { Inject, Collect } from "../../../lib/ioc/ioc";
 import { App919Mapper } from "./App919.mapper";
 
 @Collect()

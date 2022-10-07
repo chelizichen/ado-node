@@ -1,5 +1,10 @@
-import { Controller, Get, HandleController, Inject } from "../../../index";
-import { UseCache } from "../../../lib/handle.cache";
+import {
+  Controller,
+  Get,
+  HandleController,
+  Inject,
+  UseCache,
+} from "../../../index";
 import { RedisClientType } from "redis";
 import { commonClass } from "../../config/common";
 import { App919Service } from "./App919.service";

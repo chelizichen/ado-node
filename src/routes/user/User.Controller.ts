@@ -7,35 +7,21 @@ import {
   Get,
   CODE,
   Pipe,
+  UseConfig,
 } from "ado-node";
-import { Query } from "ado-node/lib/types";
-import * as mysql from "mysql";
+import { Query } from "ado-node/index.d";
 import { RedisClientType } from "redis";
 import { CommonClass } from "../../config/common";
 import { CONSTANT } from "../../config/constant";
 import { User } from "./User.Enity";
 import { UserIdPipe } from "./User.pipe";
 import { UserService } from "./User.Service";
-const config = {
-  host: "localhost",
-  user: "root",
-  password: "12345678",
-  database: "boot", //所用数据库
-  port: "3306",
-};
-export const coon = mysql.createConnection({
-  host: config.host,
-  user: config.user,
-  password: config.password,
-  database: config.database,
-  multipleStatements: true,
-});
-
 @Controller("/user")
+@UseConfig(CommonClass)
 class UserController extends HandleController {
   @Inject(UserService)
   UserService!: UserService;
-  @UseCache(CONSTANT.REDIS, CommonClass)
+  @UseCache(CONSTANT.REDIS)
   Redis!: RedisClientType;
 
   @Get("/getUser")
@@ -48,7 +34,7 @@ class UserController extends HandleController {
     };
   }
 
-  @Curd("/curd", User, [CONSTANT.MYSQL, CONSTANT.REDIS], CommonClass)
+  @Curd("/curd", User, [CONSTANT.MYSQL, CONSTANT.REDIS])
   public async CurdUser() {}
 }
 

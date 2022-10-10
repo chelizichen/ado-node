@@ -1,4 +1,4 @@
-import { Query } from "ado-node/lib/types";
+import { Query } from "ado-node/index.d";
 
 export function UserIdPipe(req: Query<{ id: number }>) {
   const id = req.query.id;

@@ -1,7 +1,8 @@
-import { CreateCache, CreateDb } from "ado-node";
+import { CreateCache, CreateDb, Config } from "ado-node";
 import * as mysql from "mysql";
 import { createClient } from "redis";
 import { CONSTANT } from "./constant";
+@Config
 export class CommonClass {
   @CreateDb(CONSTANT.MYSQL)
   public async CreateDB() {

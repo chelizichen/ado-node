@@ -1,4 +1,4 @@
-import { SeckillController } from "./seckill/seckill.controller";
+import { SeckillController } from "./seckill/Seckill.Controller";
 import { UserController } from "./user/User.Controller";
 
 const options = {

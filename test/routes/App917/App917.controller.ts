@@ -11,12 +11,13 @@ import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
 import { commonClass } from "../../config/common";
-
+import { UseConfig } from "../../../lib/store/config";
 @Controller("/app917")
+@UseConfig(commonClass)
 class App917Controller extends HandleController {
   @Inject(App917Service)
   App917Service!: App917Service;
-  @UseCache("redis", commonClass)
+  @UseCache("redis")
   Redis!: RedisClientType;
   @Get("/a1")
   public async a1() {
@@ -45,7 +46,7 @@ class App917Controller extends HandleController {
     const data = await this.App917Service.a1();
     return Ret.Message(0, "ok", data);
   }
-  @Curd("/user", user, ["mysql", "redis"], commonClass)
+  @Curd("/user", user, ["mysql", "redis"])
   public async CurdUser() {}
   @Post("/seckill")
   public async SecKill(
@@ -58,7 +59,9 @@ class App917Controller extends HandleController {
     const body = req.body;
     const getRest = await this.App917Service.getRestKey(this.Redis, body.proId);
     const getUserKey = `sk:${req.body.uId}:user`;
-    if (getRest.total === null) {
+    console.log(getRest.total);
+
+    if (getRest.total == null) {
       return {
         msg: "还没开始",
       };

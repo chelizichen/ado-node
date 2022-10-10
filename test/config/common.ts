@@ -2,6 +2,8 @@ import { createClient } from "redis";
 import { CreateCache } from "../../lib/store/cache";
 import { CreateDb } from "../../lib/store/db";
 import * as mysql from "mysql";
+import { Config } from "../../lib/store/config";
+@Config
 class commonClass {
   @CreateCache("redis")
   public async getRedis() {

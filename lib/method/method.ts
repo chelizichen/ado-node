@@ -2,7 +2,7 @@ import { SerivceMap } from "../ioc/service";
 import { Request, Response } from "express";
 
 /**
- * @Prarams Method Like GET POST
+ * @Params Method Like GET POST
  */
 const createMethod = (method: string) => {
   return (URL: string): MethodDecorator => {

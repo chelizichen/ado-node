@@ -1,8 +1,10 @@
 import { Mapper, Connect, Select } from "../../../index";
+import { UseConfig } from "../../../lib/store/config";
 import { commonClass } from "../../config/common";
 
 @Mapper()
-@Connect("mysql", commonClass)
+@UseConfig(commonClass)
+@Connect("mysql")
 class App919Mapper {
   @Select("select * from user")
   public getList() {}

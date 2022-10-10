@@ -1,4 +1,6 @@
+import { CONSTANT } from "../constant/constant";
 import { ref } from "../ioc/ref";
+import { OberServer } from "../ober/oberserver";
 
 export const CreateCache = (cacheName: string): MethodDecorator => {
   return function (
@@ -11,12 +13,14 @@ export const CreateCache = (cacheName: string): MethodDecorator => {
   };
 };
 
-export const UseCache = (
-  cacheName: string,
-  commonClass: Function
-): PropertyDecorator => {
+export const UseCache = (cacheName: string): PropertyDecorator => {
   return async function (target: Object, propertyKey: string | symbol) {
-    const CacheInst = ref.get(cacheName, commonClass.prototype);
+    let OberInst = ref.get(
+      CONSTANT.Observer,
+      OberServer.prototype
+    ) as OberServer;
+    const CommonClass = OberInst.get(CONSTANT.Config)?.value;
+    const CacheInst = ref.get(cacheName, CommonClass.prototype);
     target.constructor.prototype[propertyKey] = CacheInst;
     CacheInst().then((res: any) => {
       target.constructor.prototype[propertyKey] = res;

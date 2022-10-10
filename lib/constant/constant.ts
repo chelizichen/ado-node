@@ -1,6 +1,7 @@
-export const CONSTANT = {
-  Redis: "REDISCACHE",
-};
+export enum CONSTANT {
+  Observer = "Observer",
+  Config = "Config",
+}
 
 export enum CODE {
   CACHE = 10, // 缓存策略

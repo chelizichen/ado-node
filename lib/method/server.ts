@@ -13,7 +13,7 @@ function createServer(options: HandleProxyOptions) {
   });
   app.use(express.static(staticDist));
   app.listen(port, () => {
-    console.log(`c http://localhost:${port}`);
+    console.log(`create server at  http://localhost:${port}`);
   });
 }
 

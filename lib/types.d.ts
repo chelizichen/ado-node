@@ -14,3 +14,5 @@ export type HandleProxyOptions = {
   staticDist: string;
 };
 export type AppServer = (Options: ServerOptions) => void;
+
+export type VoidFunction = (...args: any[]) => void;

@@ -1,25 +1,31 @@
 import { SerivceMap } from "../ioc/service";
 import { Request, Response } from "express";
 import { ref } from "../ioc/ref";
-import { CODE, MESSAGE } from "../constant/constant";
+import { CODE, CONSTANT, MESSAGE } from "../constant/constant";
 import { getCachekey } from "../store/cache";
 import * as mysql from "mysql";
 import { EnityTable } from "../store/enity";
+import { OberServer } from "../ober/oberserver";
 export type ClassConstructor = new (...args: any[]) => void;
 
 const Curd = (
   CurdUrl: string,
   Enity: ClassConstructor,
-  store: string[],
-  commonClass: Function
+  store: string[]
 ): MethodDecorator => {
   return function (
     _target: Object,
     _propertyKey: string | symbol,
     _descriptor: PropertyDescriptor
   ) {
-    const coon = ref.get(store[0], commonClass.prototype) as mysql.Connection;
-    const client = ref.get(store[1], commonClass.prototype);
+    let OberInst = ref.get(
+      CONSTANT.Observer,
+      OberServer.prototype
+    ) as OberServer;
+    const CommonClass = OberInst.get(CONSTANT.Config)?.value;
+    const coon = ref.get(store[0], CommonClass.prototype) as mysql.Connection;
+    const client = ref.get(store[1], CommonClass.prototype);
+
     const url = createCurdUrl(CurdUrl);
     async function getListRet(req: Request, res: Response) {
       const options = req.query;

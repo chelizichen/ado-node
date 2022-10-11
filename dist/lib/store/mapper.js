@@ -2,9 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Delete = exports.Insert = exports.Update = exports.Select = exports.Connect = exports.Mapper = void 0;
 const ref_1 = require("../ioc/ref");
-const Connect = (dbname, coon) => {
+const constant_1 = require("../constant/constant");
+const oberserver_1 = require("../ober/oberserver");
+const Connect = (dbname) => {
     return function (target) {
-        const connInst = ref_1.ref.get(dbname, coon.prototype);
+        const OberInst = ref_1.ref.get(constant_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
+        const CommonClass = OberInst.get(constant_1.CONSTANT.Config)?.value;
+        const connInst = ref_1.ref.get(dbname, CommonClass.prototype);
         ref_1.ref.def("coon", connInst, target.prototype);
     };
 };

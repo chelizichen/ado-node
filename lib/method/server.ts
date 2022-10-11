@@ -41,4 +41,10 @@ function createSSRServer(options: HandleProxyOptions) {
   });
 }
 
-export { createServer, createSSRServer };
+class AdoNodeServer {
+  static run(options: any) {
+    createServer(options);
+  }
+}
+
+export { createServer, createSSRServer, AdoNodeServer };

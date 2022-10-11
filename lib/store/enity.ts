@@ -1,6 +1,8 @@
 import { ref } from "../ioc/ref";
-const Enity: ClassDecorator = (target: Function) => {
-  ref.def(target.name + "Enity", target.prototype, target.prototype);
+const Enity: ClassDecorator = (target: any) => {
+  const targetInst = new target(target);
+  // ref.def(target, target.prototype);
+  ref.def(target.name, targetInst, target.prototype);
 };
 const Key: PropertyDecorator = (
   target: Object,

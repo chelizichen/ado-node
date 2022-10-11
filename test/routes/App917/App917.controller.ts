@@ -10,10 +10,8 @@ import { App917Service } from "./App917.service";
 import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
-import { commonClass } from "../../config/common";
-import { UseConfig } from "../../../lib/store/config";
+
 @Controller("/app917")
-@UseConfig(commonClass)
 class App917Controller extends HandleController {
   @Inject(App917Service)
   App917Service!: App917Service;

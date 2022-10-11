@@ -1,6 +1,4 @@
 import { Mapper, Select, Update, Connect } from "../../../index";
-import { UseConfig } from "../../../lib/store/config";
-import { commonClass } from "../../config/common";
 /**
  * @Mapper 数据库操作层
  * @Connect 数据库链接
@@ -8,7 +6,6 @@ import { commonClass } from "../../config/common";
  */
 
 @Mapper()
-@UseConfig(commonClass)
 @Connect("mysql")
 class App917Mapper {
   @Select(`select * from  user where id = ? `)

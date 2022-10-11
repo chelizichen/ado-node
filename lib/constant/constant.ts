@@ -1,6 +1,7 @@
 export enum CONSTANT {
   Observer = "Observer",
   Config = "Config",
+  Config_INST = "Config_Inst",
 }
 
 export enum CODE {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSSRServer = exports.createServer = void 0;
+exports.AdoNodeServer = exports.createSSRServer = exports.createServer = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const ref_1 = require("../ioc/ref");
@@ -17,7 +17,7 @@ function createServer(options) {
     });
     app.use(express_1.default.static(staticDist));
     app.listen(port, () => {
-        console.log(`c http://localhost:${port}`);
+        console.log(`create server at  http://localhost:${port}`);
     });
 }
 exports.createServer = createServer;
@@ -40,4 +40,10 @@ function createSSRServer(options) {
     });
 }
 exports.createSSRServer = createSSRServer;
+class AdoNodeServer {
+    static run(options) {
+        createServer(options);
+    }
+}
+exports.AdoNodeServer = AdoNodeServer;
 //# sourceMappingURL=server.js.map

@@ -1,8 +1,8 @@
-import { ClassConstructor, Enity, Key, Keyword } from "../../../index";
+import { ClassConstructor, Enity, Key, Keyword } from "../../../lib/core";
 import { AdoNodeOrm } from "../../../lib/orm/orm";
 
 @Enity
-export class Fund_Star extends AdoNodeOrm {
+export class App106Enity extends AdoNodeOrm {
   constructor(BaseEnity: ClassConstructor, dbname = "mysql") {
     console.log("函数创建" + dbname + BaseEnity.name);
 
@@ -10,6 +10,9 @@ export class Fund_Star extends AdoNodeOrm {
   }
   @Key
   id!: number;
+
   @Keyword
-  fund_name!: string;
+  name!: string;
 }
+
+// App106Enity.

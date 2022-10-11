@@ -6,10 +6,13 @@ const ref_1 = require("../ioc/ref");
 const constant_1 = require("../constant/constant");
 const cache_1 = require("../store/cache");
 const enity_1 = require("../store/enity");
-const Curd = (CurdUrl, Enity, store, commonClass) => {
+const oberserver_1 = require("../ober/oberserver");
+const Curd = (CurdUrl, Enity, store) => {
     return function (_target, _propertyKey, _descriptor) {
-        const coon = ref_1.ref.get(store[0], commonClass.prototype);
-        const client = ref_1.ref.get(store[1], commonClass.prototype);
+        let OberInst = ref_1.ref.get(constant_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
+        const CommonClass = OberInst.get(constant_1.CONSTANT.Config)?.value;
+        const coon = ref_1.ref.get(store[0], CommonClass.prototype);
+        const client = ref_1.ref.get(store[1], CommonClass.prototype);
         const url = createCurdUrl(CurdUrl);
         async function getListRet(req, res) {
             const options = req.query;

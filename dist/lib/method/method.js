@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = exports.Get = void 0;
 const service_1 = require("../ioc/service");
 /**
- * @Prarams Method Like GET POST
+ * @Params Method Like GET POST
  */
 const createMethod = (method) => {
     return (URL) => {

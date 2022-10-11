@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCachekey = exports.UseCache = exports.CreateCache = void 0;
+const constant_1 = require("../constant/constant");
 const ref_1 = require("../ioc/ref");
+const oberserver_1 = require("../ober/oberserver");
 const CreateCache = (cacheName) => {
     return function (target, _propertyKey, descriptor) {
         const val = descriptor.value;
@@ -9,9 +11,11 @@ const CreateCache = (cacheName) => {
     };
 };
 exports.CreateCache = CreateCache;
-const UseCache = (cacheName, commonClass) => {
+const UseCache = (cacheName) => {
     return async function (target, propertyKey) {
-        const CacheInst = ref_1.ref.get(cacheName, commonClass.prototype);
+        let OberInst = ref_1.ref.get(constant_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
+        const CommonClass = OberInst.get(constant_1.CONSTANT.Config)?.value;
+        const CacheInst = ref_1.ref.get(cacheName, CommonClass.prototype);
         target.constructor.prototype[propertyKey] = CacheInst;
         CacheInst().then((res) => {
             target.constructor.prototype[propertyKey] = res;

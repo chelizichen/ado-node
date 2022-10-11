@@ -1,9 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MESSAGE = exports.CODE = exports.CONSTANT = void 0;
-exports.CONSTANT = {
-    Redis: "REDISCACHE",
-};
+var CONSTANT;
+(function (CONSTANT) {
+    CONSTANT["Observer"] = "Observer";
+    CONSTANT["Config"] = "Config";
+    CONSTANT["Config_INST"] = "Config_Inst";
+})(CONSTANT = exports.CONSTANT || (exports.CONSTANT = {}));
 var CODE;
 (function (CODE) {
     CODE[CODE["CACHE"] = 10] = "CACHE";

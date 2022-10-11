@@ -1,7 +1,10 @@
 // lib/constant/constant.ts
-var CONSTANT = {
-  Redis: "REDISCACHE"
-};
+var CONSTANT = /* @__PURE__ */ ((CONSTANT2) => {
+  CONSTANT2["Observer"] = "Observer";
+  CONSTANT2["Config"] = "Config";
+  CONSTANT2["Config_INST"] = "Config_Inst";
+  return CONSTANT2;
+})(CONSTANT || {});
 var CODE = /* @__PURE__ */ ((CODE2) => {
   CODE2[CODE2["CACHE"] = 10] = "CACHE";
   CODE2[CODE2["SUCCESS"] = 0] = "SUCCESS";
@@ -869,7 +872,7 @@ function createServer(options) {
   });
   app.use(express2.static(staticDist));
   app.listen(port, () => {
-    console.log(`c http://localhost:${port}`);
+    console.log(`create server at  http://localhost:${port}`);
   });
 }
 function createSSRServer(options) {
@@ -890,6 +893,25 @@ function createSSRServer(options) {
     console.log(`c http://localhost:${port}`);
   });
 }
+var AdoNodeServer = class {
+  static run(options) {
+    createServer(options);
+  }
+};
+
+// lib/ober/oberserver.ts
+var OberServer = class {
+  store = [];
+  set(key, value) {
+    this.store.push({ key, value });
+  }
+  get(key) {
+    const val = this.store.find((el) => {
+      return el.key === key;
+    });
+    return val;
+  }
+};
 
 // lib/store/cache.ts
 var CreateCache = (cacheName) => {
@@ -898,9 +920,15 @@ var CreateCache = (cacheName) => {
     ref.def(cacheName, val, target.constructor.prototype);
   };
 };
-var UseCache = (cacheName, commonClass) => {
+var UseCache = (cacheName) => {
   return async function(target, propertyKey) {
-    const CacheInst = ref.get(cacheName, commonClass.prototype);
+    var _a;
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const CacheInst = ref.get(cacheName, CommonClass.prototype);
     target.constructor.prototype[propertyKey] = CacheInst;
     CacheInst().then((res) => {
       target.constructor.prototype[propertyKey] = res;
@@ -933,7 +961,8 @@ function getCachekey(type, table, options) {
 
 // lib/store/enity.ts
 var Enity = (target) => {
-  ref.def(target.name + "Enity", target.prototype, target.prototype);
+  const targetInst = new target(target);
+  ref.def(target.name, targetInst, target.prototype);
 };
 var Key = (target, propertyKey) => {
   ref.def("key", propertyKey, target.constructor.prototype);
@@ -944,10 +973,16 @@ var Keyword = (target, propertyKey) => {
 var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/oper/curd.ts
-var Curd = (CurdUrl, Enity2, store, commonClass) => {
+var Curd = (CurdUrl, Enity2, store) => {
   return function(_target, _propertyKey, _descriptor) {
-    const coon = ref.get(store[0], commonClass.prototype);
-    const client = ref.get(store[1], commonClass.prototype);
+    var _a;
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const coon = ref.get(store[0], CommonClass.prototype);
+    const client = ref.get(store[1], CommonClass.prototype);
     const url = createCurdUrl(CurdUrl);
     async function getListRet(req, res) {
       const options = req.query;
@@ -1252,6 +1287,73 @@ var Pipe = (fn) => {
   };
 };
 
+// lib/orm/orm.ts
+var AdoNodeOrm = class {
+  BaseEnity;
+  conn;
+  constructor(BaseEnity, dbname) {
+    this.BaseEnity = BaseEnity;
+    this.getConn(dbname);
+  }
+  getConn(dbname) {
+    var _a;
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const CacheInst = ref.get(dbname, CommonClass.prototype);
+    this.conn = CacheInst;
+  }
+  async getList() {
+    const conn = await this.conn;
+    return new Promise((resolve, reject) => {
+      conn.query(
+        `select * from ${this.BaseEnity.name} limit 0,10`,
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getOneBy() {
+  }
+  async delOneByKey() {
+  }
+};
+
+// lib/store/config.ts
+var Config = (target) => {
+  let OberInst = ref.get("Observer" /* Observer */, OberServer.prototype);
+  if (!OberInst) {
+    OberInst = new OberServer();
+    ref.def("Observer" /* Observer */, OberInst, OberServer.prototype);
+  }
+  OberInst.set("Config" /* Config */, target);
+};
+var AdoNodeConfig = (ConfigClass) => {
+  return function() {
+    const config_inst = new ConfigClass();
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    if (!OberInst) {
+      OberInst = new OberServer();
+      ref.def("Observer" /* Observer */, OberInst, OberServer.prototype);
+    }
+    OberInst.set("Config_Inst" /* Config_INST */, config_inst);
+  };
+};
+var useConfig = () => {
+  var _a;
+  let OberInst = ref.get("Observer" /* Observer */, OberServer.prototype);
+  return (_a = OberInst.get("Config_Inst" /* Config_INST */)) == null ? void 0 : _a.value;
+};
+
 // lib/store/db.ts
 var CreateDb = (dbname) => {
   return function(target, _propertyKey, descriptor) {
@@ -1261,9 +1363,15 @@ var CreateDb = (dbname) => {
 };
 
 // lib/store/mapper.ts
-var Connect = (dbname, coon) => {
+var Connect = (dbname) => {
   return function(target) {
-    const connInst = ref.get(dbname, coon.prototype);
+    var _a;
+    const OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const connInst = ref.get(dbname, CommonClass.prototype);
     ref.def("coon", connInst, target.prototype);
   };
 };
@@ -1296,9 +1404,13 @@ var Update = Select;
 var Delete = Select;
 var Insert = Select;
 export {
+  AdoNodeConfig,
+  AdoNodeOrm,
+  AdoNodeServer,
   CODE,
   CONSTANT,
   Collect,
+  Config,
   Connect,
   Controller,
   CreateCache,
@@ -1319,11 +1431,13 @@ export {
   Pipe,
   Post,
   Select,
+  SerivceMap,
   Update,
   UseCache,
   createSSRServer,
   createServer,
-  ref
+  ref,
+  useConfig
 };
 /*! *****************************************************************************
 Copyright (C) Microsoft. All rights reserved.

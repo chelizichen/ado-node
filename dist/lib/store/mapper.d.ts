@@ -1,4 +1,4 @@
-declare const Connect: (dbname: string, coon: Function) => ClassDecorator;
+declare const Connect: (dbname: string) => ClassDecorator;
 declare const Mapper: () => ClassDecorator;
 declare const Select: (sql: string) => (target: Object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) => void;
 declare const Update: (sql: string) => (target: Object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) => void;

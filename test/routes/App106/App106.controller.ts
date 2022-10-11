@@ -1,13 +1,20 @@
 import { RedisClientType } from "redis";
-import { Controller, UseCache, HandleController, Get } from "../../../index";
-import { UseConfig } from "../../../lib/store/config";
-import { commonClass } from "../../config/common";
+import {
+  Controller,
+  UseCache,
+  HandleController,
+  Get,
+  Inject,
+} from "../../../index";
+import { App106Enity } from "./App106.enity";
 
 @Controller("/app106")
-@UseConfig(commonClass)
 class App106Controller extends HandleController {
   @UseCache("redis")
   Redis!: RedisClientType;
+
+  @Inject(App106Enity)
+  App106Enity!: App106Enity;
 
   @Get("/test")
   async getVal() {
@@ -15,6 +22,15 @@ class App106Controller extends HandleController {
   }
   @Get("/testRedis")
   async getTestRedis() {
+    return {
+      data: "ok",
+      code: 0,
+    };
+  }
+
+  @Get("/testEnity")
+  async testEnity() {
+    this.App106Enity.getList();
     return {
       data: "ok",
       code: 0,

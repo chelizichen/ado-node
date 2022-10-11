@@ -1,6 +1,8 @@
-export declare const CONSTANT: {
-    Redis: string;
-};
+export declare enum CONSTANT {
+    Observer = "Observer",
+    Config = "Config",
+    Config_INST = "Config_Inst"
+}
 export declare enum CODE {
     CACHE = 10,
     SUCCESS = 0,

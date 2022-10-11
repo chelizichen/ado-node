@@ -1,20 +1,11 @@
-import {
-  Controller,
-  HandleController,
-  Inject,
-  Post,
-  UseCache,
-  UseConfig,
-} from "ado-node";
+import { Controller, HandleController, Inject, Post, UseCache } from "ado-node";
 import { RedisClientType } from "redis";
-import { CommonClass } from "../../config/common";
 import { CONSTANT } from "../../config/constant";
 import { Ret } from "../../config/ret";
 import { SeckillService } from "./Seckill.Service";
 import { Body } from "ado-node/index.d";
 
 @Controller("/prod")
-@UseConfig(CommonClass)
 export class SeckillController extends HandleController {
   @UseCache(CONSTANT.REDIS)
   REDIS!: RedisClientType;

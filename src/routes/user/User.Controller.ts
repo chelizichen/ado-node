@@ -7,17 +7,14 @@ import {
   Get,
   CODE,
   Pipe,
-  UseConfig,
 } from "ado-node";
 import { Query } from "ado-node/index.d";
 import { RedisClientType } from "redis";
-import { CommonClass } from "../../config/common";
 import { CONSTANT } from "../../config/constant";
 import { User } from "./User.Enity";
 import { UserIdPipe } from "./User.pipe";
 import { UserService } from "./User.Service";
 @Controller("/user")
-@UseConfig(CommonClass)
 class UserController extends HandleController {
   @Inject(UserService)
   UserService!: UserService;

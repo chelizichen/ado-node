@@ -1,19 +1,10 @@
 import { RedisClientType } from "@redis/client";
-import {
-  Controller,
-  Get,
-  HandleController,
-  Inject,
-  UseCache,
-  UseConfig,
-} from "ado-node";
-import { CommonClass } from "../../config/common";
+import { Controller, Get, HandleController, Inject, UseCache } from "ado-node";
 import { CONSTANT } from "../../config/constant";
 import { Ret } from "../../config/ret";
 import { GoodsService } from "./Goods.Service";
 
 @Controller("/goods")
-@UseConfig(CommonClass)
 export class GoodsController extends HandleController {
   @UseCache(CONSTANT.REDIS)
   REDIS!: RedisClientType;

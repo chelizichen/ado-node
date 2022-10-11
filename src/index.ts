@@ -1,8 +1,8 @@
-import { createServer, UseConfig } from "ado-node";
+import { createServer, AdoNodeConfig } from "ado-node";
 import { CommonClass } from "./config/common";
 import { options } from "./routes";
 
-@UseConfig(CommonClass)
+@AdoNodeConfig(CommonClass)
 class AdoNodeServer {
   static run(options: any) {
     createServer(options);

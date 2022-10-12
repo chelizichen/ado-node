@@ -1,12 +1,8 @@
-import { createServer, AdoNodeConfig } from "ado-node";
+import { AdoNodeConfig, AdoNodeServer } from "ado-node";
 import { CommonClass } from "./config/common";
 import { options } from "./routes";
 
 @AdoNodeConfig(CommonClass)
-class AdoNodeServer {
-  static run(options: any) {
-    createServer(options);
-  }
-}
+class AdoNodeServerImpl extends AdoNodeServer {}
 
-AdoNodeServer.run(options);
+AdoNodeServerImpl.run(options);

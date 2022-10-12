@@ -1,7 +1,8 @@
-import { Enity, Key, Keyword } from "ado-node";
+import { AdoOrmBaseEnity, Enity, Key, Keyword } from "ado-node";
+import { CONSTANT } from "../../config/constant";
 
-@Enity
-export class Goods {
+@Enity(CONSTANT.MYSQL)
+export class Goods extends AdoOrmBaseEnity {
   @Key
   id!: number;
 

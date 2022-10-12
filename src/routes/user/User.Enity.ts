@@ -1,7 +1,8 @@
-import { Enity, Key, Keyword } from "ado-node";
+import { AdoOrmBaseEnity, Enity, Key, Keyword } from "ado-node";
+import { CONSTANT } from "../../config/constant";
 
-@Enity
-class User {
+@Enity(CONSTANT.MYSQL)
+class User extends AdoOrmBaseEnity {
   @Key
   id!: number;
   phone!: number;

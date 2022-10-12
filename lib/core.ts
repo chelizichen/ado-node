@@ -45,8 +45,8 @@ export type { ClassConstructor };
 import { Pipe } from "./pipe/pipe";
 export { Pipe };
 
-import { AdoNodeOrm } from "./orm/orm";
-export { AdoNodeOrm };
+import { AdoOrmBaseEnity } from "./orm/orm";
+export { AdoOrmBaseEnity };
 
 import { Config, AdoNodeConfig, useConfig } from "./store/config";
 import { CreateCache, UseCache } from "./store/cache";

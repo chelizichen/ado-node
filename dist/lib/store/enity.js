@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EnityTable = exports.Keyword = exports.Key = exports.Enity = void 0;
 const ref_1 = require("../ioc/ref");
-const Enity = (target) => {
-    const targetInst = new target(target);
-    // ref.def(target, target.prototype);
-    ref_1.ref.def(target.name, targetInst, target.prototype);
+const Enity = (dbname) => {
+    return function (target) {
+        const targetInst = new target(target, dbname);
+        ref_1.ref.def(target.name, targetInst, target.prototype);
+    };
 };
 exports.Enity = Enity;
 const Key = (target, propertyKey) => {

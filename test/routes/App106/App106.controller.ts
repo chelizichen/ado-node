@@ -6,15 +6,15 @@ import {
   Get,
   Inject,
 } from "../../../index";
-import { App106Enity } from "./App106.enity";
+import { Goods } from "./App106.enity";
 
 @Controller("/app106")
 class App106Controller extends HandleController {
   @UseCache("redis")
   Redis!: RedisClientType;
 
-  @Inject(App106Enity)
-  App106Enity!: App106Enity;
+  @Inject(Goods)
+  Goods!: Goods;
 
   @Get("/test")
   async getVal() {
@@ -30,10 +30,15 @@ class App106Controller extends HandleController {
 
   @Get("/testEnity")
   async testEnity() {
-    this.App106Enity.getList();
+    // const inst = new Goods()
+
+    const data = await this.Goods.save({
+      g_name: "123",
+    });
     return {
-      data: "ok",
+      data,
       code: 0,
+      msg: "ok",
     };
   }
 }

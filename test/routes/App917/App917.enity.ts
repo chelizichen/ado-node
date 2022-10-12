@@ -1,6 +1,6 @@
 import { Enity, Key, Keyword } from "../../../index";
 
-@Enity
+@Enity("mysql")
 export class user {
   @Key
   id!: number;

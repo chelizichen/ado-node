@@ -1,15 +1,18 @@
-#  - ADO-Node
-## 基于 老牌框架 Express Typescript 装饰器 的后端方案 用于解决管理路由 和 异步任务的问题
+# - ADO-Node
 
+## 基于 老牌框架 Express Typescript 装饰器 的后端方案 用于解决管理路由 和 异步任务的问题
 
 ### 案例
 
 #### Controller 控制层
 
-####  @Controller 控制器
-####   @Inject() 注入依赖
-####   @Get() @Post() 
-####   @Error() 用于提前定义错误与强制停用接口
+#### @Controller 控制器
+
+#### @Inject() 注入依赖
+
+#### @Get() @Post()
+
+#### @Error() 用于提前定义错误与强制停用接口
 
 ```
 @Controller("/app")
@@ -45,8 +48,8 @@ class AppController implyments HanldeController{
 }
 ```
 
+#### Service 层
 
-#### Service 层 
  可以用Collect 收集多个 Service 注入进 Controller
 
 ````
@@ -65,9 +68,13 @@ class AppService {
 ````
 
 #### Mapper 层
+
 #### @Mapper() 用来收集Mapper 服务
+
 #### @Connect() 用来收集 数据库连接服务
+
 #### @Select() 用来写sql 语句
+
 ````
 @Mapper()
 @Connect(coon)
@@ -79,6 +86,7 @@ class AppMappper {
 ````
 
 #### Server Options 加载配置
+
 ````
 export const options: HandleProxyOptions = {
   controller: [AppController],
@@ -87,19 +95,19 @@ export const options: HandleProxyOptions = {
 };
 ````
 
-
-
-
 #### date 10.5 update
+
 ***
-新增一键添加接口功能 
+新增一键添加接口功能
 
 新增
-* @Curd(curdurl , enityClass , mysqlConn ) 
+
+* @Curd(curdurl , enityClass , mysqlConn )
 * @Enity 用来定义实体类
 * @Key 用来定义主键
 * @Keyword 用来定义模糊查询的参数
 * @UseCache 用来定义Redis 缓存实例
+
 ````
 const coon = mysql.createConnection({
   host: config.host,
@@ -129,7 +137,9 @@ export class Member {
 }
 
 ````
+
 Redis 的秒杀案例
+
 ````
 @Controller("/product")
 class ProductController extends HandleController {
@@ -188,7 +198,6 @@ class ProductController extends HandleController {
 
 }
 ````
-````````
 
 #### Run 
 ````

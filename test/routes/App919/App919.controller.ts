@@ -14,6 +14,7 @@ import { Fund_Star } from "./App919.enity";
 class App919Controller extends HandleController {
   @UseCache("redis")
   Redis!: RedisClientType;
+
   @Inject(App919Service)
   App919Service!: App919Service;
 
@@ -25,9 +26,33 @@ class App919Controller extends HandleController {
     return Ret.Message(0, "ok", "data");
   }
 
-  @Get("/testEnity")
+  @Get("/testgetList")
   async testEnity() {
     const data = await this.Fund_Star.getList();
+    return {
+      data,
+      code: 0,
+      msg: "ok",
+    };
+  }
+
+  @Get("/testgetOne")
+  async testGetOne() {
+    const id = 777;
+    const data = await this.Fund_Star.getOneBy(id);
+    return {
+      data,
+      code: 0,
+      msg: "ok",
+    };
+  }
+
+  @Get("/testcountBy")
+  async countBy() {
+    const data = await this.Fund_Star.countBy({
+      fund_manager: "何家琪",
+      // fund_company: "华夏基金",
+    });
     return {
       data,
       code: 0,

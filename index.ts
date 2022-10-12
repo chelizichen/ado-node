@@ -34,7 +34,7 @@ import {
   Error,
   useConfig,
   AdoNodeServer,
-  AdoNodeOrm,
+  AdoOrmBaseEnity,
 } from "./lib/core";
 
 export { CONSTANT, MESSAGE, CODE };
@@ -54,7 +54,7 @@ export { Curd };
 export type { ClassConstructor };
 
 export { Pipe };
-export { AdoNodeOrm };
+export { AdoOrmBaseEnity };
 
 export {
   CreateCache,

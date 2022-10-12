@@ -4,7 +4,9 @@ exports.EnityTable = exports.Keyword = exports.Key = exports.Enity = void 0;
 const ref_1 = require("../ioc/ref");
 const Enity = (dbname) => {
     return function (target) {
-        const targetInst = new target(target, dbname);
+        const targetInst = new target();
+        targetInst.BaseEnity = target;
+        targetInst.getConn(dbname);
         ref_1.ref.def(target.name, targetInst, target.prototype);
     };
 };

@@ -11,6 +11,7 @@ export enum CODE {
   FIELDERROR = -2, // 缺少字段，
   TYPEERROR = -3, // 类型错误
   NOTFOUND = -4, // 拒绝请求 或 无法响应,
+  SERVERERROR = -5,
 }
 
 export enum MESSAGE {
@@ -20,4 +21,5 @@ export enum MESSAGE {
   FIELDERROR = "missing field",
   TypeError = "type error",
   NOTFOUND = "not found",
+  SERVERERROR = "server error",
 }

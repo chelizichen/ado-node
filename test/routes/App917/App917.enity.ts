@@ -1,13 +1,26 @@
-import { Enity, Key, Keyword } from "../../../index";
+import {
+  AdoOrmBaseEnity,
+  Enity,
+  Key,
+  Keyword,
+  AutoCreate,
+} from "../../../index";
 
 @Enity("mysql")
-export class user {
+export class user extends AdoOrmBaseEnity {
   @Key
+  @AutoCreate
   id!: number;
+
   phone!: number;
+
   @Keyword
   username!: string;
+
   password!: string;
+
+  @AutoCreate
+  createTime!: string;
 }
 
 export class Ret {

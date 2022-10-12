@@ -30,11 +30,11 @@ class App106Controller extends HandleController {
 
   @Get("/testEnity")
   async testEnity() {
-    // const inst = new Goods()
-
-    const data = await this.Goods.save({
-      g_name: "123",
-    });
+    const inst = new Goods();
+    inst.g_name = "测试名字";
+    inst.g_type = "测试类型";
+    inst.g_price = "666";
+    const data = await this.Goods.save(inst);
     return {
       data,
       code: 0,

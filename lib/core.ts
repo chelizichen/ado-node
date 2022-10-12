@@ -51,7 +51,7 @@ export { AdoOrmBaseEnity };
 import { Config, AdoNodeConfig, useConfig } from "./store/config";
 import { CreateCache, UseCache } from "./store/cache";
 import { CreateDb } from "./store/db";
-import { Enity, Key, Keyword } from "./store/enity";
+import { Enity, Key, Keyword, AutoCreate } from "./store/enity";
 import {
   Connect,
   Mapper,
@@ -77,6 +77,7 @@ export {
   Config,
   AdoNodeConfig,
   useConfig,
+  AutoCreate,
 };
 
 import { Query, Body, HandleProxyOptions } from "./types";

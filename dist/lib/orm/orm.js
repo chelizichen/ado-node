@@ -6,10 +6,6 @@ const oberserver_1 = require("../ober/oberserver");
 class AdoOrmBaseEnity {
     BaseEnity;
     conn;
-    constructor(BaseEnity, dbname) {
-        this.BaseEnity = BaseEnity;
-        this.getConn(dbname);
-    }
     async getConn(dbname) {
         let OberInst = core_1.ref.get(core_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
         const CommonClass = OberInst.get(core_1.CONSTANT.Config)?.value;
@@ -90,6 +86,10 @@ class AdoOrmBaseEnity {
             });
         });
     }
+    /**
+     * @method getBy
+     * @param {} Record<string, string>
+     */
     async getBy(val) {
         const tablename = this.BaseEnity.name;
         let countSql = `select * as total from ${tablename} where `;
@@ -114,8 +114,13 @@ class AdoOrmBaseEnity {
             });
         });
     }
+    /**
+     * @method save
+     * @paramsType <T extends Record<string, string>
+     */
     async save(val) {
-        let opt = [this.BaseEnity.name, val];
+        const filterUndefined = JSON.parse(JSON.stringify(val));
+        let opt = [this.BaseEnity.name, filterUndefined];
         return new Promise((resolve, reject) => {
             this.conn.query(`insert into ??  SET ? `, opt, function (err, res) {
                 if (err) {

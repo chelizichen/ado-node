@@ -1,14 +1,13 @@
 import * as mysql from "mysql";
-import { ClassConstructor, CONSTANT, ref } from "../core";
+import { CONSTANT, ref } from "../core";
+import { ClientError } from "../error/client";
+import { DataBaseError } from "../error/dababase";
 import { OberServer } from "../ober/oberserver";
+import { getStrCount } from "../oper/protect";
 export class AdoOrmBaseEnity {
   public BaseEnity!: Function;
   public conn!: mysql.Connection;
-  constructor(BaseEnity: ClassConstructor, dbname: string) {
-    this.BaseEnity = BaseEnity;
-    this.getConn(dbname);
-  }
-  private async getConn(dbname: string) {
+  public async getConn(dbname: string) {
     let OberInst = ref.get(
       CONSTANT.Observer,
       OberServer.prototype
@@ -40,14 +39,24 @@ export class AdoOrmBaseEnity {
    */
   public async getOneBy(val: any) {
     const key = ref.get("key", this.BaseEnity.prototype);
-    const options = [val];
-    return new Promise((resolve, reject) => {
+    const count = getStrCount(val, ["delete", "drop"]);
+    if (count) {
+      const Error = new ClientError("非法参数，可能为恶意sql注入");
+      return Error;
+    }
+    const options = [this.BaseEnity.name, key, val];
+
+    return new Promise((resolve) => {
       this.conn.query(
-        `select * from ${this.BaseEnity.name} where ${key} = ?`,
+        `select * from ?? where ?? = ?`,
         options,
         function (err, res) {
           if (err) {
-            reject(err);
+            const Error = new DataBaseError(
+              "数据库错误,也许配置项是非法的",
+              err
+            );
+            resolve(Error);
           }
           resolve(res);
         }
@@ -60,10 +69,10 @@ export class AdoOrmBaseEnity {
    */
   public async delOneBy(val: any) {
     const key = ref.get("key", this.BaseEnity.prototype);
-    const options = [val];
+    const options = [this.BaseEnity.name, key, val];
     return new Promise((resolve, reject) => {
       this.conn.query(
-        `DELETE FROM ${this.BaseEnity.name} WHERE ${key} = ?`,
+        `DELETE FROM ?? WHERE ?? = ?`,
         options,
         function (err, res) {
           if (err) {
@@ -79,53 +88,48 @@ export class AdoOrmBaseEnity {
    * @param val
    */
   public async countBy(val: Record<string, string>) {
-    const tablename = this.BaseEnity.name;
-    let countSql = `select count(*) as total from ${tablename} where `;
-    let jointSql = "";
-    let keys = Object.keys(val);
-    keys.forEach((item, index) => {
-      if (index != keys.length - 1) {
-        jointSql += `${item} = '${val[item]}' and `;
-      } else {
-        jointSql += `${item} = '${val[item]}' `;
-      }
-    });
-    countSql += jointSql;
+    let countSql = `select count(*) as total from ?? where `;
+    const jonitSql = this.conn.escape(val).replaceAll(",", " and ");
     return new Promise((resolve, reject) => {
-      this.conn.query(countSql, function (err, res) {
-        if (err) {
-          reject(err);
+      this.conn.query(
+        countSql + jonitSql,
+        [this.BaseEnity.name],
+        function (err, res) {
+          if (err) {
+            reject(err);
+          }
+          const data = res[0];
+          resolve(data);
         }
-        const data = res[0];
-        resolve(data);
-      });
+      );
     });
   }
+  /**
+   * @method getBy
+   * @param {} Record<string, string>
+   */
   public async getBy(val: Record<string, string>) {
-    const tablename = this.BaseEnity.name;
-    let countSql = `select * as total from ${tablename} where `;
-    let jointSql = "";
-    let keys = Object.keys(val);
-    keys.forEach((item, index) => {
-      if (index != keys.length - 1) {
-        jointSql += `${item} = '${val[item]}' and `;
-      } else {
-        jointSql += `${item} = '${val[item]}' `;
-      }
-    });
-    countSql += jointSql;
+    const sql = this.conn.escape(val).replaceAll(",", " and ");
     return new Promise((resolve, reject) => {
-      this.conn.query(countSql, function (err, res) {
-        if (err) {
-          reject(err);
+      this.conn.query(
+        "select * from ?? where " + sql,
+        [this.BaseEnity.name],
+        function (err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
         }
-        const data = res[0];
-        resolve(data);
-      });
+      );
     });
   }
-  public async save(val: Record<string, string>) {
-    let opt = [this.BaseEnity.name, val];
+  /**
+   * @method save
+   * @paramsType <T extends Record<string, string>
+   */
+  public async save<T extends Record<string, string> | Object>(val: T) {
+    const filterUndefined = JSON.parse(JSON.stringify(val));
+    let opt = [this.BaseEnity.name, filterUndefined];
     return new Promise((resolve, reject) => {
       this.conn.query(`insert into ??  SET ? `, opt, function (err, res) {
         if (err) {

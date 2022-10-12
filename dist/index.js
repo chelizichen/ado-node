@@ -1027,7 +1027,9 @@ function getCachekey(type, table, options) {
 // lib/store/enity.ts
 var Enity = (dbname) => {
   return function(target) {
-    const targetInst = new target(target, dbname);
+    const targetInst = new target();
+    targetInst.BaseEnity = target;
+    targetInst.getConn(dbname);
     ref.def(target.name, targetInst, target.prototype);
   };
 };
@@ -1358,10 +1360,6 @@ var Pipe = (fn) => {
 var AdoOrmBaseEnity = class {
   BaseEnity;
   conn;
-  constructor(BaseEnity, dbname) {
-    this.BaseEnity = BaseEnity;
-    this.getConn(dbname);
-  }
   async getConn(dbname) {
     var _a;
     let OberInst = ref.get(
@@ -1464,7 +1462,8 @@ var AdoOrmBaseEnity = class {
     });
   }
   async save(val) {
-    let opt = [this.BaseEnity.name, val];
+    const filterUndefined = JSON.parse(JSON.stringify(val));
+    let opt = [this.BaseEnity.name, filterUndefined];
     return new Promise((resolve, reject) => {
       this.conn.query(`insert into ??  SET ? `, opt, function(err, res) {
         if (err) {

@@ -4,6 +4,6 @@ import { commonClass } from "./config/common";
 import { options } from "./routes";
 
 @AdoNodeConfig(commonClass)
-class AdoNodeServerImpl extends AdoNodeServer {}
+export class AdoNodeServerImpl extends AdoNodeServer {}
 
 AdoNodeServerImpl.run(options);

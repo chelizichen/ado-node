@@ -38,7 +38,8 @@ class App919Controller extends HandleController {
 
   @Get("/testgetOne")
   async testGetOne() {
-    const id = 777;
+    const id = "777;delete * from";
+
     const data = await this.Fund_Star.getOneBy(id);
     return {
       data,
@@ -52,6 +53,19 @@ class App919Controller extends HandleController {
     const data = await this.Fund_Star.countBy({
       fund_manager: "何家琪",
       // fund_company: "华夏基金",
+    });
+    return {
+      data,
+      code: 0,
+      msg: "ok",
+    };
+  }
+
+  @Get("/testgetBy")
+  async testgetBy() {
+    const data = await this.Fund_Star.getBy({
+      fund_manager: "何家琪",
+      fund_company: "华夏基金",
     });
     return {
       data,

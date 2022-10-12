@@ -52,14 +52,22 @@ const Curd = (
                 code: CODE.SUCCESS,
                 message: MESSAGE.SUCCESS,
               };
-              await LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
-              await LinkRedis.expire(Enity.name, 120);
               resolve(data);
             }
           });
-        }).then((ret) => {
-          res.json(ret);
-        });
+        })
+          .then(async (ret) => {
+            await LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
+            await LinkRedis.expire(Enity.name, 120);
+            res.json(ret);
+          })
+          .catch((err) => {
+            res.json({
+              code: CODE.ERROR,
+              message: CODE.ERROR,
+              data: err,
+            });
+          });
       }
     }
     async function getGetRet(req: Request, res: Response) {
@@ -94,9 +102,19 @@ const Curd = (
               resolve(data);
             }
           });
-        }).then((ret) => {
-          res.json(ret);
-        });
+        })
+          .then((ret) => {
+            res.json(ret);
+          })
+          .catch((err) => {
+            console.log("出现错误");
+            console.log(err);
+            res.json({
+              code: CODE.ERROR,
+              message: CODE.ERROR,
+              data: err,
+            });
+          });
       }
     }
     async function getDelRet(req: Request, res: Response) {
@@ -162,8 +180,11 @@ const Curd = (
     async function getUpdateRet(req: Request, res: Response) {
       const options = req.body;
       const ListSql = createUpdateSql(Enity, options);
-      new Promise((resolve, reject) => {
-        coon.query(ListSql, function (err, res) {
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(ListSql, function (err, res) {
           if (err) {
             reject(err);
           } else {
@@ -171,9 +192,9 @@ const Curd = (
           }
         });
       }).then(async (ret) => {
-        const keys = await client.hKeys(Enity.name);
+        const keys = await LinkRedis.hKeys(Enity.name);
         keys.forEach((el: any) => {
-          client.hDel(Enity.name, el);
+          LinkRedis.hDel(Enity.name, el);
         });
         res.json(ret);
       });
@@ -239,14 +260,15 @@ function createListSql(Enity: ClassConstructor, options: any) {
     `;
     return sql;
   }
-  return `
-    SELECT  * from ${Enity.name} limit 0,10;
-    SELECT FOUND_ROWS() as total;
-  `;
+  const sql = `SELECT  * from ${Enity.name} limit 0,10 ; SELECT FOUND_ROWS() as total;`;
+  console.log("sql", sql);
+  return sql;
 }
 function createGetSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);
-  return `select SQL_CALC_FOUND_ROWS * from ${Enity.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+  const sql = `select SQL_CALC_FOUND_ROWS * from ${Enity.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+  console.log("sql", sql);
+  return sql;
 }
 function createDelSql(Enity: ClassConstructor, options: any) {
   const key = ref.get("key", Enity.prototype);
@@ -258,14 +280,26 @@ function createAddSql(Enity: ClassConstructor, options: any) {
     fields = Object.getOwnPropertyNames(new Enity());
     EnityTable.set(Enity.name, fields);
   }
-  const key = ref.get("key", Enity.prototype);
-  const opt = fields.filter((el) => el != key);
+  const AutoCreate = ref.get("AutoCreate", Enity.prototype) as string[];
+  const opt = fields.filter((el: string) => {
+    if (AutoCreate.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
   const val = opt.map((el) => {
     return options[el];
   });
-  return `insert into ${
+  console.log("val", val);
+
+  const sql = `insert into ${
     Enity.name
   }(${opt.toString()}) values  (${val.toString()})`;
+  console.log("sql", sql);
+
+  return sql;
 }
 function createUpdateSql(Enity: ClassConstructor, options: any) {
   let fields: Array<string> = EnityTable.get(Enity.name);
@@ -274,7 +308,14 @@ function createUpdateSql(Enity: ClassConstructor, options: any) {
     EnityTable.set(Enity.name, fields);
   }
   const key = ref.get("key", Enity.prototype);
-  const opt = fields.filter((el) => el != key);
+  const AutoCreate = ref.get("AutoCreate", Enity.prototype) as string[];
+  const opt = fields.filter((el: string) => {
+    if (AutoCreate.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const val = opt.map((el) => {
     return {
       [el]: options[el],
@@ -293,6 +334,8 @@ function createUpdateSql(Enity: ClassConstructor, options: any) {
     return pre + sql;
   }, "");
   const sql = `Update ${Enity.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+  console.log("sql", sql);
+
   return sql;
 }
 

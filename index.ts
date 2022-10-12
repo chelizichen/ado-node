@@ -35,6 +35,7 @@ import {
   useConfig,
   AdoNodeServer,
   AdoOrmBaseEnity,
+  AutoCreate,
 } from "./lib/core";
 
 export { CONSTANT, MESSAGE, CODE };
@@ -72,4 +73,5 @@ export {
   Config,
   AdoNodeConfig,
   useConfig,
+  AutoCreate,
 };

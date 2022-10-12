@@ -1,10 +1,8 @@
 import * as mysql from "mysql";
-import { ClassConstructor } from "../core";
 export declare class AdoOrmBaseEnity {
     BaseEnity: Function;
     conn: mysql.Connection;
-    constructor(BaseEnity: ClassConstructor, dbname: string);
-    private getConn;
+    getConn(dbname: string): Promise<void>;
     /**
      * @method getList
      * @description 获取所有的数据
@@ -25,6 +23,14 @@ export declare class AdoOrmBaseEnity {
      * @param val
      */
     countBy(val: Record<string, string>): Promise<unknown>;
+    /**
+     * @method getBy
+     * @param {} Record<string, string>
+     */
     getBy(val: Record<string, string>): Promise<unknown>;
-    save(val: Record<string, string>): Promise<unknown>;
+    /**
+     * @method save
+     * @paramsType <T extends Record<string, string>
+     */
+    save<T extends Record<string, string> | Object>(val: T): Promise<unknown>;
 }

@@ -7,7 +7,11 @@ export class Goods extends AdoOrmBaseEnity {
   id!: number;
 
   @Keyword
-  name!: string;
+  g_name!: string;
+
+  g_price!: string;
+
+  g_type!: string;
 }
 
 // App106Enity.

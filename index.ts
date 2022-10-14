@@ -15,8 +15,7 @@ import {
   createSSRServer,
   createServer,
   Curd,
-  ClassConstructor,
-  Pipe,
+  UsePipe,
   CreateCache,
   UseCache,
   CreateDb,
@@ -52,9 +51,8 @@ export {
 };
 export { Get, Post, createSSRServer, createServer, AdoNodeServer };
 export { Curd };
-export type { ClassConstructor };
 
-export { Pipe };
+export { UsePipe };
 export { AdoOrmBaseEnity };
 
 export {

@@ -37,13 +37,11 @@ import { createSSRServer, createServer, AdoNodeServer } from "./method/server";
 export { Get, Post, createSSRServer, createServer, AdoNodeServer };
 
 import { Curd } from "./oper/curd";
-import type { ClassConstructor } from "./oper/curd";
 
 export { Curd };
-export type { ClassConstructor };
 
-import { Pipe } from "./pipe/pipe";
-export { Pipe };
+import { UsePipe } from "./pipe/pipe";
+export { UsePipe };
 
 import { AdoOrmBaseEnity } from "./orm/orm";
 export { AdoOrmBaseEnity };
@@ -51,7 +49,16 @@ export { AdoOrmBaseEnity };
 import { Config, AdoNodeConfig, useConfig } from "./store/config";
 import { CreateCache, UseCache } from "./store/cache";
 import { CreateDb } from "./store/db";
-import { Enity, Key, Keyword, AutoCreate } from "./store/enity";
+import {
+  Enity,
+  Key,
+  Keyword,
+  AutoCreate,
+  EnityTable,
+  IsEmail,
+  IsNumber,
+  IsOptional,
+} from "./orm/enity";
 import {
   Connect,
   Mapper,
@@ -77,8 +84,24 @@ export {
   Config,
   AdoNodeConfig,
   useConfig,
-  AutoCreate,
 };
 
+export { IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate };
+
 import { Query, Body, HandleProxyOptions } from "./types";
+import { ClientError } from "./error/client";
+import { DataBaseError } from "./error/dababase";
+import { FieldError } from "./error/field";
+import { RestartServer } from "./error/restart";
+import { ServerError } from "./error/server";
+import { TypesError } from "./error/type";
 export type { Query, Body, HandleProxyOptions };
+
+export {
+  ClientError,
+  DataBaseError,
+  FieldError,
+  RestartServer,
+  ServerError,
+  TypesError,
+};

@@ -4,7 +4,7 @@ import { ref } from "../ioc/ref";
 import { CODE, CONSTANT, MESSAGE } from "../constant/constant";
 import { getCachekey } from "../store/cache";
 import * as mysql from "mysql";
-import { EnityTable } from "../store/enity";
+import { EnityTable } from "../orm/enity";
 import { OberServer } from "../ober/oberserver";
 export type ClassConstructor = new (...args: any[]) => void;
 

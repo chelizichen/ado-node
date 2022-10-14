@@ -5,6 +5,10 @@ import { HandleProxyOptions } from "../types";
 
 function createServer(options: HandleProxyOptions) {
   const app: Express = express();
+  options.globalPipes.forEach((el: any) => {
+    const inst = new el();
+    app.use("*", inst.run);
+  });
   app.use(express.json());
   const { port, staticDist, controller, base } = options;
   controller.forEach((el) => {

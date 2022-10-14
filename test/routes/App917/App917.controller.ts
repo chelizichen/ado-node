@@ -3,13 +3,13 @@ import { Controller } from "../../../lib/ioc/controller";
 import { Curd } from "../../../lib/oper/curd";
 import { Inject } from "../../../lib/ioc/ioc";
 import { Get, Post } from "../../../lib/method/method";
-import { Pipe } from "../../../lib/pipe/pipe";
+import { UsePipe } from "../../../lib/pipe/pipe";
 import { Ret, user } from "./App917.enity";
-import { useIdPipe, userNamePipe } from "./App917.pipe";
 import { App917Service } from "./App917.service";
 import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
+import { UserNamePipe } from "./App917.pipe";
 
 @Controller("/app917")
 class App917Controller extends HandleController {
@@ -29,7 +29,7 @@ class App917Controller extends HandleController {
     };
   }
   @Get("/b1")
-  @Pipe([useIdPipe, userNamePipe])
+  @UsePipe(new UserNamePipe())
   public async b1(_req: any, _res: any) {
     const ret = await this.App917Service.a1();
     return {
@@ -39,7 +39,6 @@ class App917Controller extends HandleController {
     };
   }
   @Get("/c1")
-  @Pipe(useIdPipe)
   public async c1(_req: any, _res: any) {
     const data = await this.App917Service.a1();
     return Ret.Message(0, "ok", data);

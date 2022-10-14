@@ -1,3 +1,4 @@
-import { Query, Body, ClassConstructor } from "./lib/core";
+import { Query, Body } from "./lib/core";
+import { AdoNodePipe, ClassConstructor } from "./lib/types";
 
-export type { Query, Body, ClassConstructor };
+export type { Query, Body, ClassConstructor, AdoNodePipe };

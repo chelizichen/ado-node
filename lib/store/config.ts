@@ -1,5 +1,6 @@
-import { ref, CONSTANT, ClassConstructor } from "../core";
+import { ref, CONSTANT } from "../core";
 import { OberServer } from "../ober/oberserver";
+import { ClassConstructor } from "../types";
 
 export const Config: ClassDecorator = (target: Function) => {
   let OberInst = ref.get(CONSTANT.Observer, OberServer.prototype) as OberServer;

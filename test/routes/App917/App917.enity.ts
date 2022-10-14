@@ -5,6 +5,7 @@ import {
   Keyword,
   AutoCreate,
 } from "../../../index";
+import { IsEmail, IsNumber, IsOptional } from "../../../lib/orm/enity";
 
 @Enity("mysql")
 export class user extends AdoOrmBaseEnity {
@@ -12,14 +13,21 @@ export class user extends AdoOrmBaseEnity {
   @AutoCreate
   id!: number;
 
+  @IsNumber
   phone!: number;
 
   @Keyword
+  @IsOptional
   username!: string;
 
+  @IsNumber
   password!: string;
 
+  @IsEmail
+  email!: string;
+
   @AutoCreate
+  @IsOptional
   createTime!: string;
 }
 

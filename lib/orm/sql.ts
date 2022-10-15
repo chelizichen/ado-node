@@ -1,4 +1,4 @@
-export class query {
+class query {
   public sql: string = "select";
   public Enity: string = "";
   public andsql = "";
@@ -64,7 +64,7 @@ export class query {
     if (typeof options == "object") {
       const entries = Object.keys(options);
       entries.forEach((el) => {
-        this.and(el, options[el]);
+        this.or(el, options[el]);
       });
     }
     return this;
@@ -93,3 +93,69 @@ export class query {
     return this.sql;
   }
 }
+
+// `DELETE FROM ?? WHERE ?? = ?`
+class del {
+  public sql: string = "select";
+  private Enity: string = "";
+  private andsql = "";
+  private orsql = "";
+
+  setEnity(Enity: Function) {
+    this.Enity = Enity.name;
+    this.sql = "delete from " + this.Enity + " ";
+    return this;
+  }
+  // 只允许用连续的 and(key,value) 或者一次 and(options:Record<string,any>)
+  and<T extends string | Record<string, string>>(
+    options: T,
+    value?: T extends string ? T : any
+  ) {
+    if (value) {
+      if (!this.andsql) {
+        this.andsql += " where ";
+      } else {
+        this.andsql = "";
+        this.andsql += " and ";
+      }
+      this.andsql += options + ' = "' + value + '"';
+      this.sql += this.andsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.and(el, options[el]);
+      });
+    }
+    return this;
+  }
+
+  // 只允许用连续的 or(key,value) 或者一次 and(options:Record<string,any>)
+  or<T extends string | Record<string, string>>(
+    options: T,
+    value?: T extends string ? T : any
+  ) {
+    if (value) {
+      if (!this.orsql) {
+        this.orsql += " where ";
+      } else {
+        this.orsql = "";
+        this.orsql += " or ";
+      }
+      this.orsql += options + ' = "' + value + '"';
+      this.sql += this.orsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.or(el, options[el]);
+      });
+    }
+    return this;
+  }
+  getMany() {
+    return this.sql;
+  }
+}
+
+export { query, del };

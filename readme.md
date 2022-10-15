@@ -92,6 +92,7 @@ export const options: HandleProxyOptions = {
   controller: [AppController],
   base: "/app",
   port: 3000,
+  globalPipes: [TestGlobalPipe],
 };
 ````
 
@@ -199,11 +200,78 @@ class ProductController extends HandleController {
 }
 ````
 
-#### Run 
+
+***
+#### date 10.15 update
+新增类 <b>class < query ></b>
+*链式获取sql 语句*
+
 ````
-import createServer from "";
-import { options } from "";
 
-createServer(options);
 
+const sql = new query()
+  .setEnity(user)
+  .and("username", "leemulus")
+  .and("age", "13")
+  .pagination(1, 10)
+  .getMany();
+const sql1 = new query()
+  .setEnity(user)
+  .and({
+    username: "leemulus",
+    phone: "13476973442",
+  })
+  .pagination(0, 10)
+  .getMany();
+
+const sql2 = new query()
+  .setEnity(user)
+  .setColumn(["phone", "username", "age"])
+  .getMany();
+
+const sql3 = new query()
+  .setEnity(user)
+  .setColumn(["phone", "username", "age"])
+  .pagination(0, 10)
+  .getMany();
+````
+***
+
+### ConfigClass 
+````
+@Config
+class commonClass {
+  @CreateCache("redis")
+  public async getRedis() {
+    return await createClient();
+  }
+  @CreateDb("mysql")
+  public async getConn() {
+    console.log("注入数据库连接");
+    const config = {
+      host: "localhost",
+      user: "root",
+      password: "12345678",
+      database: "boot", //所用数据库
+      port: 3306,
+    };
+    const coon = await mysql.createConnection({
+      host: config.host,
+      user: config.user,
+      password: config.password,
+      database: config.database,
+      port: config.port,
+      multipleStatements: true,
+    });
+    return coon;
+  }
+}
+````
+***
+#### Run 
+
+````
+@AdoNodeConfig(commonClass)
+export class AdoNodeServerImpl extends AdoNodeServer {}
+AdoNodeServerImpl.run(options);
 ````

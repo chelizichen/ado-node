@@ -10,6 +10,7 @@ import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
 import { UserNamePipe } from "./App917.pipe";
+import { query } from "../../../lib/orm/sql";
 
 @Controller("/app917")
 class App917Controller extends HandleController {
@@ -41,6 +42,38 @@ class App917Controller extends HandleController {
   @Get("/c1")
   public async c1(_req: any, _res: any) {
     const data = await this.App917Service.a1();
+
+    const sql = new query()
+      .setEnity(user)
+      .and("username", "leemulus")
+      .and("age", "13")
+      .pagination(1, 10)
+      .getMany();
+
+    console.log(!sql);
+    const sql1 = new query()
+      .setEnity(user)
+      .and({
+        username: "leemulus",
+        phone: "13476973442",
+      })
+      .pagination(0, 10)
+      .getMany();
+
+    console.log(sql1);
+    const sql2 = new query()
+      .setEnity(user)
+      .setColumn(["phone", "username", "age"])
+      .getMany();
+    console.log(!sql2);
+
+    const sql3 = new query()
+      .setEnity(user)
+      .setColumn(["phone", "username", "age"])
+      .pagination(0, 10)
+      .getMany();
+    console.log(!sql3);
+
     return Ret.Message(0, "ok", data);
   }
   @Curd("/user", user, ["mysql", "redis"])

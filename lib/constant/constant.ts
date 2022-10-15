@@ -1,10 +1,10 @@
-export enum CONSTANT {
+enum CONSTANT {
   Observer = "Observer",
   Config = "Config",
   Config_INST = "Config_Inst",
 }
 
-export enum CODE {
+enum CODE {
   CACHE = 10, // 缓存策略
   SUCCESS = 0, // 成功请求
   ERROR = -1, // 失败请求
@@ -14,7 +14,7 @@ export enum CODE {
   SERVERERROR = -5, // 服务端错误
 }
 
-export enum MESSAGE {
+enum MESSAGE {
   CACHE = "cache",
   SUCCESS = "success",
   ERROR = "error",
@@ -23,3 +23,5 @@ export enum MESSAGE {
   NOTFOUND = "not found",
   SERVERERROR = "server error",
 }
+
+export { MESSAGE, CONSTANT, CODE };

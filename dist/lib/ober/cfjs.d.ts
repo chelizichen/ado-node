@@ -4,9 +4,9 @@
  * add( fn:callback , weight:number )
  */
 import { VoidFunction } from "../types";
-export declare function useCffn(fn: VoidFunction, weight: number): void;
-export declare function useRunCf(): void;
-export declare class cfjs {
+declare function useCffn(fn: VoidFunction, weight: number): void;
+declare function useRunCf(): void;
+declare class cfjs {
     static store: Array<{
         fn: VoidFunction;
         weight: number;
@@ -15,3 +15,4 @@ export declare class cfjs {
     static sort(): void;
     static run(): void;
 }
+export { useCffn, useRunCf, cfjs };

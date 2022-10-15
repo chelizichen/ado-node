@@ -24,6 +24,8 @@ const createMethod = (method) => {
         };
     };
 };
-exports.Get = createMethod("Get");
-exports.Post = createMethod("Post");
+const Get = createMethod("Get");
+exports.Get = Get;
+const Post = createMethod("Post");
+exports.Post = Post;
 //# sourceMappingURL=method.js.map

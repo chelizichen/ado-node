@@ -20,4 +20,6 @@ export type AppServer = (Options: ServerOptions) => void;
 
 export type VoidFunction = (...args: any[]) => void;
 
-export type { AdoNodePipe, ClassConstructor };
+export type { ClassConstructor };
+
+export type { AdoNodePipe, AdoNodeGlobalPipe };

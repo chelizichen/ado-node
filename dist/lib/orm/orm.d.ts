@@ -1,8 +1,16 @@
 import * as mysql from "mysql";
-export declare class AdoOrmBaseEnity {
-    BaseEnity: Function;
-    conn: mysql.Connection;
-    getConn(dbname: string): Promise<void>;
+export declare const RunConfig: unique symbol;
+export declare const BASEENITY: unique symbol;
+export declare const Conn: unique symbol;
+export declare const Target: unique symbol;
+export declare const GetConn: unique symbol;
+declare class AdoOrmBaseEnity {
+    [BASEENITY]: Function;
+    [Conn]: mysql.Connection;
+    [Target]: any;
+    constructor();
+    [RunConfig](BaseEnity: Function, dbname: string): Promise<boolean>;
+    [GetConn](dbname: string): Promise<false | undefined>;
     /**
      * @method getList
      * @description 获取所有的数据
@@ -34,3 +42,4 @@ export declare class AdoOrmBaseEnity {
      */
     save<T extends Record<string, string> | Object>(val: T): Promise<unknown>;
 }
+export { AdoOrmBaseEnity };

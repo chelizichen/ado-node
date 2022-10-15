@@ -1,6 +1,5 @@
 import { CODE, MESSAGE } from "../core";
-
-export class TypesError extends Error {
+class TypesError extends Error {
   public name = "TypeError";
   public code = CODE.TYPEERROR;
   public message: string;
@@ -17,3 +16,4 @@ export class TypesError extends Error {
     };
   }
 }
+export { TypesError };

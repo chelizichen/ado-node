@@ -5,6 +5,7 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -22,6 +23,10 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 
 // index.ts
 var ado_node_exports = {};
@@ -29,8 +34,10 @@ __export(ado_node_exports, {
   AdoNodeConfig: () => AdoNodeConfig,
   AdoNodeServer: () => AdoNodeServer,
   AdoOrmBaseEnity: () => AdoOrmBaseEnity,
+  AutoCreate: () => AutoCreate,
   CODE: () => CODE,
   CONSTANT: () => CONSTANT,
+  ClientError: () => ClientError,
   Collect: () => Collect,
   Config: () => Config,
   Connect: () => Connect,
@@ -38,30 +45,48 @@ __export(ado_node_exports, {
   CreateCache: () => CreateCache,
   CreateDb: () => CreateDb,
   Curd: () => Curd,
+  DataBaseError: () => DataBaseError,
   Delete: () => Delete,
   Enity: () => Enity,
+  EnityTable: () => EnityTable,
   Error: () => Error2,
+  FieldError: () => FieldError,
   GenereateRouter: () => GenereateRouter,
   Get: () => Get,
   HandleController: () => HandleController,
   Inject: () => Inject,
   Insert: () => Insert,
+  IsEmail: () => IsEmail,
+  IsNumber: () => IsNumber,
+  IsOptional: () => IsOptional,
   Key: () => Key,
   Keyword: () => Keyword,
   MESSAGE: () => MESSAGE,
   Mapper: () => Mapper,
-  Pipe: () => Pipe,
+  OberServer: () => OberServer,
   Post: () => Post,
   Select: () => Select,
   SerivceMap: () => SerivceMap,
+  TypesError: () => TypesError,
   Update: () => Update,
   UseCache: () => UseCache,
+  UsePipe: () => UsePipe,
+  cfjs: () => cfjs,
   createSSRServer: () => createSSRServer,
   createServer: () => createServer,
+  del: () => del,
+  getCachekey: () => getCachekey,
+  getStrCount: () => getStrCount,
+  query: () => import_express2.query,
   ref: () => ref,
-  useConfig: () => useConfig
+  useCffn: () => useCffn,
+  useConfig: () => useConfig,
+  useRunCf: () => useRunCf
 });
 module.exports = __toCommonJS(ado_node_exports);
+
+// lib/core.ts
+var import_express2 = require("express");
 
 // lib/constant/constant.ts
 var CONSTANT = /* @__PURE__ */ ((CONSTANT2) => {
@@ -77,6 +102,7 @@ var CODE = /* @__PURE__ */ ((CODE2) => {
   CODE2[CODE2["FIELDERROR"] = -2] = "FIELDERROR";
   CODE2[CODE2["TYPEERROR"] = -3] = "TYPEERROR";
   CODE2[CODE2["NOTFOUND"] = -4] = "NOTFOUND";
+  CODE2[CODE2["SERVERERROR"] = -5] = "SERVERERROR";
   return CODE2;
 })(CODE || {});
 var MESSAGE = /* @__PURE__ */ ((MESSAGE2) => {
@@ -86,8 +112,28 @@ var MESSAGE = /* @__PURE__ */ ((MESSAGE2) => {
   MESSAGE2["FIELDERROR"] = "missing field";
   MESSAGE2["TypeError"] = "type error";
   MESSAGE2["NOTFOUND"] = "not found";
+  MESSAGE2["SERVERERROR"] = "server error";
   return MESSAGE2;
 })(MESSAGE || {});
+
+// lib/error/client.ts
+var ClientError = class extends Error {
+  name = "ClientError";
+  code = -1 /* ERROR */;
+  message;
+  constructor(message) {
+    super(message);
+    this.message = message;
+  }
+  static RetClientError(message) {
+    const data = new ClientError(message);
+    return {
+      code: -1 /* ERROR */,
+      message: "error" /* ERROR */,
+      data
+    };
+  }
+};
 
 // ../../../node_modules/reflect-metadata/Reflect.js
 var Reflect2;
@@ -848,121 +894,80 @@ var Error2 = (e) => {
   };
 };
 
-// lib/ioc/class.ts
-var express = __toESM(require("express"));
-var HandleController = class {
-  constructor(Base, Service) {
-    this.Base = Base;
-    this.Service = Service;
-  }
-  Boost() {
-    const app = express.Router();
-    this.Service.forEach((service, URL) => {
-      URL = this.Base + URL;
-      console.log("URL", URL);
-      if (service.method == "Get") {
-        app.get(URL, service.fn);
-      }
-      if (service.method == "Post") {
-        app.post(URL, service.fn);
-      }
-    });
-    return app;
+// lib/error/dababase.ts
+var DataBaseError = class extends Error {
+  name = "DataBaseError";
+  code = -1 /* ERROR */;
+  detail;
+  constructor(message, detail) {
+    super(message);
+    this.detail = detail;
   }
 };
 
-// lib/ioc/service.ts
-var SerivceMap = /* @__PURE__ */ new Map();
-function GenereateRouter(Controller2) {
-  const URL = ref.get("BaseUrl", Controller2.prototype);
-  const GetService = new Controller2(URL, SerivceMap);
-  return GetService.Boost();
-}
-
-// lib/ioc/controller.ts
-var Controller = (BaseUrl) => {
-  return (target) => {
-    ref.def("BaseUrl", BaseUrl, target.prototype);
-    ref.def(target, GenereateRouter(target.prototype.constructor));
-    SerivceMap.clear();
-  };
-};
-
-// lib/ioc/ioc.ts
-var Inject = (InjectTarget) => {
-  return function(target, propertyKey) {
-    const Service = ref.get(InjectTarget);
-    target.constructor.prototype[propertyKey] = Service;
-  };
-};
-var Collect = () => {
-  return function(target) {
-    ref.def(target, target.prototype);
-  };
-};
-
-// lib/method/method.ts
-var createMethod = (method) => {
-  return (URL) => {
-    return function(target, propertyKey, descriptor) {
-      const fn = descriptor.value;
-      descriptor.value = async function(req, res) {
-        target.constructor.prototype[propertyKey] = fn;
-        await new Promise((resolve) => {
-          resolve(target.constructor.prototype[propertyKey](req, res));
-        }).then((response) => {
-          res.json(response);
-        });
-      };
-      SerivceMap.set(URL, {
-        fn: descriptor.value,
-        method
-      });
+// lib/error/field.ts
+var FieldError = class extends Error {
+  name = "FieldError";
+  code = -2 /* FIELDERROR */;
+  message;
+  constructor(message) {
+    super(message);
+    this.message = message;
+  }
+  static RetFieldError(message) {
+    const data = new FieldError(message);
+    return {
+      code: -2 /* FIELDERROR */,
+      message: "missing field" /* FIELDERROR */,
+      data
     };
-  };
-};
-var Get = createMethod("Get");
-var Post = createMethod("Post");
-
-// lib/method/server.ts
-var import_express = __toESM(require("express"));
-var import_path = __toESM(require("path"));
-function createServer(options) {
-  const app = (0, import_express.default)();
-  app.use(import_express.default.json());
-  const { port, staticDist, controller, base } = options;
-  controller.forEach((el) => {
-    const router = ref.get(el);
-    app.use(base, router);
-  });
-  app.use(import_express.default.static(staticDist));
-  app.listen(port, () => {
-    console.log(`create server at  http://localhost:${port}`);
-  });
-}
-function createSSRServer(options) {
-  const app = (0, import_express.default)();
-  app.use(import_express.default.json());
-  const { port, staticDist } = options;
-  const { base, controller } = options;
-  controller.forEach((el) => {
-    const router = ref.get(el);
-    console.log("router", router);
-    app.use(base, router);
-  });
-  app.use(import_express.default.static(staticDist));
-  app.get("*", (_req, res) => {
-    res.sendFile(import_path.default.join(__dirname, "app/index.html"));
-  });
-  app.listen(port, () => {
-    console.log(`c http://localhost:${port}`);
-  });
-}
-var AdoNodeServer = class {
-  static run(options) {
-    createServer(options);
   }
 };
+
+// lib/error/type.ts
+var TypesError = class extends Error {
+  name = "TypeError";
+  code = -3 /* TYPEERROR */;
+  message;
+  constructor(message) {
+    super(message);
+    this.message = message;
+  }
+  static RetTypeError(message) {
+    const data = new TypesError(message);
+    return {
+      code: -3 /* TYPEERROR */,
+      message: "type error" /* TypeError */,
+      data
+    };
+  }
+};
+
+// lib/ober/cfjs.ts
+function useCffn(fn, weight) {
+  cfjs.add(fn, weight);
+}
+function useRunCf() {
+  cfjs.run();
+}
+var _cfjs = class {
+  static add(fn, weight) {
+    _cfjs.store.push({ fn, weight });
+  }
+  static sort() {
+    _cfjs.store.sort((a, b) => {
+      return a.weight - b.weight;
+    });
+  }
+  static run() {
+    _cfjs.sort();
+    _cfjs.store.forEach((el) => {
+      el.fn();
+    });
+  }
+};
+var cfjs = _cfjs;
+__publicField(cfjs, "store", []);
 
 // lib/ober/oberserver.ts
 var OberServer = class {
@@ -975,6 +980,272 @@ var OberServer = class {
       return el.key === key;
     });
     return val;
+  }
+};
+
+// lib/oper/protect.ts
+function getStrCount(aStr, aChar) {
+  let result;
+  let count = 0;
+  if (typeof aChar === "string") {
+    let regex = new RegExp(aChar, "g");
+    result = aStr.match(regex);
+    count = !result ? 0 : result.length;
+  }
+  if (aChar instanceof Array) {
+    aChar.forEach((el) => {
+      let regex = new RegExp(el, "g");
+      result = aStr.match(regex);
+      result = !result ? 0 : result.length;
+      count += result;
+    });
+  }
+  return count;
+}
+
+// lib/orm/orm.ts
+var RunConfig = Symbol("RUNCONFIG");
+var BASEENITY = Symbol("BASEENITY");
+var Conn = Symbol("CONN");
+var Target = Symbol("TARGET");
+var GetConn = Symbol("GETCONN");
+var AdoOrmBaseEnity = class {
+  [BASEENITY];
+  [Conn];
+  [Target];
+  constructor() {
+    this[Target] = AdoOrmBaseEnity.name;
+  }
+  async [RunConfig](BaseEnity, dbname) {
+    if (this[Target] !== "AdoOrmBaseEnity") {
+      console.log("this.target.name", this[Target]);
+      console.log("\u4E0D\u662FAdoOrmBaseEnity \u51FD\u6570\u8C03\u7528 \u62D2\u7EDD\u8BBF\u95EE");
+      return false;
+    }
+    this[GetConn](dbname);
+    this[BASEENITY] = BaseEnity;
+    return true;
+  }
+  async [GetConn](dbname) {
+    var _a;
+    if (this[Target] !== "AdoOrmBaseEnity") {
+      console.log("this.target.name", this[Target]);
+      console.log("\u4E0D\u662FAdoOrmBaseEnity \u51FD\u6570\u8C03\u7528 \u62D2\u7EDD\u8BBF\u95EE");
+      return false;
+    }
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const CacheInst = ref.get(dbname, CommonClass.prototype);
+    this[Conn] = await CacheInst;
+    return;
+  }
+  async getList() {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `select * from ${this[BASEENITY].name} limit 0,10`,
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getOneBy(val) {
+    const key = ref.get("key", this[BASEENITY].prototype);
+    const count = getStrCount(val, ["delete", "drop"]);
+    if (count) {
+      const Error3 = new ClientError("\u975E\u6CD5\u53C2\u6570\uFF0C\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
+      return Error3;
+    }
+    const options = [this[BASEENITY].name, key, val];
+    return new Promise((resolve) => {
+      this[Conn].query(
+        `select * from ?? where ?? = ?`,
+        options,
+        function(err, res) {
+          if (err) {
+            const Error3 = new DataBaseError(
+              "\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684",
+              err
+            );
+            resolve(Error3);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async delOneBy(val) {
+    const key = ref.get("key", this[BASEENITY].prototype);
+    const options = [this[BASEENITY].name, key, val];
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `DELETE FROM ?? WHERE ?? = ?`,
+        options,
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async countBy(val) {
+    let countSql = `select count(*) as total from ?? where `;
+    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        countSql + jonitSql,
+        [this[BASEENITY].name],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          const data = res[0];
+          resolve(data);
+        }
+      );
+    });
+  }
+  async getBy(val) {
+    const sql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        "select * from ?? where " + sql,
+        [this[BASEENITY].name],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async save(val) {
+    const filterUndefined = JSON.parse(JSON.stringify(val));
+    let opt = [this[BASEENITY].name, filterUndefined];
+    return new Promise((resolve, reject) => {
+      this[Conn].query(`insert into ??  SET ? `, opt, function(err, res) {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
+      });
+    });
+  }
+};
+
+// lib/orm/enity.ts
+var Enity = (dbname) => {
+  return function(target) {
+    const targetInst = new target();
+    targetInst[RunConfig](target, dbname);
+    ref.def(target.name, targetInst, target.prototype);
+  };
+};
+var Key = (target, propertyKey) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Keyword = (target, propertyKey) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
+var AutoCreate = (target, propertyKey) => {
+  const getPrevAutoCreate = ref.get(
+    "AutoCreate" /* AutoCreate */,
+    target.constructor.prototype
+  );
+  if (!getPrevAutoCreate) {
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      [propertyKey],
+      target.constructor.prototype
+    );
+  } else {
+    getPrevAutoCreate.push(propertyKey);
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      getPrevAutoCreate,
+      target.constructor.prototype
+    );
+  }
+};
+var IsEmail = (target, propertyKey) => {
+  const EmailValidate = (data) => {
+    const reg = /[\w]+(\.[\w]+)*@[\w]+(\.[\w])+/;
+    return reg.test(data);
+  };
+  ref.def(propertyKey, EmailValidate, target.constructor.prototype);
+};
+var IsNumber = (target, propertyKey) => {
+  const IsNum = (num) => {
+    return !isNaN(num);
+  };
+  ref.def(propertyKey, IsNum, target.constructor.prototype);
+};
+var IsOptional = (target, propertyKey) => {
+  const RetTrue = () => true;
+  ref.def(propertyKey, RetTrue, target.constructor.prototype);
+};
+var EnityTable = /* @__PURE__ */ new Map();
+
+// lib/orm/sql.ts
+var del = class {
+  sql = "select";
+  Enity = "";
+  andsql = "";
+  orsql = "";
+  setEnity(Enity2) {
+    this.Enity = Enity2.name;
+    this.sql = "delete from " + this.Enity + " ";
+    return this;
+  }
+  and(options, value) {
+    if (value) {
+      if (!this.andsql) {
+        this.andsql += " where ";
+      } else {
+        this.andsql = "";
+        this.andsql += " and ";
+      }
+      this.andsql += options + ' = "' + value + '"';
+      this.sql += this.andsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.and(el, options[el]);
+      });
+    }
+    return this;
+  }
+  or(options, value) {
+    if (value) {
+      if (!this.orsql) {
+        this.orsql += " where ";
+      } else {
+        this.orsql = "";
+        this.orsql += " or ";
+      }
+      this.orsql += options + ' = "' + value + '"';
+      this.sql += this.orsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.or(el, options[el]);
+      });
+    }
+    return this;
+  }
+  getMany() {
+    return this.sql;
   }
 };
 
@@ -1024,22 +1295,64 @@ function getCachekey(type, table, options) {
   return "";
 }
 
-// lib/store/enity.ts
-var Enity = (dbname) => {
-  return function(target) {
-    const targetInst = new target();
-    targetInst.BaseEnity = target;
-    targetInst.getConn(dbname);
-    ref.def(target.name, targetInst, target.prototype);
+// lib/ioc/class.ts
+var express = __toESM(require("express"));
+var HandleController = class {
+  constructor(Base, Service) {
+    this.Base = Base;
+    this.Service = Service;
+  }
+  Boost() {
+    const app = express.Router();
+    this.Service.forEach((service, URL) => {
+      if (service.method == "Get") {
+        URL = this.Base + URL;
+        console.log("URL", service.method, URL);
+        app.get(URL, service.fn);
+      }
+      if (service.method == "Post") {
+        URL = this.Base + URL;
+        console.log("URL", service.method, URL);
+        app.post(URL, service.fn);
+      }
+      if (service.method == "All") {
+        console.log("URL", service.method, URL);
+        app.all(URL, service.fn);
+      }
+    });
+    return app;
+  }
+};
+
+// lib/ioc/service.ts
+var SerivceMap = /* @__PURE__ */ new Map();
+function GenereateRouter(Controller2) {
+  const URL = ref.get("BaseUrl", Controller2.prototype);
+  const GetService = new Controller2(URL, SerivceMap);
+  return GetService.Boost();
+}
+
+// lib/ioc/controller.ts
+var Controller = (BaseUrl) => {
+  return (target) => {
+    ref.def("BaseUrl", BaseUrl, target.prototype);
+    ref.def(target, GenereateRouter(target.prototype.constructor));
+    SerivceMap.clear();
   };
 };
-var Key = (target, propertyKey) => {
-  ref.def("key", propertyKey, target.constructor.prototype);
+
+// lib/ioc/ioc.ts
+var Inject = (InjectTarget) => {
+  return function(target, propertyKey) {
+    const Service = ref.get(InjectTarget);
+    target.constructor.prototype[propertyKey] = Service;
+  };
 };
-var Keyword = (target, propertyKey) => {
-  ref.def("keyword", propertyKey, target.constructor.prototype);
+var Collect = () => {
+  return function(target) {
+    ref.def(target, target.prototype);
+  };
 };
-var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/oper/curd.ts
 var Curd = (CurdUrl, Enity2, store) => {
@@ -1078,13 +1391,19 @@ var Curd = (CurdUrl, Enity2, store) => {
                 code: 0 /* SUCCESS */,
                 message: "success" /* SUCCESS */
               };
-              await LinkRedis.hSet(Enity2.name, cacheKey, JSON.stringify(data2));
-              await LinkRedis.expire(Enity2.name, 120);
               resolve(data2);
             }
           });
-        }).then((ret) => {
+        }).then(async (ret) => {
+          await LinkRedis.hSet(Enity2.name, cacheKey, JSON.stringify(data));
+          await LinkRedis.expire(Enity2.name, 120);
           res.json(ret);
+        }).catch((err) => {
+          res.json({
+            code: -1 /* ERROR */,
+            message: -1 /* ERROR */,
+            data: err
+          });
         });
       }
     }
@@ -1122,6 +1441,14 @@ var Curd = (CurdUrl, Enity2, store) => {
           });
         }).then((ret) => {
           res.json(ret);
+        }).catch((err) => {
+          console.log("\u51FA\u73B0\u9519\u8BEF");
+          console.log(err);
+          res.json({
+            code: -1 /* ERROR */,
+            message: -1 /* ERROR */,
+            data: err
+          });
         });
       }
     }
@@ -1188,8 +1515,11 @@ var Curd = (CurdUrl, Enity2, store) => {
     async function getUpdateRet(req, res) {
       const options = req.body;
       const ListSql = createUpdateSql(Enity2, options);
-      new Promise((resolve, reject) => {
-        coon.query(ListSql, function(err, res2) {
+      const LinkRedis = await client();
+      LinkRedis.connect();
+      new Promise(async (resolve, reject) => {
+        const _conn = await coon;
+        _conn.query(ListSql, function(err, res2) {
           if (err) {
             reject(err);
           } else {
@@ -1197,9 +1527,9 @@ var Curd = (CurdUrl, Enity2, store) => {
           }
         });
       }).then(async (ret) => {
-        const keys = await client.hKeys(Enity2.name);
+        const keys = await LinkRedis.hKeys(Enity2.name);
         keys.forEach((el) => {
-          client.hDel(Enity2.name, el);
+          LinkRedis.hDel(Enity2.name, el);
         });
         res.json(ret);
       });
@@ -1249,29 +1579,30 @@ function createListSql(Enity2, options) {
     `;
   }
   if (options.page && options.size) {
-    const sql = `
+    const sql2 = `
       select SQL_CALC_FOUND_ROWS * from ${Enity2.name} limit 
       ${options.page - 1},${options.size} ;
       SELECT FOUND_ROWS() as total;
     `;
-    return sql;
+    return sql2;
   }
   if (options.keyword && !options.page && !options.size) {
-    const sql = `
+    const sql2 = `
       select  SQL_CALC_FOUND_ROWS * from ${Enity2.name} 
       where ${keyword} like '%${options.keyword}%' limit 0,10 ;
       SELECT FOUND_ROWS() as total;
     `;
-    return sql;
+    return sql2;
   }
-  return `
-    SELECT  * from ${Enity2.name} limit 0,10;
-    SELECT FOUND_ROWS() as total;
-  `;
+  const sql = `SELECT  * from ${Enity2.name} limit 0,10 ; SELECT FOUND_ROWS() as total;`;
+  console.log("sql", sql);
+  return sql;
 }
 function createGetSql(Enity2, options) {
   const key = ref.get("key", Enity2.prototype);
-  return `select SQL_CALC_FOUND_ROWS * from ${Enity2.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+  const sql = `select SQL_CALC_FOUND_ROWS * from ${Enity2.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+  console.log("sql", sql);
+  return sql;
 }
 function createDelSql(Enity2, options) {
   const key = ref.get("key", Enity2.prototype);
@@ -1283,12 +1614,21 @@ function createAddSql(Enity2, options) {
     fields = Object.getOwnPropertyNames(new Enity2());
     EnityTable.set(Enity2.name, fields);
   }
-  const key = ref.get("key", Enity2.prototype);
-  const opt = fields.filter((el) => el != key);
+  const AutoCreate2 = ref.get("AutoCreate", Enity2.prototype);
+  const opt = fields.filter((el) => {
+    if (AutoCreate2.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const val = opt.map((el) => {
     return options[el];
   });
-  return `insert into ${Enity2.name}(${opt.toString()}) values  (${val.toString()})`;
+  console.log("val", val);
+  const sql = `insert into ${Enity2.name}(${opt.toString()}) values  (${val.toString()})`;
+  console.log("sql", sql);
+  return sql;
 }
 function createUpdateSql(Enity2, options) {
   let fields = EnityTable.get(Enity2.name);
@@ -1297,7 +1637,14 @@ function createUpdateSql(Enity2, options) {
     EnityTable.set(Enity2.name, fields);
   }
   const key = ref.get("key", Enity2.prototype);
-  const opt = fields.filter((el) => el != key);
+  const AutoCreate2 = ref.get("AutoCreate", Enity2.prototype);
+  const opt = fields.filter((el) => {
+    if (AutoCreate2.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const val = opt.map((el) => {
     return {
       [el]: options[el]
@@ -1316,163 +1663,101 @@ function createUpdateSql(Enity2, options) {
     return pre + sql2;
   }, "");
   const sql = `Update ${Enity2.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+  console.log("sql", sql);
   return sql;
 }
 
+// lib/method/server.ts
+var import_express = __toESM(require("express"));
+var import_path = __toESM(require("path"));
+function createServer(options) {
+  const app = (0, import_express.default)();
+  options.globalPipes.forEach((el) => {
+    const inst = new el();
+    app.use("*", inst.run);
+  });
+  app.use(import_express.default.json());
+  const { port, staticDist, controller, base } = options;
+  controller.forEach((el) => {
+    const router = ref.get(el);
+    app.use(base, router);
+  });
+  app.use(import_express.default.static(staticDist));
+  app.listen(port, () => {
+    console.log(`create server at  http://localhost:${port}`);
+  });
+}
+function createSSRServer(options) {
+  const app = (0, import_express.default)();
+  app.use(import_express.default.json());
+  const { port, staticDist } = options;
+  const { base, controller } = options;
+  controller.forEach((el) => {
+    const router = ref.get(el);
+    console.log("router", router);
+    app.use(base, router);
+  });
+  app.use(import_express.default.static(staticDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(import_path.default.join(__dirname, "app/index.html"));
+  });
+  app.listen(port, () => {
+    console.log(`c http://localhost:${port}`);
+  });
+}
+var AdoNodeServer = class {
+  static run(options) {
+    createServer(options);
+  }
+};
+
+// lib/method/method.ts
+var createMethod = (method) => {
+  return (URL) => {
+    return function(target, propertyKey, descriptor) {
+      const fn = descriptor.value;
+      descriptor.value = async function(req, res) {
+        target.constructor.prototype[propertyKey] = fn;
+        await new Promise((resolve) => {
+          resolve(target.constructor.prototype[propertyKey](req, res));
+        }).then((response) => {
+          res.json(response);
+        });
+      };
+      SerivceMap.set(URL, {
+        fn: descriptor.value,
+        method
+      });
+    };
+  };
+};
+var Get = createMethod("Get");
+var Post = createMethod("Post");
+
 // lib/pipe/pipe.ts
-var Pipe = (fn) => {
+var UsePipe = (fn) => {
   return function(target, propertyKey, descriptor) {
     const method = descriptor.value;
-    descriptor.value = async function(req, res) {
-      let isNext;
-      try {
-        if (typeof fn === "function") {
-          isNext = fn(req);
-        }
-        if (fn instanceof Array) {
-          fn.forEach((fns) => {
-            if (isNext === false) {
-              return;
-            } else {
-              isNext = fns(req) === void 0 ? void 0 : false;
-            }
-          });
-        }
-        if (isNext === void 0) {
-          target.constructor.prototype[propertyKey] = method;
-          await new Promise((resolve) => {
-            resolve(target.constructor.prototype[propertyKey](req, res));
-          }).then((response) => {
-            res.json(response);
-          });
-        }
-      } catch (e) {
-        res.json({
-          Message: e.toString(),
-          Code: -1
+    descriptor.value = async function(req, res, next) {
+      const context = fn.run({ req, res, next });
+      if (context instanceof Error) {
+        res.json(context);
+      } else {
+        target.constructor.prototype[propertyKey] = method;
+        await new Promise((resolve) => {
+          resolve(
+            target.constructor.prototype[propertyKey](
+              context.req,
+              context.res,
+              context.next
+            )
+          );
+        }).then((response) => {
+          res.json(response);
         });
       }
     };
   };
-};
-
-// lib/orm/orm.ts
-var AdoOrmBaseEnity = class {
-  BaseEnity;
-  conn;
-  async getConn(dbname) {
-    var _a;
-    let OberInst = ref.get(
-      "Observer" /* Observer */,
-      OberServer.prototype
-    );
-    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
-    const CacheInst = ref.get(dbname, CommonClass.prototype);
-    this.conn = await CacheInst;
-  }
-  async getList() {
-    return new Promise((resolve, reject) => {
-      this.conn.query(
-        `select * from ${this.BaseEnity.name} limit 0,10`,
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async getOneBy(val) {
-    const key = ref.get("key", this.BaseEnity.prototype);
-    const options = [val];
-    return new Promise((resolve, reject) => {
-      this.conn.query(
-        `select * from ${this.BaseEnity.name} where ${key} = ?`,
-        options,
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async delOneBy(val) {
-    const key = ref.get("key", this.BaseEnity.prototype);
-    const options = [val];
-    return new Promise((resolve, reject) => {
-      this.conn.query(
-        `DELETE FROM ${this.BaseEnity.name} WHERE ${key} = ?`,
-        options,
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async countBy(val) {
-    const tablename = this.BaseEnity.name;
-    let countSql = `select count(*) as total from ${tablename} where `;
-    let jointSql = "";
-    let keys = Object.keys(val);
-    keys.forEach((item, index) => {
-      if (index != keys.length - 1) {
-        jointSql += `${item} = '${val[item]}' and `;
-      } else {
-        jointSql += `${item} = '${val[item]}' `;
-      }
-    });
-    countSql += jointSql;
-    return new Promise((resolve, reject) => {
-      this.conn.query(countSql, function(err, res) {
-        if (err) {
-          reject(err);
-        }
-        const data = res[0];
-        resolve(data);
-      });
-    });
-  }
-  async getBy(val) {
-    const tablename = this.BaseEnity.name;
-    let countSql = `select * as total from ${tablename} where `;
-    let jointSql = "";
-    let keys = Object.keys(val);
-    keys.forEach((item, index) => {
-      if (index != keys.length - 1) {
-        jointSql += `${item} = '${val[item]}' and `;
-      } else {
-        jointSql += `${item} = '${val[item]}' `;
-      }
-    });
-    countSql += jointSql;
-    return new Promise((resolve, reject) => {
-      this.conn.query(countSql, function(err, res) {
-        if (err) {
-          reject(err);
-        }
-        const data = res[0];
-        resolve(data);
-      });
-    });
-  }
-  async save(val) {
-    const filterUndefined = JSON.parse(JSON.stringify(val));
-    let opt = [this.BaseEnity.name, filterUndefined];
-    return new Promise((resolve, reject) => {
-      this.conn.query(`insert into ??  SET ? `, opt, function(err, res) {
-        if (err) {
-          reject(err);
-        }
-        resolve(res);
-      });
-    });
-  }
 };
 
 // lib/store/config.ts
@@ -1558,8 +1843,10 @@ var Insert = Select;
   AdoNodeConfig,
   AdoNodeServer,
   AdoOrmBaseEnity,
+  AutoCreate,
   CODE,
   CONSTANT,
+  ClientError,
   Collect,
   Config,
   Connect,
@@ -1567,28 +1854,43 @@ var Insert = Select;
   CreateCache,
   CreateDb,
   Curd,
+  DataBaseError,
   Delete,
   Enity,
+  EnityTable,
   Error,
+  FieldError,
   GenereateRouter,
   Get,
   HandleController,
   Inject,
   Insert,
+  IsEmail,
+  IsNumber,
+  IsOptional,
   Key,
   Keyword,
   MESSAGE,
   Mapper,
-  Pipe,
+  OberServer,
   Post,
   Select,
   SerivceMap,
+  TypesError,
   Update,
   UseCache,
+  UsePipe,
+  cfjs,
   createSSRServer,
   createServer,
+  del,
+  getCachekey,
+  getStrCount,
+  query,
   ref,
-  useConfig
+  useCffn,
+  useConfig,
+  useRunCf
 });
 /*! *****************************************************************************
 Copyright (C) Microsoft. All rights reserved.

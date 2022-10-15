@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenereateRouter = exports.SerivceMap = void 0;
 const ref_1 = require("./ref");
 // 创建SerivceMap
-exports.SerivceMap = new Map();
+const SerivceMap = new Map();
+exports.SerivceMap = SerivceMap;
 /**
  * @methods GenereateRouter
  * @param Controller
@@ -11,7 +12,7 @@ exports.SerivceMap = new Map();
  */
 function GenereateRouter(Controller) {
     const URL = ref_1.ref.get("BaseUrl", Controller.prototype);
-    const GetService = new Controller(URL, exports.SerivceMap);
+    const GetService = new Controller(URL, SerivceMap);
     return GetService.Boost();
 }
 exports.GenereateRouter = GenereateRouter;

@@ -1,4 +1,4 @@
-export class OberServer {
+class OberServer {
   public store: { key: string; value: any }[] = [];
   public set(key: string, value: any) {
     this.store.push({ key, value });
@@ -10,3 +10,5 @@ export class OberServer {
     return val;
   }
 }
+
+export { OberServer };

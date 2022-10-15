@@ -3,4 +3,5 @@ export declare type ErrorType<E = string, Code = number> = {
     code?: Code;
     force?: boolean;
 };
-export declare const Error: (e: ErrorType) => MethodDecorator;
+declare const Error: (e: ErrorType) => MethodDecorator;
+export { Error };

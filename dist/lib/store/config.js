@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useConfig = exports.AdoNodeConfig = exports.Config = void 0;
+exports.AdoNodeConfig = exports.Config = exports.useConfig = void 0;
 const core_1 = require("../core");
 const oberserver_1 = require("../ober/oberserver");
 const Config = (target) => {

@@ -1,6 +1,6 @@
 // import express, { IRouter } from "express";
 import * as express from "express";
-export class HandleController {
+class HandleController {
   constructor(
     public readonly Base: string,
     public readonly Service: Map<
@@ -29,3 +29,5 @@ export class HandleController {
     return app;
   }
 }
+
+export { HandleController };

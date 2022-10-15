@@ -4,7 +4,7 @@ import { ref } from "../ioc/ref";
 // propertyKey: string | symbol,
 // descriptor: PropertyDescriptor
 
-export const CreateDb = (dbname: string): MethodDecorator => {
+const CreateDb = (dbname: string): MethodDecorator => {
   return function (
     target: Object,
     _propertyKey: string | symbol,
@@ -14,3 +14,5 @@ export const CreateDb = (dbname: string): MethodDecorator => {
     ref.def(dbname, val, target.constructor.prototype);
   };
 };
+
+export { CreateDb };

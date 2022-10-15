@@ -1,1 +1,2 @@
-export declare const Controller: (BaseUrl: string) => ClassDecorator;
+declare const Controller: (BaseUrl: string) => ClassDecorator;
+export { Controller };

@@ -2,7 +2,7 @@ import { CONSTANT } from "../constant/constant";
 import { ref } from "../ioc/ref";
 import { OberServer } from "../ober/oberserver";
 
-export const CreateCache = (cacheName: string): MethodDecorator => {
+const CreateCache = (cacheName: string): MethodDecorator => {
   return function (
     target: Object,
     _propertyKey: string | symbol,
@@ -13,7 +13,7 @@ export const CreateCache = (cacheName: string): MethodDecorator => {
   };
 };
 
-export const UseCache = (cacheName: string): PropertyDecorator => {
+const UseCache = (cacheName: string): PropertyDecorator => {
   return async function (target: Object, propertyKey: string | symbol) {
     let OberInst = ref.get(
       CONSTANT.Observer,
@@ -28,7 +28,7 @@ export const UseCache = (cacheName: string): PropertyDecorator => {
   };
 };
 
-export function getCachekey(type: string, table: string, options: any) {
+function getCachekey(type: string, table: string, options: any) {
   if (type == "list") {
     if (options.key && options.page && options.size) {
       return `list&table:${table}&key:${options.key}&page:${options.page}&size:${options.size}`;
@@ -52,3 +52,5 @@ export function getCachekey(type: string, table: string, options: any) {
   }
   return "";
 }
+
+export { getCachekey, CreateCache, UseCache };

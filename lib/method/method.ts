@@ -29,5 +29,7 @@ const createMethod = (method: string) => {
   };
 };
 
-export const Get = createMethod("Get");
-export const Post = createMethod("Post");
+const Get = createMethod("Get");
+const Post = createMethod("Post");
+
+export { Get, Post };

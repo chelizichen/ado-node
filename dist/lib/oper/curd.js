@@ -5,7 +5,7 @@ const service_1 = require("../ioc/service");
 const ref_1 = require("../ioc/ref");
 const constant_1 = require("../constant/constant");
 const cache_1 = require("../store/cache");
-const enity_1 = require("../store/enity");
+const enity_1 = require("../orm/enity");
 const oberserver_1 = require("../ober/oberserver");
 const Curd = (CurdUrl, Enity, store) => {
     return function (_target, _propertyKey, _descriptor) {
@@ -41,13 +41,21 @@ const Curd = (CurdUrl, Enity, store) => {
                                 code: constant_1.CODE.SUCCESS,
                                 message: constant_1.MESSAGE.SUCCESS,
                             };
-                            await LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
-                            await LinkRedis.expire(Enity.name, 120);
                             resolve(data);
                         }
                     });
-                }).then((ret) => {
+                })
+                    .then(async (ret) => {
+                    await LinkRedis.hSet(Enity.name, cacheKey, JSON.stringify(data));
+                    await LinkRedis.expire(Enity.name, 120);
                     res.json(ret);
+                })
+                    .catch((err) => {
+                    res.json({
+                        code: constant_1.CODE.ERROR,
+                        message: constant_1.CODE.ERROR,
+                        data: err,
+                    });
                 });
             }
         }
@@ -85,8 +93,18 @@ const Curd = (CurdUrl, Enity, store) => {
                             resolve(data);
                         }
                     });
-                }).then((ret) => {
+                })
+                    .then((ret) => {
                     res.json(ret);
+                })
+                    .catch((err) => {
+                    console.log("出现错误");
+                    console.log(err);
+                    res.json({
+                        code: constant_1.CODE.ERROR,
+                        message: constant_1.CODE.ERROR,
+                        data: err,
+                    });
                 });
             }
         }
@@ -156,8 +174,11 @@ const Curd = (CurdUrl, Enity, store) => {
         async function getUpdateRet(req, res) {
             const options = req.body;
             const ListSql = createUpdateSql(Enity, options);
-            new Promise((resolve, reject) => {
-                coon.query(ListSql, function (err, res) {
+            const LinkRedis = await client();
+            LinkRedis.connect();
+            new Promise(async (resolve, reject) => {
+                const _conn = await coon;
+                _conn.query(ListSql, function (err, res) {
                     if (err) {
                         reject(err);
                     }
@@ -166,9 +187,9 @@ const Curd = (CurdUrl, Enity, store) => {
                     }
                 });
             }).then(async (ret) => {
-                const keys = await client.hKeys(Enity.name);
+                const keys = await LinkRedis.hKeys(Enity.name);
                 keys.forEach((el) => {
-                    client.hDel(Enity.name, el);
+                    LinkRedis.hDel(Enity.name, el);
                 });
                 res.json(ret);
             });
@@ -234,14 +255,15 @@ function createListSql(Enity, options) {
     `;
         return sql;
     }
-    return `
-    SELECT  * from ${Enity.name} limit 0,10;
-    SELECT FOUND_ROWS() as total;
-  `;
+    const sql = `SELECT  * from ${Enity.name} limit 0,10 ; SELECT FOUND_ROWS() as total;`;
+    console.log("sql", sql);
+    return sql;
 }
 function createGetSql(Enity, options) {
     const key = ref_1.ref.get("key", Enity.prototype);
-    return `select SQL_CALC_FOUND_ROWS * from ${Enity.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+    const sql = `select SQL_CALC_FOUND_ROWS * from ${Enity.name} where ${key} = ${options[key]};SELECT FOUND_ROWS() as total;`;
+    console.log("sql", sql);
+    return sql;
 }
 function createDelSql(Enity, options) {
     const key = ref_1.ref.get("key", Enity.prototype);
@@ -253,12 +275,22 @@ function createAddSql(Enity, options) {
         fields = Object.getOwnPropertyNames(new Enity());
         enity_1.EnityTable.set(Enity.name, fields);
     }
-    const key = ref_1.ref.get("key", Enity.prototype);
-    const opt = fields.filter((el) => el != key);
+    const AutoCreate = ref_1.ref.get("AutoCreate", Enity.prototype);
+    const opt = fields.filter((el) => {
+        if (AutoCreate.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
     const val = opt.map((el) => {
         return options[el];
     });
-    return `insert into ${Enity.name}(${opt.toString()}) values  (${val.toString()})`;
+    console.log("val", val);
+    const sql = `insert into ${Enity.name}(${opt.toString()}) values  (${val.toString()})`;
+    console.log("sql", sql);
+    return sql;
 }
 function createUpdateSql(Enity, options) {
     let fields = enity_1.EnityTable.get(Enity.name);
@@ -267,7 +299,15 @@ function createUpdateSql(Enity, options) {
         enity_1.EnityTable.set(Enity.name, fields);
     }
     const key = ref_1.ref.get("key", Enity.prototype);
-    const opt = fields.filter((el) => el != key);
+    const AutoCreate = ref_1.ref.get("AutoCreate", Enity.prototype);
+    const opt = fields.filter((el) => {
+        if (AutoCreate.indexOf(el) == -1 && el != "BaseEnity" && el !== "conn") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
     const val = opt.map((el) => {
         return {
             [el]: options[el],
@@ -287,6 +327,7 @@ function createUpdateSql(Enity, options) {
         return pre + sql;
     }, "");
     const sql = `Update ${Enity.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+    console.log("sql", sql);
     return sql;
 }
 //# sourceMappingURL=curd.js.map

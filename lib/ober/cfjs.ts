@@ -8,15 +8,15 @@
 // 使用配置项为 10 - 100
 // 运行 100 - 999
 import { VoidFunction } from "../types";
-export function useCffn(fn: VoidFunction, weight: number) {
+function useCffn(fn: VoidFunction, weight: number) {
   cfjs.add(fn, weight);
 }
 
-export function useRunCf() {
+function useRunCf() {
   cfjs.run();
 }
 
-export class cfjs {
+class cfjs {
   public static store: Array<{
     fn: VoidFunction;
     weight: number;
@@ -39,3 +39,5 @@ export class cfjs {
     });
   }
 }
+
+export { useCffn, useRunCf, cfjs };

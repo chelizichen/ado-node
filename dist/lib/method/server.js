@@ -9,6 +9,10 @@ const path_1 = __importDefault(require("path"));
 const ref_1 = require("../ioc/ref");
 function createServer(options) {
     const app = (0, express_1.default)();
+    options.globalPipes.forEach((el) => {
+        const inst = new el();
+        app.use("*", inst.run);
+    });
     app.use(express_1.default.json());
     const { port, staticDist, controller, base } = options;
     controller.forEach((el) => {

@@ -1,6 +1,5 @@
-import { AdoOrmBaseEnity } from "../core";
 import { ref } from "../ioc/ref";
-import { RunConfig } from "./orm";
+import { AdoOrmBaseEnity, RunConfig } from "./orm";
 
 export enum ENITY_CONSTANT {
   Key = "keys",

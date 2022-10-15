@@ -1,4 +1,4 @@
-export declare class OberServer {
+declare class OberServer {
     store: {
         key: string;
         value: any;
@@ -9,3 +9,4 @@ export declare class OberServer {
         value: any;
     } | undefined;
 }
+export { OberServer };

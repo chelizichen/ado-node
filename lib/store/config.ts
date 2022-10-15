@@ -2,7 +2,7 @@ import { ref, CONSTANT } from "../core";
 import { OberServer } from "../ober/oberserver";
 import { ClassConstructor } from "../types";
 
-export const Config: ClassDecorator = (target: Function) => {
+const Config: ClassDecorator = (target: Function) => {
   let OberInst = ref.get(CONSTANT.Observer, OberServer.prototype) as OberServer;
   if (!OberInst) {
     OberInst = new OberServer();
@@ -11,9 +11,7 @@ export const Config: ClassDecorator = (target: Function) => {
   OberInst.set(CONSTANT.Config, target);
 };
 
-export const AdoNodeConfig = (
-  ConfigClass: ClassConstructor
-): ClassDecorator => {
+const AdoNodeConfig = (ConfigClass: ClassConstructor): ClassDecorator => {
   return function () {
     const config_inst = new ConfigClass();
     let OberInst = ref.get(
@@ -28,8 +26,10 @@ export const AdoNodeConfig = (
   };
 };
 
-export const useConfig = <T extends any>() => {
+const useConfig = <T extends any>() => {
   let OberInst = ref.get(CONSTANT.Observer, OberServer.prototype) as OberServer;
 
   return OberInst.get(CONSTANT.Config_INST)?.value as T;
 };
+
+export { useConfig, Config, AdoNodeConfig };

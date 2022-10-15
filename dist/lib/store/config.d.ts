@@ -1,4 +1,5 @@
-import { ClassConstructor } from "../core";
-export declare const Config: ClassDecorator;
-export declare const AdoNodeConfig: (ConfigClass: ClassConstructor) => ClassDecorator;
-export declare const useConfig: <T extends unknown>() => T;
+import { ClassConstructor } from "../types";
+declare const Config: ClassDecorator;
+declare const AdoNodeConfig: (ConfigClass: ClassConstructor) => ClassDecorator;
+declare const useConfig: <T extends unknown>() => T;
+export { useConfig, Config, AdoNodeConfig };

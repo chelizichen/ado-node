@@ -36,13 +36,19 @@ class HandleController {
     Boost() {
         const app = express.Router();
         this.Service.forEach((service, URL) => {
-            URL = this.Base + URL;
-            console.log("URL", URL);
             if (service.method == "Get") {
+                URL = this.Base + URL;
+                console.log("URL", service.method, URL);
                 app.get(URL, service.fn);
             }
             if (service.method == "Post") {
+                URL = this.Base + URL;
+                console.log("URL", service.method, URL);
                 app.post(URL, service.fn);
+            }
+            if (service.method == "All") {
+                console.log("URL", service.method, URL);
+                app.all(URL, service.fn);
             }
         });
         return app;

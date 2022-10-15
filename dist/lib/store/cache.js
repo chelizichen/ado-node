@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCachekey = exports.UseCache = exports.CreateCache = void 0;
+exports.UseCache = exports.CreateCache = exports.getCachekey = void 0;
 const constant_1 = require("../constant/constant");
 const ref_1 = require("../ioc/ref");
 const oberserver_1 = require("../ober/oberserver");

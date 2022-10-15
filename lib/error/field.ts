@@ -1,6 +1,6 @@
 import { CODE, MESSAGE } from "../core";
 
-export class FieldError extends Error {
+class FieldError extends Error {
   public name = "FieldError";
   public code = CODE.FIELDERROR;
   public message: string;
@@ -17,3 +17,4 @@ export class FieldError extends Error {
     };
   }
 }
+export { FieldError };

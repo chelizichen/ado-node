@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MESSAGE = exports.CODE = exports.CONSTANT = void 0;
+exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
 var CONSTANT;
 (function (CONSTANT) {
     CONSTANT["Observer"] = "Observer";
     CONSTANT["Config"] = "Config";
     CONSTANT["Config_INST"] = "Config_Inst";
-})(CONSTANT = exports.CONSTANT || (exports.CONSTANT = {}));
+})(CONSTANT || (CONSTANT = {}));
+exports.CONSTANT = CONSTANT;
 var CODE;
 (function (CODE) {
     CODE[CODE["CACHE"] = 10] = "CACHE";
@@ -15,7 +16,9 @@ var CODE;
     CODE[CODE["FIELDERROR"] = -2] = "FIELDERROR";
     CODE[CODE["TYPEERROR"] = -3] = "TYPEERROR";
     CODE[CODE["NOTFOUND"] = -4] = "NOTFOUND";
-})(CODE = exports.CODE || (exports.CODE = {}));
+    CODE[CODE["SERVERERROR"] = -5] = "SERVERERROR";
+})(CODE || (CODE = {}));
+exports.CODE = CODE;
 var MESSAGE;
 (function (MESSAGE) {
     MESSAGE["CACHE"] = "cache";
@@ -24,5 +27,7 @@ var MESSAGE;
     MESSAGE["FIELDERROR"] = "missing field";
     MESSAGE["TypeError"] = "type error";
     MESSAGE["NOTFOUND"] = "not found";
-})(MESSAGE = exports.MESSAGE || (exports.MESSAGE = {}));
+    MESSAGE["SERVERERROR"] = "server error";
+})(MESSAGE || (MESSAGE = {}));
+exports.MESSAGE = MESSAGE;
 //# sourceMappingURL=constant.js.map

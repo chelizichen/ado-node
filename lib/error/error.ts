@@ -6,7 +6,7 @@ export type ErrorType<E = string, Code = number> = {
   force?: boolean;
 };
 
-export const Error = (e: ErrorType): MethodDecorator => {
+const Error = (e: ErrorType): MethodDecorator => {
   return function (
     _target: Object,
     _propertyKey: string | symbol,
@@ -21,3 +21,4 @@ export const Error = (e: ErrorType): MethodDecorator => {
     ref.def("error", e, descriptor.value);
   };
 };
+export { Error };

@@ -1,1 +1,2 @@
-export declare const CreateDb: (dbname: string) => MethodDecorator;
+declare const CreateDb: (dbname: string) => MethodDecorator;
+export { CreateDb };

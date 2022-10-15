@@ -10,7 +10,7 @@ export const BASEENITY = Symbol("BASEENITY");
 export const Conn = Symbol("CONN");
 export const Target = Symbol("TARGET");
 export const GetConn = Symbol("GETCONN");
-export class AdoOrmBaseEnity {
+class AdoOrmBaseEnity {
   public [BASEENITY]!: Function;
   public [Conn]!: mysql.Connection;
   public [Target]: any;
@@ -166,3 +166,4 @@ export class AdoOrmBaseEnity {
     });
   }
 }
+export { AdoOrmBaseEnity };

@@ -14,9 +14,9 @@ declare type context<T> = {
 interface AdoNodePipe<T> {
     run(context: context<T>): context<any> | Error;
 }
-export declare function validate(inst: any): true | FieldError;
+declare function validate(inst: any): true | FieldError;
 interface AdoNodeGlobalPipe {
     run(req: Request, res: Response, next: NextFunction): void | Error;
 }
-export { UsePipe };
+export { UsePipe, validate };
 export type { AdoNodePipe, AdoNodeGlobalPipe };

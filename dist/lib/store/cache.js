@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UseCache = exports.CreateCache = exports.getCachekey = void 0;
+exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = void 0;
 const constant_1 = require("../constant/constant");
 const ref_1 = require("../ioc/ref");
 const oberserver_1 = require("../ober/oberserver");
@@ -23,6 +23,18 @@ const UseCache = (cacheName) => {
     };
 };
 exports.UseCache = UseCache;
+const UseDataBase = (dbName) => {
+    return async function (target, propertyKey) {
+        let OberInst = ref_1.ref.get(constant_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
+        const CommonClass = OberInst.get(constant_1.CONSTANT.Config)?.value;
+        const DbInst = ref_1.ref.get(dbName, CommonClass.prototype);
+        target.constructor.prototype[propertyKey] = DbInst;
+        DbInst().then((res) => {
+            target.constructor.prototype[propertyKey] = res;
+        });
+    };
+};
+exports.UseDataBase = UseDataBase;
 function getCachekey(type, table, options) {
     if (type == "list") {
         if (options.key && options.page && options.size) {

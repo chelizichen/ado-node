@@ -50,7 +50,7 @@ interface AdoNodePipe<T> {
   run(context: context<T>): context<any> | Error;
 }
 
-export function validate(inst: any) {
+function validate(inst: any) {
   let errorfield: Record<string, any> = {};
   // 得到所有自动生成的
   const Autocreate = ref.get(
@@ -85,5 +85,5 @@ interface AdoNodeGlobalPipe {
   run(req: Request, res: Response, next: NextFunction): void | Error;
 }
 
-export { UsePipe };
+export { UsePipe, validate };
 export type { AdoNodePipe, AdoNodeGlobalPipe };

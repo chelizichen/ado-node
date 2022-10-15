@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsePipe = exports.validate = void 0;
+exports.validate = exports.UsePipe = void 0;
 const core_1 = require("../core");
 const field_1 = require("../error/field");
 const enity_1 = require("../orm/enity");

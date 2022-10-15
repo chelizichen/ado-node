@@ -4,11 +4,13 @@ import {
   HandleController,
   Inject,
   UseCache,
+  UsePipe,
 } from "../../../index";
 import { RedisClientType } from "redis";
 import { App919Service } from "./App919.service";
 import { Ret } from "../App917/App917.enity";
 import { Fund_Star } from "./App919.enity";
+import { FundCodePipe } from "./App919.pipe";
 
 @Controller("/app919")
 class App919Controller extends HandleController {
@@ -74,6 +76,11 @@ class App919Controller extends HandleController {
     };
   }
 
+  @Get("/testMapper")
+  @UsePipe(new FundCodePipe())
+  async testMapper() {
+    return this.App919Service.getCompanyList();
+  }
   // @Get("/a1")
   // public async a1() {
   //   return await this.App919Service.a1();

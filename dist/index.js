@@ -34,6 +34,7 @@ __export(ado_node_exports, {
   AdoNodeConfig: () => AdoNodeConfig,
   AdoNodeServer: () => AdoNodeServer,
   AdoOrmBaseEnity: () => AdoOrmBaseEnity,
+  Async: () => Async,
   AutoCreate: () => AutoCreate,
   CODE: () => CODE,
   CONSTANT: () => CONSTANT,
@@ -70,6 +71,7 @@ __export(ado_node_exports, {
   TypesError: () => TypesError,
   Update: () => Update,
   UseCache: () => UseCache,
+  UseDataBase: () => UseDataBase,
   UsePipe: () => UsePipe,
   cfjs: () => cfjs,
   createSSRServer: () => createSSRServer,
@@ -77,16 +79,14 @@ __export(ado_node_exports, {
   del: () => del,
   getCachekey: () => getCachekey,
   getStrCount: () => getStrCount,
-  query: () => import_express2.query,
+  query: () => query,
   ref: () => ref,
   useCffn: () => useCffn,
   useConfig: () => useConfig,
-  useRunCf: () => useRunCf
+  useRunCf: () => useRunCf,
+  validate: () => validate
 });
 module.exports = __toCommonJS(ado_node_exports);
-
-// lib/core.ts
-var import_express2 = require("express");
 
 // lib/constant/constant.ts
 var CONSTANT = /* @__PURE__ */ ((CONSTANT2) => {
@@ -1196,6 +1196,82 @@ var IsOptional = (target, propertyKey) => {
 var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/orm/sql.ts
+var query = class {
+  sql = "select";
+  Enity = "";
+  andsql = "";
+  orsql = "";
+  setEnity(Enity2) {
+    this.Enity = Enity2.name;
+    this.sql = "select * from " + this.Enity + " ";
+    return this;
+  }
+  setColumn(keys) {
+    let columns = "";
+    this.sql = "";
+    keys.forEach((el, index) => {
+      if (index != keys.length - 1) {
+        columns += "" + el + ",";
+      } else {
+        columns += "" + el + " ";
+      }
+    });
+    this.sql = "select " + columns + "from " + this.Enity;
+    return this;
+  }
+  and(options, value) {
+    if (value) {
+      if (!this.andsql) {
+        this.andsql += " where ";
+      } else {
+        this.andsql = "";
+        this.andsql += " and ";
+      }
+      this.andsql += options + ' = "' + value + '"';
+      this.sql += this.andsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.and(el, options[el]);
+      });
+    }
+    return this;
+  }
+  or(options, value) {
+    if (value) {
+      if (!this.orsql) {
+        this.orsql += " where ";
+      } else {
+        this.orsql = "";
+        this.orsql += " or ";
+      }
+      this.orsql += options + " = " + value;
+      this.sql += this.orsql;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.or(el, options[el]);
+      });
+    }
+    return this;
+  }
+  pagination(options, value) {
+    let paginationsql = " limit ";
+    if (value) {
+      paginationsql += options + "," + value;
+    }
+    if (typeof options == "object") {
+      paginationsql += options.page + "," + options.size;
+    }
+    this.sql += paginationsql;
+    return this;
+  }
+  getMany() {
+    return this.sql;
+  }
+};
 var del = class {
   sql = "select";
   Enity = "";
@@ -1267,6 +1343,21 @@ var UseCache = (cacheName) => {
     const CacheInst = ref.get(cacheName, CommonClass.prototype);
     target.constructor.prototype[propertyKey] = CacheInst;
     CacheInst().then((res) => {
+      target.constructor.prototype[propertyKey] = res;
+    });
+  };
+};
+var UseDataBase = (dbName) => {
+  return async function(target, propertyKey) {
+    var _a;
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const DbInst = ref.get(dbName, CommonClass.prototype);
+    target.constructor.prototype[propertyKey] = DbInst;
+    DbInst().then((res) => {
       target.constructor.prototype[propertyKey] = res;
     });
   };
@@ -1759,6 +1850,34 @@ var UsePipe = (fn) => {
     };
   };
 };
+function validate(inst) {
+  let errorfield = {};
+  const Autocreate = ref.get(
+    "AutoCreate" /* AutoCreate */,
+    inst.__proto__
+  );
+  const Filter = Object.getOwnPropertyNames(inst).filter(
+    (el) => Autocreate.indexOf(el) == -1
+  );
+  const isError = Filter.some((el) => {
+    const func = ref.get(el, inst.__proto__);
+    const ret = func(inst[el]);
+    if (!ret) {
+      errorfield = {
+        key: el,
+        value: inst[el]
+      };
+      return true;
+    }
+    return false;
+  });
+  if (isError) {
+    return new FieldError(
+      `${errorfield.key + " " + errorfield.value} \u5B58\u5728\u9519\u8BEF`
+    );
+  }
+  return !isError;
+}
 
 // lib/store/config.ts
 var Config = (target) => {
@@ -1838,11 +1957,27 @@ var Select = (sql) => {
 var Update = Select;
 var Delete = Select;
 var Insert = Select;
+
+// lib/orm/async.ts
+var Async = (_, __, descriptor) => {
+  const methods = descriptor.value;
+  descriptor.value = function(...args) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const value = methods(args);
+        resolve(value);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  };
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AdoNodeConfig,
   AdoNodeServer,
   AdoOrmBaseEnity,
+  Async,
   AutoCreate,
   CODE,
   CONSTANT,
@@ -1879,6 +2014,7 @@ var Insert = Select;
   TypesError,
   Update,
   UseCache,
+  UseDataBase,
   UsePipe,
   cfjs,
   createSSRServer,
@@ -1890,7 +2026,8 @@ var Insert = Select;
   ref,
   useCffn,
   useConfig,
-  useRunCf
+  useRunCf,
+  validate
 });
 /*! *****************************************************************************
 Copyright (C) Microsoft. All rights reserved.

@@ -50,6 +50,9 @@ import {
   Delete,
   query,
   Error,
+  validate,
+  UseDataBase,
+  Async,
 } from "./lib/core";
 
 // constant
@@ -76,7 +79,6 @@ export { createServer, createSSRServer, AdoNodeServer };
 // ober
 export { useCffn, useRunCf, cfjs };
 export { OberServer };
-
 // oper
 // curd
 export { Curd };
@@ -95,17 +97,19 @@ export {
   EnityTable,
   AutoCreate,
 };
+export { Async };
+
 // orm
 export { AdoOrmBaseEnity };
 // sql
 export { query, del };
 
 // pipe
-export { UsePipe };
+export { UsePipe, validate };
 
 // store
 // cache
-export { getCachekey, CreateCache, UseCache };
+export { getCachekey, CreateCache, UseCache, UseDataBase };
 
 // config
 export { useConfig, Config, AdoNodeConfig };

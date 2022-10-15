@@ -31,5 +31,4 @@ const createMethod = (method: string) => {
 
 const Get = createMethod("Get");
 const Post = createMethod("Post");
-
 export { Get, Post };

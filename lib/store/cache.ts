@@ -28,6 +28,21 @@ const UseCache = (cacheName: string): PropertyDecorator => {
   };
 };
 
+const UseDataBase = (dbName: string): PropertyDecorator => {
+  return async function (target: Object, propertyKey: string | symbol) {
+    let OberInst = ref.get(
+      CONSTANT.Observer,
+      OberServer.prototype
+    ) as OberServer;
+    const CommonClass = OberInst.get(CONSTANT.Config)?.value;
+    const DbInst = ref.get(dbName, CommonClass.prototype);
+    target.constructor.prototype[propertyKey] = DbInst;
+    DbInst.then((res: any) => {
+      target.constructor.prototype[propertyKey] = res;
+    });
+  };
+};
+
 function getCachekey(type: string, table: string, options: any) {
   if (type == "list") {
     if (options.key && options.page && options.size) {
@@ -53,4 +68,4 @@ function getCachekey(type: string, table: string, options: any) {
   return "";
 }
 
-export { getCachekey, CreateCache, UseCache };
+export { getCachekey, CreateCache, UseCache, UseDataBase };

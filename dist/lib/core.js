@@ -1,9 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Insert = exports.Update = exports.Select = exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
-exports.Delete = void 0;
-const express_1 = require("express");
-Object.defineProperty(exports, "query", { enumerable: true, get: function () { return express_1.query; } });
+exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.validate = exports.UsePipe = exports.del = exports.query = exports.Async = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
+exports.Delete = exports.Insert = exports.Update = exports.Select = void 0;
 const constant_1 = require("./constant/constant");
 Object.defineProperty(exports, "MESSAGE", { enumerable: true, get: function () { return constant_1.MESSAGE; } });
 Object.defineProperty(exports, "CODE", { enumerable: true, get: function () { return constant_1.CODE; } });
@@ -37,10 +35,12 @@ Object.defineProperty(exports, "Key", { enumerable: true, get: function () { ret
 Object.defineProperty(exports, "Keyword", { enumerable: true, get: function () { return enity_1.Keyword; } });
 const sql_1 = require("./orm/sql");
 Object.defineProperty(exports, "del", { enumerable: true, get: function () { return sql_1.del; } });
+Object.defineProperty(exports, "query", { enumerable: true, get: function () { return sql_1.query; } });
 const cache_1 = require("./store/cache");
 Object.defineProperty(exports, "CreateCache", { enumerable: true, get: function () { return cache_1.CreateCache; } });
 Object.defineProperty(exports, "getCachekey", { enumerable: true, get: function () { return cache_1.getCachekey; } });
 Object.defineProperty(exports, "UseCache", { enumerable: true, get: function () { return cache_1.UseCache; } });
+Object.defineProperty(exports, "UseDataBase", { enumerable: true, get: function () { return cache_1.UseDataBase; } });
 const class_1 = require("./ioc/class");
 Object.defineProperty(exports, "HandleController", { enumerable: true, get: function () { return class_1.HandleController; } });
 const controller_1 = require("./ioc/controller");
@@ -64,6 +64,7 @@ Object.defineProperty(exports, "GenereateRouter", { enumerable: true, get: funct
 Object.defineProperty(exports, "SerivceMap", { enumerable: true, get: function () { return service_1.SerivceMap; } });
 const pipe_1 = require("./pipe/pipe");
 Object.defineProperty(exports, "UsePipe", { enumerable: true, get: function () { return pipe_1.UsePipe; } });
+Object.defineProperty(exports, "validate", { enumerable: true, get: function () { return pipe_1.validate; } });
 const orm_1 = require("./orm/orm");
 Object.defineProperty(exports, "AdoOrmBaseEnity", { enumerable: true, get: function () { return orm_1.AdoOrmBaseEnity; } });
 const config_1 = require("./store/config");
@@ -79,4 +80,6 @@ Object.defineProperty(exports, "Select", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "Update", { enumerable: true, get: function () { return mapper_1.Update; } });
 Object.defineProperty(exports, "Insert", { enumerable: true, get: function () { return mapper_1.Insert; } });
 Object.defineProperty(exports, "Delete", { enumerable: true, get: function () { return mapper_1.Delete; } });
+const async_1 = require("./orm/async");
+Object.defineProperty(exports, "Async", { enumerable: true, get: function () { return async_1.Async; } });
 //# sourceMappingURL=core.js.map

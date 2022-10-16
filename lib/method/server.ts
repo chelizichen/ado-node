@@ -6,6 +6,7 @@ import { HandleProxyOptions } from "../types";
 function defineAdoNodeOptions(options: HandleProxyOptions) {
   return options;
 }
+
 function createServer(options: HandleProxyOptions) {
   const app: Express = express();
   if (

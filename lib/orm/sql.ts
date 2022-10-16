@@ -191,7 +191,6 @@ class update {
     } else {
       this.Enity = Enity;
     }
-    // this.sql = "update from " + this.Enity + " ";
     return this;
   }
 
@@ -263,13 +262,56 @@ class update {
   getSql() {
     const opt = [this.options];
     console.log("this.sql", this.sql);
-    const sql = "update from " + this.Enity + " Set ?? " + this.sql;
+    const sql = "update  " + this.Enity + " Set ? " + this.sql;
     return {
       opt,
       sql,
     };
   }
 }
+// insert into ??  SET ?
+class save {
+  public sql = "";
+  public Enity = "";
+  public options: Record<string, string> = {};
+  public setEnity<T extends string | Function>(Enity: T) {
+    if (typeof Enity === "function") {
+      this.Enity = Enity.name;
+    } else {
+      this.Enity = Enity;
+    }
+    return this;
+  }
 
-class save {}
+  // public setOptions<T extends Record<string, string> | string>(
+  //   options: T,
+  //   value?: T extends string ? string : any
+  // );
+  setOptions<T extends string | Record<string, string>>(
+    options: T,
+    value?: T extends string ? string : undefined
+  ): this {
+    if (value && typeof options == "string") {
+      console.log(this.options);
+
+      this.options[options] = value;
+    } else {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        // @ts-ignore
+        this.setOptions(el, options[el]);
+      });
+    }
+    return this;
+  }
+  getSql() {
+    const opt = [this.options];
+    console.log("this.sql", this.sql);
+    const sql = "insert into  " + this.Enity + " SET ? ";
+    return {
+      opt,
+      sql,
+    };
+  }
+}
 export { query, del, update, save };

@@ -3,6 +3,7 @@ import { query, UseDataBase } from "../../../lib/core";
 import { Collect, Inject } from "../../../lib/ioc/ioc";
 import { User } from "./App917.enity";
 import * as mysql from "mysql";
+import { save, update } from "../../../lib/orm/sql";
 @Collect()
 class App917Service {
   @Inject(User)
@@ -39,6 +40,26 @@ class App917Service {
   public getUserKey(UID: string) {
     const key = `sk:${UID}:user`;
     return key;
+  }
+  async f1() {
+    const sql = new update()
+      .setEnity("hotkeyword")
+      .setOptions({ thekeys: "疫情新闻" })
+      .and("thekeys", "疫情")
+      .getSql();
+
+    console.log(!sql);
+
+    // const data = await this.User.getMany(sql.sql, sql.opt);
+    const sql1 = new save()
+      .setEnity("goods")
+      .setOptions("g_price", "666")
+      .setOptions("g_type", "222")
+      .setOptions("g_name", "商品安利")
+      .getSql();
+    const data = await this.User.getMany(sql1.sql, sql1.opt);
+
+    return data;
   }
 }
 

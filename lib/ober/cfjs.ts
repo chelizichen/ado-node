@@ -7,6 +7,10 @@
 // 配置项 为 1 - 10
 // 使用配置项为 10 - 100
 // 运行 100 - 999
+/**
+ * 暂时弃用
+ * 由于 Decorator 加载原因
+ */
 import { VoidFunction } from "../types";
 function useCffn(fn: VoidFunction, weight: number) {
   cfjs.add(fn, weight);

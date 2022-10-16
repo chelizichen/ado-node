@@ -93,13 +93,13 @@ class App917Controller extends HandleController {
     console.log(sql5);
 
     const up1 = new update()
-      .setEnity("set")
+      .setEnity("goods")
       .setOptions({
-        a: "1asd",
+        g_name: "1asd",
         b: "2asd",
         c: "3asd",
       })
-      .and("a1", "2")
+      .and("id", "2")
       .and("b1", "b2")
       .getSql();
     console.log(up1);
@@ -153,6 +153,11 @@ class App917Controller extends HandleController {
     return Ret.Message(0, "ok", data);
   }
 
+  @Get("/f1")
+  public async f1() {
+    const data = await this.App917Service.f1();
+    return data;
+  }
   @Curd("/user", User, ["mysql", "redis"])
   public async CurdUser() {}
   @Post("/seckill")

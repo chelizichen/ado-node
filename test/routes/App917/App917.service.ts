@@ -48,7 +48,7 @@ class App917Service {
       .and("thekeys", "疫情")
       .getSql();
 
-    console.log(!sql);
+    console.log(sql);
 
     // const data = await this.User.getMany(sql.sql, sql.opt);
     const sql1 = new save()
@@ -57,6 +57,8 @@ class App917Service {
       .setOptions("g_type", "222")
       .setOptions("g_name", "商品安利")
       .getSql();
+    console.log(sql1);
+
     const data = await this.User.getMany(sql1.sql, sql1.opt);
 
     return data;

@@ -41,5 +41,6 @@ declare class AdoOrmBaseEnity {
      * @paramsType <T extends Record<string, string>
      */
     save<T extends Record<string, string> | Object>(val: T): Promise<unknown>;
+    getMany(sql: string, options?: any[]): Promise<unknown>;
 }
 export { AdoOrmBaseEnity };

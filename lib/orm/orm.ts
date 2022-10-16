@@ -165,5 +165,17 @@ class AdoOrmBaseEnity {
       });
     });
   }
+
+  public async getMany(sql: string, options?: any[]) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(sql, options, function (err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      });
+    });
+  }
 }
 export { AdoOrmBaseEnity };

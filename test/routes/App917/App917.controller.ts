@@ -4,7 +4,7 @@ import { Curd } from "../../../lib/oper/curd";
 import { Inject } from "../../../lib/ioc/ioc";
 import { Get, Post } from "../../../lib/method/method";
 import { UsePipe } from "../../../lib/pipe/pipe";
-import { Ret, user } from "./App917.enity";
+import { Ret, User } from "./App917.enity";
 import { App917Service } from "./App917.service";
 import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
@@ -21,7 +21,6 @@ class App917Controller extends HandleController {
   @Get("/a1")
   public async a1() {
     const ret = await this.App917Service.a1();
-    console.log("ret", ret);
 
     return {
       Msg: "测试中",
@@ -44,34 +43,34 @@ class App917Controller extends HandleController {
     const data = await this.App917Service.a1();
 
     const sql = new query()
-      .setEnity(user)
+      .setEnity(User)
       .and("username", "leemulus")
       .and("age", "13")
       .pagination(1, 10)
-      .getMany();
+      .getSql();
 
     console.log(!sql);
     const sql1 = new query()
-      .setEnity(user)
+      .setEnity(User)
       .and({
         username: "leemulus",
         phone: "13476973442",
       })
       .pagination(0, 10)
-      .getMany();
+      .getSql();
 
     console.log(sql1);
     const sql2 = new query()
-      .setEnity(user)
+      .setEnity(User)
       .setColumn(["phone", "username", "age"])
-      .getMany();
+      .getSql();
     console.log(!sql2);
 
     const sql3 = new query()
-      .setEnity(user)
+      .setEnity(User)
       .setColumn(["phone", "username", "age"])
       .pagination(0, 10)
-      .getMany();
+      .getSql();
     console.log(!sql3);
 
     return Ret.Message(0, "ok", data);
@@ -81,38 +80,38 @@ class App917Controller extends HandleController {
   public async d1(_req: any, _res: any) {
     const data = await this.App917Service.a1();
     const sql = new del()
-      .setEnity(user)
+      .setEnity(User)
       .and("username", "leemlus")
       .and("phone", "13476973442")
-      .getMany();
+      .getSql();
     console.log("sql", sql);
 
-    const sql1 = new del().setEnity(user).getMany();
+    const sql1 = new del().setEnity(User).getSql();
     console.log("sql1", sql1);
 
     const sql2 = new del()
-      .setEnity(user)
+      .setEnity(User)
       .and({
         username: "leemulus",
         phone: "13476973442",
       })
-      .getMany();
+      .getSql();
     console.log("sql2", sql2);
 
     const sql3 = new del()
-      .setEnity(user)
+      .setEnity(User)
       .or({
         username: "leemulus",
         phone: "13476973442",
       })
-      .getMany();
+      .getSql();
     console.log("sql3", sql3);
 
     // new user()
     return Ret.Message(0, "ok", data);
   }
 
-  @Curd("/user", user, ["mysql", "redis"])
+  @Curd("/user", User, ["mysql", "redis"])
   public async CurdUser() {}
   @Post("/seckill")
   public async SecKill(

@@ -3,7 +3,7 @@ declare class query {
     Enity: string;
     andsql: string;
     orsql: string;
-    setEnity(Enity: Function): this;
+    setEnity(Enity: Function | string): this;
     setColumn<T extends string[]>(keys: T): query;
     and<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
     or<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
@@ -11,16 +11,16 @@ declare class query {
         page: number;
         size: number;
     } | number>(options: T, value: T extends number ? number : any): query;
-    getMany(): string;
+    getSql(): string;
 }
 declare class del {
     sql: string;
     private Enity;
     private andsql;
     private orsql;
-    setEnity(Enity: Function): this;
+    setEnity(Enity: Function | string): this;
     and<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
     or<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
-    getMany(): string;
+    getSql(): string;
 }
 export { query, del };

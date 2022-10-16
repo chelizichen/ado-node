@@ -3,16 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdoNodeServer = exports.createSSRServer = exports.createServer = void 0;
+exports.defineAdoNodeOptions = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const ref_1 = require("../ioc/ref");
+function defineAdoNodeOptions(options) {
+    return options;
+}
+exports.defineAdoNodeOptions = defineAdoNodeOptions;
 function createServer(options) {
     const app = (0, express_1.default)();
-    options.globalPipes.forEach((el) => {
-        const inst = new el();
-        app.use("*", inst.run);
-    });
+    if (options.globalPipes &&
+        options.globalPipes.length &&
+        options instanceof Array) {
+        options.globalPipes.forEach((pipe) => {
+            const inst = new pipe();
+            app.use("*", inst.run);
+        });
+    }
     app.use(express_1.default.json());
     const { port, staticDist, controller, base } = options;
     controller.forEach((el) => {

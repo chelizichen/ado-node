@@ -29,7 +29,7 @@ const UseDataBase = (dbName) => {
         const CommonClass = OberInst.get(constant_1.CONSTANT.Config)?.value;
         const DbInst = ref_1.ref.get(dbName, CommonClass.prototype);
         target.constructor.prototype[propertyKey] = DbInst;
-        DbInst().then((res) => {
+        DbInst.then((res) => {
             target.constructor.prototype[propertyKey] = res;
         });
     };

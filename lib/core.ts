@@ -39,7 +39,6 @@ import {
   Insert,
   Delete,
 } from "./store/mapper";
-import { Async } from "./orm/async";
 // constant
 export { MESSAGE, CONSTANT, CODE };
 
@@ -87,7 +86,6 @@ export {
 export { AdoOrmBaseEnity };
 // async
 
-export { Async };
 // sql
 export { query, del };
 

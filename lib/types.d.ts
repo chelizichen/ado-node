@@ -14,8 +14,9 @@ export type HandleProxyOptions = {
   base: string;
   port: number;
   staticDist: string;
-  globalPipes: any[];
+  globalPipes?: any[];
 };
+
 export type AppServer = (Options: ServerOptions) => void;
 
 export type VoidFunction = (...args: any[]) => void;

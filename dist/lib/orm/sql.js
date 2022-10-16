@@ -7,7 +7,12 @@ class query {
     andsql = "";
     orsql = "";
     setEnity(Enity) {
-        this.Enity = Enity.name;
+        if (typeof Enity === "function") {
+            this.Enity = Enity.name;
+        }
+        else {
+            this.Enity = Enity;
+        }
         this.sql = "select * from " + this.Enity + " ";
         return this;
     }
@@ -78,7 +83,7 @@ class query {
         this.sql += paginationsql;
         return this;
     }
-    getMany() {
+    getSql() {
         return this.sql;
     }
 }
@@ -90,7 +95,12 @@ class del {
     andsql = "";
     orsql = "";
     setEnity(Enity) {
-        this.Enity = Enity.name;
+        if (typeof Enity === "function") {
+            this.Enity = Enity.name;
+        }
+        else {
+            this.Enity = Enity;
+        }
         this.sql = "delete from " + this.Enity + " ";
         return this;
     }
@@ -136,7 +146,7 @@ class del {
         }
         return this;
     }
-    getMany() {
+    getSql() {
         return this.sql;
     }
 }

@@ -140,6 +140,18 @@ class AdoOrmBaseEnity {
             });
         });
     }
+    async getMany(sql, options) {
+        return new Promise((resolve, reject) => {
+            this[exports.Conn].query(sql, options, function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(res);
+                }
+            });
+        });
+    }
 }
 exports.AdoOrmBaseEnity = AdoOrmBaseEnity;
 //# sourceMappingURL=orm.js.map

@@ -3,12 +3,21 @@ import path from "path";
 import { ref } from "../ioc/ref";
 import { HandleProxyOptions } from "../types";
 
+function defineAdoNodeOptions(options: HandleProxyOptions) {
+  return options;
+}
 function createServer(options: HandleProxyOptions) {
   const app: Express = express();
-  options.globalPipes.forEach((el: any) => {
-    const inst = new el();
-    app.use("*", inst.run);
-  });
+  if (
+    options.globalPipes &&
+    options.globalPipes.length &&
+    options instanceof Array
+  ) {
+    options.globalPipes.forEach((pipe: any) => {
+      const inst = new pipe();
+      app.use("*", inst.run);
+    });
+  }
   app.use(express.json());
   const { port, staticDist, controller, base } = options;
   controller.forEach((el) => {
@@ -51,4 +60,4 @@ class AdoNodeServer {
   }
 }
 
-export { createServer, createSSRServer, AdoNodeServer };
+export { createServer, createSSRServer, AdoNodeServer, defineAdoNodeOptions };

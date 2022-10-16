@@ -52,8 +52,8 @@ import {
   Error,
   validate,
   UseDataBase,
-  Async,
 } from "./lib/core";
+import { defineAdoNodeOptions } from "./lib/method/server";
 
 // constant
 export { MESSAGE, CONSTANT, CODE };
@@ -74,7 +74,7 @@ export { SerivceMap, GenereateRouter };
 
 // method
 export { Get, Post };
-export { createServer, createSSRServer, AdoNodeServer };
+export { createServer, createSSRServer, AdoNodeServer, defineAdoNodeOptions };
 
 // ober
 export { useCffn, useRunCf, cfjs };
@@ -97,7 +97,6 @@ export {
   EnityTable,
   AutoCreate,
 };
-export { Async };
 
 // orm
 export { AdoOrmBaseEnity };

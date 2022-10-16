@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "1.6.3",
+  "version": "1.6.5",
   "description": "ts-decorator for express server",
   "exports": {
     ".": {
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "ts-node-dev --project tsconfig.server.json test/server",
-    "build": "tsc --project tsconfig.server.json"
+    "build": "tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test/ && npm publish"
   },
   "keywords": [
     "express",

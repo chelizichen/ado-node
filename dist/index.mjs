@@ -1057,6 +1057,17 @@ var AdoOrmBaseEnity = class {
       });
     });
   }
+  async getMany(sql, options) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(sql, options, function(err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      });
+    });
+  }
 };
 
 // lib/orm/enity.ts
@@ -1119,7 +1130,11 @@ var query = class {
   andsql = "";
   orsql = "";
   setEnity(Enity2) {
-    this.Enity = Enity2.name;
+    if (typeof Enity2 === "function") {
+      this.Enity = Enity2.name;
+    } else {
+      this.Enity = Enity2;
+    }
     this.sql = "select * from " + this.Enity + " ";
     return this;
   }
@@ -1185,7 +1200,7 @@ var query = class {
     this.sql += paginationsql;
     return this;
   }
-  getMany() {
+  getSql() {
     return this.sql;
   }
 };
@@ -1195,7 +1210,11 @@ var del = class {
   andsql = "";
   orsql = "";
   setEnity(Enity2) {
-    this.Enity = Enity2.name;
+    if (typeof Enity2 === "function") {
+      this.Enity = Enity2.name;
+    } else {
+      this.Enity = Enity2;
+    }
     this.sql = "delete from " + this.Enity + " ";
     return this;
   }
@@ -1237,7 +1256,7 @@ var del = class {
     }
     return this;
   }
-  getMany() {
+  getSql() {
     return this.sql;
   }
 };
@@ -1274,7 +1293,7 @@ var UseDataBase = (dbName) => {
     const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
     const DbInst = ref.get(dbName, CommonClass.prototype);
     target.constructor.prototype[propertyKey] = DbInst;
-    DbInst().then((res) => {
+    DbInst.then((res) => {
       target.constructor.prototype[propertyKey] = res;
     });
   };
@@ -1678,12 +1697,17 @@ function createUpdateSql(Enity2, options) {
 // lib/method/server.ts
 import express2 from "express";
 import path from "path";
+function defineAdoNodeOptions(options) {
+  return options;
+}
 function createServer(options) {
   const app = express2();
-  options.globalPipes.forEach((el) => {
-    const inst = new el();
-    app.use("*", inst.run);
-  });
+  if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
+    options.globalPipes.forEach((pipe) => {
+      const inst = new pipe();
+      app.use("*", inst.run);
+    });
+  }
   app.use(express2.json());
   const { port, staticDist, controller, base } = options;
   controller.forEach((el) => {
@@ -1874,26 +1898,10 @@ var Select = (sql) => {
 var Update = Select;
 var Delete = Select;
 var Insert = Select;
-
-// lib/orm/async.ts
-var Async = (_, __, descriptor) => {
-  const methods = descriptor.value;
-  descriptor.value = function(...args) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const value = methods(args);
-        resolve(value);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  };
-};
 export {
   AdoNodeConfig,
   AdoNodeServer,
   AdoOrmBaseEnity,
-  Async,
   AutoCreate,
   CODE,
   CONSTANT,
@@ -1935,6 +1943,7 @@ export {
   cfjs,
   createSSRServer,
   createServer,
+  defineAdoNodeOptions,
   del,
   getCachekey,
   getStrCount,

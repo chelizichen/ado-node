@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.validate = exports.UsePipe = exports.del = exports.query = exports.Async = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
-exports.Delete = exports.Insert = exports.Update = exports.Select = void 0;
+exports.Select = exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
+exports.Delete = exports.Insert = exports.Update = void 0;
 const constant_1 = require("./constant/constant");
 Object.defineProperty(exports, "MESSAGE", { enumerable: true, get: function () { return constant_1.MESSAGE; } });
 Object.defineProperty(exports, "CODE", { enumerable: true, get: function () { return constant_1.CODE; } });
@@ -80,6 +80,4 @@ Object.defineProperty(exports, "Select", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "Update", { enumerable: true, get: function () { return mapper_1.Update; } });
 Object.defineProperty(exports, "Insert", { enumerable: true, get: function () { return mapper_1.Insert; } });
 Object.defineProperty(exports, "Delete", { enumerable: true, get: function () { return mapper_1.Delete; } });
-const async_1 = require("./orm/async");
-Object.defineProperty(exports, "Async", { enumerable: true, get: function () { return async_1.Async; } });
 //# sourceMappingURL=core.js.map

@@ -10,7 +10,7 @@ import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
 import { UserNamePipe } from "./App917.pipe";
-import { del, query } from "../../../lib/orm/sql";
+import { del, query, update } from "../../../lib/orm/sql";
 
 @Controller("/app917")
 class App917Controller extends HandleController {
@@ -49,7 +49,7 @@ class App917Controller extends HandleController {
       .pagination(1, 10)
       .getSql();
 
-    console.log(!sql);
+    console.log(sql);
     const sql1 = new query()
       .setEnity(User)
       .and({
@@ -64,14 +64,56 @@ class App917Controller extends HandleController {
       .setEnity(User)
       .setColumn(["phone", "username", "age"])
       .getSql();
-    console.log(!sql2);
+    console.log(sql2);
 
     const sql3 = new query()
       .setEnity(User)
       .setColumn(["phone", "username", "age"])
       .pagination(0, 10)
       .getSql();
-    console.log(!sql3);
+    console.log(sql3);
+
+    const sql4 = new query()
+      .setEnity(User)
+      .setColumn(["phone", "username", "age"])
+      .and("key", "value")
+      .like("key1", "value1", "and")
+      .pagination(0, 10)
+      .getSql();
+    console.log(sql4);
+
+    const sql5 = new query()
+      .setEnity(User)
+      .setColumn(["phone", "username", "age"])
+      .like("key3", "value3", "and")
+      .or("key", "value")
+      .or("key2", "value2")
+      .pagination(0, 10)
+      .getSql();
+    console.log(sql5);
+
+    const up1 = new update()
+      .setEnity("set")
+      .setOptions({
+        a: "1asd",
+        b: "2asd",
+        c: "3asd",
+      })
+      .and("a1", "2")
+      .and("b1", "b2")
+      .getSql();
+    console.log(up1);
+
+    const up2 = new update()
+      .setEnity("set")
+      .setOptions({
+        a: "1asd",
+        b: "2asd",
+        c: "3asd",
+      })
+      .or({ a1: "1", b1: "2" })
+      .getSql();
+    console.log(up2);
 
     return Ret.Message(0, "ok", data);
   }

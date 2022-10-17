@@ -1,6 +1,8 @@
-# - ADO-Node
+# - *AdoNode*
 
-## 基于 老牌框架 Express Typescript 装饰器 的后端方案 用于解决管理路由 和 异步任务的问题
+#### <i style="color:royalblue"> typescript express ioc decorate </i>
+
+## 以极简的代码构建高效的 Node.js 服务
 
 ### 案例
 
@@ -43,8 +45,6 @@
 * FieldError
 * TypesError
   
-
-
 ##### ORM 操作
 
 * query
@@ -68,12 +68,10 @@
 * @CreateCache(cacheInst:string)
 * **useConfig**
 
-
 #### Run
 
 * func defineAdoNodeOptions(options) 定义需要的选项
 * <i style="color:royalblue"> Extends AdoNodeServer </i>
-
 
 ````
 
@@ -85,7 +83,6 @@ AdoNodeServerImpl.run(options);
 ````
 
 ***
-
 
 ##### *query*
 
@@ -205,7 +202,6 @@ sql: 'insert into  goods SET ? '
 ````
 
 #### *ORM*
-
 ````
 
 this.AnyEnity.getOneBy(val)
@@ -214,5 +210,42 @@ this.AnyEnity.getBy(val)
 this.AnyEnity.save(val)
 this.AnyEnity.getMany(val)
 this.AnyEnity.getList(val)
+````
 
+#### *Pipe* 使用管道
+
+````
+  // 全局管道本质上等同于
+  app.get(" * ",func(req,res,next){})
+````
+
+*全局管道*
+
+````
+
+export class TestGlobalPipe implements AdoNodeGlobalPipe {
+  run(req,res,next){
+    console.log("req.query", req.query);
+    next();
+  }
+}
+````
+
+*普通管道*
+
+````
+class FundCodePipe implements AdoNodePipe<any> {
+  run(context: {
+    req: any;
+    res: Response<any, Record<string, any>>;
+    next: NextFunction;
+  }){
+    if (context.req.query.fundcode) {
+      context.next();
+    } else {
+      return new FieldError("没有 fundcode 参数");
+    }
+    return context;
+  }
+}
 ````

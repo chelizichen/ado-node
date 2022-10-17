@@ -15,21 +15,18 @@ const Enity = (dbname: string) => {
     ref.def(target.name, targetInst, target.prototype);
   };
 };
-
 const Key: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
 ) => {
   ref.def("key", propertyKey, target.constructor.prototype);
 };
-
 const Keyword: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
 ) => {
   ref.def("keyword", propertyKey, target.constructor.prototype);
 };
-
 const AutoCreate: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
@@ -53,7 +50,6 @@ const AutoCreate: PropertyDecorator = (
     );
   }
 };
-
 const IsEmail: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
@@ -64,7 +60,6 @@ const IsEmail: PropertyDecorator = (
   };
   ref.def(propertyKey as string, EmailValidate, target.constructor.prototype);
 };
-
 const IsNumber: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
@@ -74,7 +69,6 @@ const IsNumber: PropertyDecorator = (
   };
   ref.def(propertyKey as string, IsNum, target.constructor.prototype);
 };
-
 /**
  * @IsOptional 可选的 如果无参数传入 则使用默认的参数
  */

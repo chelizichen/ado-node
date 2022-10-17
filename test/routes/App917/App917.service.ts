@@ -51,6 +51,7 @@ class App917Service {
     console.log(sql);
 
     // const data = await this.User.getMany(sql.sql, sql.opt);
+
     const sql1 = new save()
       .setEnity("goods")
       .setOptions("g_price", "666")

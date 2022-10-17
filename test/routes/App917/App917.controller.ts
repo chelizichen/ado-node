@@ -3,7 +3,6 @@ import { Controller } from "../../../lib/ioc/controller";
 import { Curd } from "../../../lib/oper/curd";
 import { Inject } from "../../../lib/ioc/ioc";
 import { Get, Post } from "../../../lib/method/method";
-import { UsePipe } from "../../../lib/pipe/pipe";
 import { Ret, User } from "./App917.enity";
 import { App917Service } from "./App917.service";
 import { UseCache } from "../../../lib/store/cache";
@@ -11,7 +10,8 @@ import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
 import { UserNamePipe } from "./App917.pipe";
 import { del, query, update } from "../../../lib/orm/sql";
-
+import { Request } from "express";
+import { UsePipe } from "../../../lib/pipe/pipe";
 @Controller("/app917")
 class App917Controller extends HandleController {
   @Inject(App917Service)
@@ -30,7 +30,9 @@ class App917Controller extends HandleController {
   }
   @Get("/b1")
   @UsePipe(new UserNamePipe())
-  public async b1(_req: any, _res: any) {
+  public async b1(_req: Request, _res: any) {
+    // console.log(_req.);
+
     const ret = await this.App917Service.a1();
     return {
       Msg: "测试中",

@@ -8,12 +8,16 @@ const ref = {
   def: function <T extends Function | string>(
     key: T,
     value: any,
-    target?: Object
+    target?: Object,
+    propertyKey?: string
   ) {
     if (key instanceof Function) {
       Reflect.defineMetadata(key.name, value, key.prototype);
     } else {
-      if (target) {
+      if (target && propertyKey) {
+        Reflect.defineMetadata(key, value, target, propertyKey);
+      }
+      if (target && !propertyKey) {
         Reflect.defineMetadata(key, value, target);
       }
     }
@@ -24,7 +28,14 @@ const ref = {
    * @return Reflect.defineMetadata(key.name, key.prototype);
    * @return Reflect.defineMetadata(key, key);
    */
-  get: function <T extends Function | string>(key: T, target?: Object) {
+  get: function <T extends Function | string>(
+    key: T,
+    target?: Object,
+    propertyKey?: string
+  ) {
+    if (propertyKey && target) {
+      return Reflect.getMetadata(key, target, propertyKey);
+    }
     if (typeof key == "string") {
       if (target) {
         return Reflect.getMetadata(key, target);

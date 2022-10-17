@@ -1,5 +1,6 @@
 import { SerivceMap } from "../ioc/service";
 import { Request, Response } from "express";
+import { ref } from "../core";
 
 /**
  * @Params Method Like GET POST
@@ -12,6 +13,9 @@ const createMethod = (method: string) => {
       descriptor: PropertyDescriptor
     ) {
       const fn = descriptor.value;
+
+      ref.def(propertyKey as string, URL, target.constructor.prototype, "url");
+
       descriptor.value = async function (req: Request, res: Response) {
         target.constructor.prototype[propertyKey] = fn;
         await new Promise((resolve) => {

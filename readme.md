@@ -243,6 +243,23 @@ class FundCodePipe implements AdoNodePipe {
 implyments AdoNodeInterceptor
 UseInterceptor(new InterceptorConstructor())
 **可以实现 请求开始 处理请求前 响应后 四个钩子**
-````
 
+````
+class UserLogInterceptor implements AdoNodeInterceptor {
+  async hack(req: Request, _res: Response) {
+    console.log("处理中", !req.headers);
+  }
+  async after(req: Request, _res: Response) {
+    console.log("处理后", !req.headers);
+  }
+
+  async before(req: Request, _res: Response) {
+    console.log("处理前", req.headers);
+    if (!req.headers["token"]) {
+      req.headers["token"] =
+        "token a5sdimkgdsa2134ij213saklnbgjoasjdaskjdal1231";
+    }
+    res.json(req.headers);
+  }
+}
 ````

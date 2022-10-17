@@ -3,39 +3,9 @@ import { ref } from "../core";
 import { FieldError } from "../error/field";
 import { ENITY_CONSTANT } from "../orm/enity";
 
-const UsePipe = <T extends any | Error>(
-  fn: AdoNodePipe<T>
-): MethodDecorator => {
-  return function (
-    target: Object,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor
-  ) {
-    const method = descriptor.value;
-    descriptor.value = async function (
-      req: T,
-      res: Response,
-      next: NextFunction
-    ) {
-      const context = fn.run({ req, res, next });
-
-      if (context instanceof Error) {
-        res.json(context);
-      } else {
-        target.constructor.prototype[propertyKey] = method;
-        await new Promise((resolve) => {
-          resolve(
-            target.constructor.prototype[propertyKey](
-              context.req,
-              context.res,
-              context.next
-            )
-          );
-        }).then((response) => {
-          res.json(response);
-        });
-      }
-    };
+const UsePipe = (fn: AdoNodePipe): MethodDecorator => {
+  return function (target: Object, propertyKey: string | symbol) {
+    ref.def(propertyKey as string, fn, target.constructor.prototype, ":pipe");
   };
 };
 
@@ -44,10 +14,9 @@ const UsePipe = <T extends any | Error>(
  * @use 在代码进入进入控制层时进行判断 参数校验 另外的逻辑判断
  * @params context
  */
-type context<T> = { req: T; res: Response; next: NextFunction };
 
-interface AdoNodePipe<T> {
-  run(context: context<T>): context<any> | Error;
+interface AdoNodePipe {
+  run(req: Request, res: Response): Promise<any>;
 }
 
 function validate(inst: any) {
@@ -82,7 +51,7 @@ function validate(inst: any) {
 }
 
 interface AdoNodeGlobalPipe {
-  run(req: Request, res: Response, next: NextFunction): void | Error;
+  run(req: Request, res: Response, next: NextFunction): void;
 }
 
 export { UsePipe, validate };

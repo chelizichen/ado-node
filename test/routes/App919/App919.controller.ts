@@ -40,7 +40,7 @@ class App919Controller extends HandleController {
 
   @Get("/testgetOne")
   async testGetOne() {
-    const id = "777;delete * from";
+    const id = "777";
 
     const data = await this.Fund_Star.getOneBy(id);
     return {

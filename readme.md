@@ -224,28 +224,25 @@ this.AnyEnity.getList(val)
 ````
 
 export class TestGlobalPipe implements AdoNodeGlobalPipe {
-  run(req,res,next){
-    console.log("req.query", req.query);
-    next();
-  }
+  run(req,res){}
 }
 ````
 
 *普通管道*
 
 ````
-class FundCodePipe implements AdoNodePipe<any> {
-  run(context: {
-    req: any;
-    res: Response<any, Record<string, any>>;
-    next: NextFunction;
-  }){
-    if (context.req.query.fundcode) {
-      context.next();
-    } else {
-      return new FieldError("没有 fundcode 参数");
-    }
-    return context;
+
+class FundCodePipe implements AdoNodePipe {
+  run(req: Request,res: Response){
+
   }
 }
+````
+
+拦截器 
+implyments AdoNodeInterceptor
+UseInterceptor(new InterceptorConstructor())
+**可以实现 请求开始 处理请求前 响应后 四个钩子**
+````
+
 ````

@@ -11,7 +11,6 @@ class commonClass {
   }
   @CreateDb("mysql")
   public async getConn() {
-    console.log("注入数据库连接");
     const config = {
       host: "localhost",
       user: "root",

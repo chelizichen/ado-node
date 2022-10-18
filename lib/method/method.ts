@@ -4,7 +4,7 @@ import { ref } from "../core";
 import { AdoNodePipe } from "../pipe/pipe";
 import { AdoNodeInterceptor } from "../interceptor/interceptor";
 
-function useRunTimeInterceptor(
+export function useRunTimeInterceptor(
   Interceptor: AdoNodeInterceptor,
   time: keyof AdoNodeInterceptor,
   options: {
@@ -42,7 +42,9 @@ const createMethod = (method: string) => {
           target.constructor.prototype,
           ":interceptor"
         );
-        await useRunTimeInterceptor(interceptor, "before", { req, res });
+        if (!req.closed) {
+          await useRunTimeInterceptor(interceptor, "before", { req, res });
+        }
 
         // AOP Pipe
         const pipe: AdoNodePipe = ref.get(
@@ -51,22 +53,36 @@ const createMethod = (method: string) => {
           ":pipe"
         );
 
-        if (pipe) {
-          req.closed || (await pipe.run(req, res));
+        if (pipe && !req.closed) {
+          const isNext = await pipe.run(req, res);
+          if (isNext) {
+            return;
+          }
         }
 
-        await useRunTimeInterceptor(interceptor, "hack", {
-          req,
-          res,
-        });
+        console.log("req.closed useRuntime", req.closed);
 
         req.closed ||
-          res.json(await target.constructor.prototype[propertyKey](req, res));
+          (await useRunTimeInterceptor(interceptor, "hack", {
+            req,
+            res,
+          }));
 
-        await useRunTimeInterceptor(interceptor, "after", {
-          req,
-          res,
-        });
+        // run server
+        if (!req.closed) {
+          const ret = await target.constructor.prototype[propertyKey](req, res);
+          res.json(ret);
+        }
+
+        // unMounted
+
+        if (req.closed) {
+          await useRunTimeInterceptor(interceptor, "after", {
+            req,
+            res,
+          });
+        }
+
         return;
       };
 

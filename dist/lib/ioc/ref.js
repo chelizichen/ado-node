@@ -7,12 +7,15 @@ const ref = {
      * @description 元数据方法
      * @return Reflect.defineMetadata(key.name, value, key.prototype);
      */
-    def: function (key, value, target) {
+    def: function (key, value, target, propertyKey) {
         if (key instanceof Function) {
             Reflect.defineMetadata(key.name, value, key.prototype);
         }
         else {
-            if (target) {
+            if (target && propertyKey) {
+                Reflect.defineMetadata(key, value, target, propertyKey);
+            }
+            if (target && !propertyKey) {
                 Reflect.defineMetadata(key, value, target);
             }
         }
@@ -23,7 +26,10 @@ const ref = {
      * @return Reflect.defineMetadata(key.name, key.prototype);
      * @return Reflect.defineMetadata(key, key);
      */
-    get: function (key, target) {
+    get: function (key, target, propertyKey) {
+        if (propertyKey && target) {
+            return Reflect.getMetadata(key, target, propertyKey);
+        }
         if (typeof key == "string") {
             if (target) {
                 return Reflect.getMetadata(key, target);

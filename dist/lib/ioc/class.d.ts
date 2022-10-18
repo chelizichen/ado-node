@@ -1,3 +1,4 @@
+import { BaseController } from "./../../index.d";
 import * as express from "express";
 declare class HandleController {
     readonly Base: string;
@@ -9,6 +10,6 @@ declare class HandleController {
         method: "Get" | "Post" | "All";
         fn: any;
     }>);
-    Boost(): express.IRouter;
+    Boost(Base: BaseController): express.IRouter;
 }
 export { HandleController };

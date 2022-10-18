@@ -24,8 +24,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleController = void 0;
-// import express, { IRouter } from "express";
 const express = __importStar(require("express"));
+const ref_1 = require("./ref");
 class HandleController {
     Base;
     Service;
@@ -33,21 +33,49 @@ class HandleController {
         this.Base = Base;
         this.Service = Service;
     }
-    Boost() {
+    Boost(Base) {
+        const AdoNodeGlobalInterceptor = ref_1.ref.get(Base.name, Base.prototype, ":ControllerInterceptor");
         const app = express.Router();
         this.Service.forEach((service, URL) => {
             if (service.method == "Get") {
                 URL = this.Base + URL;
-                console.log("URL", service.method, URL);
+                let fn = service.fn;
+                service.fn = async function (req, res) {
+                    if (AdoNodeGlobalInterceptor) {
+                        if (AdoNodeGlobalInterceptor.before) {
+                            AdoNodeGlobalInterceptor.before(req, res);
+                        }
+                        fn(req, res);
+                        if (AdoNodeGlobalInterceptor.after) {
+                            AdoNodeGlobalInterceptor.after(req, res);
+                        }
+                    }
+                    else {
+                        fn(req, res);
+                    }
+                };
                 app.get(URL, service.fn);
             }
             if (service.method == "Post") {
                 URL = this.Base + URL;
-                console.log("URL", service.method, URL);
+                let fn = service.fn;
+                service.fn = async function (req, res) {
+                    if (AdoNodeGlobalInterceptor) {
+                        if (AdoNodeGlobalInterceptor.before) {
+                            AdoNodeGlobalInterceptor.before(req, res);
+                        }
+                        fn(req, res);
+                        if (AdoNodeGlobalInterceptor.after) {
+                            AdoNodeGlobalInterceptor.after(req, res);
+                        }
+                    }
+                    else {
+                        fn(req, res);
+                    }
+                };
                 app.post(URL, service.fn);
             }
             if (service.method == "All") {
-                console.log("URL", service.method, URL);
                 app.all(URL, service.fn);
             }
         });

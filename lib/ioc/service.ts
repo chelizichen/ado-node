@@ -13,7 +13,7 @@ const SerivceMap = new Map<string, any>();
 function GenereateRouter(Controller: BaseController): IRouter {
   const URL = ref.get("BaseUrl", Controller.prototype);
   const GetService = new Controller(URL, SerivceMap);
-  return GetService.Boost();
+  return GetService.Boost(Controller);
 }
 
 export { SerivceMap, GenereateRouter };

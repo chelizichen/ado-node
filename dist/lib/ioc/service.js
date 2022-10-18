@@ -13,7 +13,7 @@ exports.SerivceMap = SerivceMap;
 function GenereateRouter(Controller) {
     const URL = ref_1.ref.get("BaseUrl", Controller.prototype);
     const GetService = new Controller(URL, SerivceMap);
-    return GetService.Boost();
+    return GetService.Boost(Controller);
 }
 exports.GenereateRouter = GenereateRouter;
 //# sourceMappingURL=service.js.map

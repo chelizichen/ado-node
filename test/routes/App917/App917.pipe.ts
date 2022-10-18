@@ -8,6 +8,8 @@ export class UserNamePipe implements AdoNodePipe {
     const isError = validate(merge);
     if (isError !== true) {
       res.json(isError);
+      return true;
     }
+    return false;
   }
 }

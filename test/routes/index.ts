@@ -15,6 +15,7 @@ const options: HandleProxyOptions = {
   port: 3000,
   staticDist: "dist/app",
   globalPipes: [TestGlobalPipe],
+  cluster: true,
 };
 
 export { options };

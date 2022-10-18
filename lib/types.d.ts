@@ -15,6 +15,7 @@ export type HandleProxyOptions = {
   port: number;
   staticDist: string;
   globalPipes?: any[];
+  cluster?: boolean;
 };
 
 export type AppServer = (Options: ServerOptions) => void;

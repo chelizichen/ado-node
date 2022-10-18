@@ -6,7 +6,9 @@ class FundCodePipe implements AdoNodePipe {
   async run(req: any, res: Response) {
     if (!req.query.fundcode) {
       res.json(new FieldError("没有 fundcode 参数"));
+      return true;
     }
+    return false;
   }
 }
 

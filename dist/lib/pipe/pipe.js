@@ -5,22 +5,8 @@ const core_1 = require("../core");
 const field_1 = require("../error/field");
 const enity_1 = require("../orm/enity");
 const UsePipe = (fn) => {
-    return function (target, propertyKey, descriptor) {
-        const method = descriptor.value;
-        descriptor.value = async function (req, res, next) {
-            const context = fn.run({ req, res, next });
-            if (context instanceof Error) {
-                res.json(context);
-            }
-            else {
-                target.constructor.prototype[propertyKey] = method;
-                await new Promise((resolve) => {
-                    resolve(target.constructor.prototype[propertyKey](context.req, context.res, context.next));
-                }).then((response) => {
-                    res.json(response);
-                });
-            }
-        };
+    return function (target, propertyKey) {
+        core_1.ref.def(propertyKey, fn, target.constructor.prototype, ":pipe");
     };
 };
 exports.UsePipe = UsePipe;

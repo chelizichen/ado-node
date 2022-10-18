@@ -776,16 +776,22 @@ var Reflect2;
 
 // lib/ioc/ref.ts
 var ref = {
-  def: function(key, value, target) {
+  def: function(key, value, target, propertyKey) {
     if (key instanceof Function) {
       Reflect.defineMetadata(key.name, value, key.prototype);
     } else {
-      if (target) {
+      if (target && propertyKey) {
+        Reflect.defineMetadata(key, value, target, propertyKey);
+      }
+      if (target && !propertyKey) {
         Reflect.defineMetadata(key, value, target);
       }
     }
   },
-  get: function(key, target) {
+  get: function(key, target, propertyKey) {
+    if (propertyKey && target) {
+      return Reflect.getMetadata(key, target, propertyKey);
+    }
     if (typeof key == "string") {
       if (target) {
         return Reflect.getMetadata(key, target);
@@ -1129,6 +1135,7 @@ var query = class {
   Enity = "";
   andsql = "";
   orsql = "";
+  likesql = "";
   setEnity(Enity2) {
     if (typeof Enity2 === "function") {
       this.Enity = Enity2.name;
@@ -1153,7 +1160,7 @@ var query = class {
   }
   and(options, value) {
     if (value) {
-      if (!this.andsql) {
+      if (!this.andsql && !this.likesql) {
         this.andsql += " where ";
       } else {
         this.andsql = "";
@@ -1172,13 +1179,13 @@ var query = class {
   }
   or(options, value) {
     if (value) {
-      if (!this.orsql) {
+      if (!this.orsql && !this.likesql) {
         this.orsql += " where ";
       } else {
         this.orsql = "";
         this.orsql += " or ";
       }
-      this.orsql += options + " = " + value;
+      this.orsql += options + ' = "' + value + '"';
       this.sql += this.orsql;
     }
     if (typeof options == "object") {
@@ -1187,6 +1194,17 @@ var query = class {
         this.or(el, options[el]);
       });
     }
+    return this;
+  }
+  like(key, value, andor) {
+    if (!this.likesql && !this.andsql && !this.orsql) {
+      this.likesql += " where ";
+    } else {
+      this.likesql = "";
+      this.likesql += " " + andor + " ";
+    }
+    this.likesql += key + ' like "%' + value + '%" ';
+    this.sql += this.likesql;
     return this;
   }
   pagination(options, value) {
@@ -1260,6 +1278,116 @@ var del = class {
     return this.sql;
   }
 };
+var update = class {
+  Enity;
+  sql = "";
+  options = {};
+  orsql = "";
+  andsql = "";
+  setEnity(Enity2) {
+    if (typeof Enity2 === "function") {
+      this.Enity = Enity2.name;
+    } else {
+      this.Enity = Enity2;
+    }
+    return this;
+  }
+  setOptions(options, value) {
+    if (value && typeof options == "string") {
+      console.log(this.options);
+      this.options[options] = value;
+    } else {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.setOptions(el, options[el]);
+      });
+    }
+    return this;
+  }
+  or(options, value) {
+    if (value) {
+      if (!this.andsql && !this.orsql) {
+        this.orsql += " where ";
+      } else {
+        this.orsql = " ";
+        this.orsql += " or ";
+      }
+      this.orsql += options + ' = "' + value + '"';
+      this.sql += this.orsql;
+      return this;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.or(el, options[el]);
+      });
+    }
+    return this;
+  }
+  and(options, value) {
+    if (value) {
+      if (!this.andsql && !this.orsql) {
+        this.andsql += " where ";
+      } else {
+        this.andsql = " ";
+        this.andsql += " and ";
+      }
+      this.andsql += options + ' = "' + value + '"';
+      this.sql += this.andsql;
+      return this;
+    }
+    if (typeof options == "object") {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.and(el, options[el]);
+      });
+    }
+    return this;
+  }
+  getSql() {
+    const opt = [this.options];
+    console.log("this.sql", this.sql);
+    const sql = "update  " + this.Enity + " Set ? " + this.sql;
+    return {
+      opt,
+      sql
+    };
+  }
+};
+var save = class {
+  sql = "";
+  Enity = "";
+  options = {};
+  setEnity(Enity2) {
+    if (typeof Enity2 === "function") {
+      this.Enity = Enity2.name;
+    } else {
+      this.Enity = Enity2;
+    }
+    return this;
+  }
+  setOptions(options, value) {
+    if (value && typeof options == "string") {
+      console.log(this.options);
+      this.options[options] = value;
+    } else {
+      const entries = Object.keys(options);
+      entries.forEach((el) => {
+        this.setOptions(el, options[el]);
+      });
+    }
+    return this;
+  }
+  getSql() {
+    const opt = [this.options];
+    console.log("this.sql", this.sql);
+    const sql = "insert into  " + this.Enity + " SET ? ";
+    return {
+      opt,
+      sql
+    };
+  }
+};
 
 // lib/store/cache.ts
 var CreateCache = (cacheName) => {
@@ -1329,21 +1457,51 @@ var HandleController = class {
     this.Base = Base;
     this.Service = Service;
   }
-  Boost() {
+  Boost(Base) {
+    const AdoNodeGlobalInterceptor = ref.get(
+      Base.name,
+      Base.prototype,
+      ":ControllerInterceptor"
+    );
     const app = express.Router();
     this.Service.forEach((service, URL) => {
       if (service.method == "Get") {
         URL = this.Base + URL;
-        console.log("URL", service.method, URL);
+        let fn = service.fn;
+        service.fn = async function(req, res) {
+          if (AdoNodeGlobalInterceptor) {
+            if (AdoNodeGlobalInterceptor.before) {
+              AdoNodeGlobalInterceptor.before(req, res);
+            }
+            fn(req, res);
+            if (AdoNodeGlobalInterceptor.after) {
+              AdoNodeGlobalInterceptor.after(req, res);
+            }
+          } else {
+            fn(req, res);
+          }
+        };
         app.get(URL, service.fn);
       }
       if (service.method == "Post") {
         URL = this.Base + URL;
-        console.log("URL", service.method, URL);
+        let fn = service.fn;
+        service.fn = async function(req, res) {
+          if (AdoNodeGlobalInterceptor) {
+            if (AdoNodeGlobalInterceptor.before) {
+              AdoNodeGlobalInterceptor.before(req, res);
+            }
+            fn(req, res);
+            if (AdoNodeGlobalInterceptor.after) {
+              AdoNodeGlobalInterceptor.after(req, res);
+            }
+          } else {
+            fn(req, res);
+          }
+        };
         app.post(URL, service.fn);
       }
       if (service.method == "All") {
-        console.log("URL", service.method, URL);
         app.all(URL, service.fn);
       }
     });
@@ -1356,7 +1514,7 @@ var SerivceMap = /* @__PURE__ */ new Map();
 function GenereateRouter(Controller2) {
   const URL = ref.get("BaseUrl", Controller2.prototype);
   const GetService = new Controller2(URL, SerivceMap);
-  return GetService.Boost();
+  return GetService.Boost(Controller2);
 }
 
 // lib/ioc/controller.ts
@@ -1697,27 +1855,10 @@ function createUpdateSql(Enity2, options) {
 // lib/method/server.ts
 import express2 from "express";
 import path from "path";
+import { cpus } from "os";
+import cluster from "cluster";
 function defineAdoNodeOptions(options) {
   return options;
-}
-function createServer(options) {
-  const app = express2();
-  if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
-    options.globalPipes.forEach((pipe) => {
-      const inst = new pipe();
-      app.use("*", inst.run);
-    });
-  }
-  app.use(express2.json());
-  const { port, staticDist, controller, base } = options;
-  controller.forEach((el) => {
-    const router = ref.get(el);
-    app.use(base, router);
-  });
-  app.use(express2.static(staticDist));
-  app.listen(port, () => {
-    console.log(`create server at  http://localhost:${port}`);
-  });
 }
 function createSSRServer(options) {
   const app = express2();
@@ -1739,22 +1880,100 @@ function createSSRServer(options) {
 }
 var AdoNodeServer = class {
   static run(options) {
-    createServer(options);
+    if (options.cluster) {
+      let workers = {};
+      if (cluster.isPrimary) {
+        cluster.on("exit", (worker, _code, _signal) => {
+          console.log(`\u5DE5\u4F5C\u8FDB\u7A0B ${worker.process.pid} \u5DF2\u9000\u51FA`);
+          delete workers[worker.process.pid];
+          worker = cluster.fork();
+          workers[worker.process.pid] = worker;
+        });
+        for (let i = 0; i < cpus().length; i++) {
+          let worker = cluster.fork();
+          workers[worker.process.pid] = worker;
+        }
+      } else {
+        this.runServer(options);
+      }
+    } else {
+      this.runServer(options);
+    }
+  }
+  static runServer(options) {
+    const app = express2();
+    if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
+      options.globalPipes.forEach((pipe) => {
+        const inst = new pipe();
+        app.use("*", inst.run);
+      });
+    }
+    app.use(express2.json());
+    const { port, staticDist, controller, base } = options;
+    controller.forEach((el) => {
+      const router = ref.get(el);
+      app.use(base, router);
+    });
+    app.use(express2.static(staticDist));
+    app.set("port", options.port);
+    app.listen(port, () => {
+      console.log(
+        `create server at  http://localhost:${port} Worker ${process.pid} started`
+      );
+    });
   }
 };
 
 // lib/method/method.ts
+function useRunTimeInterceptor(Interceptor, time, options) {
+  if (Interceptor) {
+    if (Interceptor[time]) {
+      Interceptor[time](options.req, options.res);
+    }
+  }
+}
 var createMethod = (method) => {
   return (URL) => {
     return function(target, propertyKey, descriptor) {
       const fn = descriptor.value;
+      ref.def(propertyKey, URL, target.constructor.prototype, ":url");
       descriptor.value = async function(req, res) {
         target.constructor.prototype[propertyKey] = fn;
-        await new Promise((resolve) => {
-          resolve(target.constructor.prototype[propertyKey](req, res));
-        }).then((response) => {
-          res.json(response);
+        const interceptor = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":interceptor"
+        );
+        if (!req.closed) {
+          await useRunTimeInterceptor(interceptor, "before", { req, res });
+        }
+        const pipe = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":pipe"
+        );
+        if (pipe && !req.closed) {
+          const isNext = await pipe.run(req, res);
+          if (isNext) {
+            return;
+          }
+        }
+        console.log("req.closed useRuntime", req.closed);
+        req.closed || await useRunTimeInterceptor(interceptor, "hack", {
+          req,
+          res
         });
+        if (!req.closed) {
+          const ret = await target.constructor.prototype[propertyKey](req, res);
+          res.json(ret);
+        }
+        if (req.closed) {
+          await useRunTimeInterceptor(interceptor, "after", {
+            req,
+            res
+          });
+        }
+        return;
       };
       SerivceMap.set(URL, {
         fn: descriptor.value,
@@ -1768,27 +1987,8 @@ var Post = createMethod("Post");
 
 // lib/pipe/pipe.ts
 var UsePipe = (fn) => {
-  return function(target, propertyKey, descriptor) {
-    const method = descriptor.value;
-    descriptor.value = async function(req, res, next) {
-      const context = fn.run({ req, res, next });
-      if (context instanceof Error) {
-        res.json(context);
-      } else {
-        target.constructor.prototype[propertyKey] = method;
-        await new Promise((resolve) => {
-          resolve(
-            target.constructor.prototype[propertyKey](
-              context.req,
-              context.res,
-              context.next
-            )
-          );
-        }).then((response) => {
-          res.json(response);
-        });
-      }
-    };
+  return function(target, propertyKey) {
+    ref.def(propertyKey, fn, target.constructor.prototype, ":pipe");
   };
 };
 function validate(inst) {
@@ -1898,6 +2098,25 @@ var Select = (sql) => {
 var Update = Select;
 var Delete = Select;
 var Insert = Select;
+
+// lib/interceptor/global.ts
+var UseControllerInterceptor = (fn) => {
+  return function(target) {
+    ref.def(target.name, fn, target.prototype, ":ControllerInterceptor");
+  };
+};
+
+// lib/interceptor/interceptor.ts
+var UseInterceptor = (fn) => {
+  return function(target, propertyKey) {
+    ref.def(
+      propertyKey,
+      fn,
+      target.constructor.prototype,
+      ":interceptor"
+    );
+  };
+};
 export {
   AdoNodeConfig,
   AdoNodeServer,
@@ -1938,17 +2157,20 @@ export {
   TypesError,
   Update,
   UseCache,
+  UseControllerInterceptor,
   UseDataBase,
+  UseInterceptor,
   UsePipe,
   cfjs,
   createSSRServer,
-  createServer,
   defineAdoNodeOptions,
   del,
   getCachekey,
   getStrCount,
   query,
   ref,
+  save,
+  update,
   useCffn,
   useConfig,
   useRunCf,

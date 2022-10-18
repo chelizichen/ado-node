@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Select = exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.createServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
-exports.Delete = exports.Insert = exports.Update = void 0;
+exports.Update = exports.Select = exports.Connect = exports.Mapper = exports.CreateDb = exports.AdoNodeConfig = exports.Config = exports.useConfig = exports.UseDataBase = exports.UseCache = exports.CreateCache = exports.getCachekey = exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.Curd = exports.OberServer = exports.cfjs = exports.useRunCf = exports.useCffn = exports.AdoNodeServer = exports.createSSRServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.HandleController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
+exports.Delete = exports.Insert = void 0;
 const constant_1 = require("./constant/constant");
 Object.defineProperty(exports, "MESSAGE", { enumerable: true, get: function () { return constant_1.MESSAGE; } });
 Object.defineProperty(exports, "CODE", { enumerable: true, get: function () { return constant_1.CODE; } });
@@ -54,7 +54,6 @@ const curd_1 = require("./oper/curd");
 Object.defineProperty(exports, "Curd", { enumerable: true, get: function () { return curd_1.Curd; } });
 const server_1 = require("./method/server");
 Object.defineProperty(exports, "AdoNodeServer", { enumerable: true, get: function () { return server_1.AdoNodeServer; } });
-Object.defineProperty(exports, "createServer", { enumerable: true, get: function () { return server_1.createServer; } });
 Object.defineProperty(exports, "createSSRServer", { enumerable: true, get: function () { return server_1.createSSRServer; } });
 const method_1 = require("./method/method");
 Object.defineProperty(exports, "Get", { enumerable: true, get: function () { return method_1.Get; } });

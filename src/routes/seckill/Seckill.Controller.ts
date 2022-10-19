@@ -1,9 +1,15 @@
-import { Controller, HandleController, Inject, Post, UseCache } from "ado-node";
+import {
+  Body,
+  Controller,
+  HandleController,
+  Inject,
+  Post,
+  UseCache,
+} from "ado-node";
 import { RedisClientType } from "redis";
 import { CONSTANT } from "../../config/constant";
 import { Ret } from "../../config/ret";
 import { SeckillService } from "./Seckill.Service";
-import { Body } from "ado-node/index.d";
 
 @Controller("/prod")
 export class SeckillController extends HandleController {
@@ -13,19 +19,15 @@ export class SeckillController extends HandleController {
   SeckillService!: SeckillService;
 
   @Post("/seckill")
-  public async SecKill(
-    req: Body<{ uId: string; proId: string }>,
-    _res: Response
-  ) {
+  public async SecKill(@Body() body: { uId: string; proId: string }) {
     if (!this.REDIS.isOpen) {
       await this.REDIS.connect();
     }
-    const body = req.body;
     const getRest = await this.SeckillService.getRestKey(
       this.REDIS,
       body.proId
     );
-    const getUserKey = `sk:${req.body.uId}:user`;
+    const getUserKey = `sk:${body.uId}:user`;
     if (getRest.total === null) {
       return {
         msg: "还没开始",
@@ -53,15 +55,12 @@ export class SeckillController extends HandleController {
   }
 
   @Post("/addProd")
-  public async addProd(
-    req: Body<{ proId: string; total: string }>,
-    _res: Response
-  ) {
+  public async addProd(@Body() body: { proId: string; total: string }) {
     if (!this.REDIS.isOpen) {
       await this.REDIS.connect();
     }
-    const key = `sk:${req.body.proId}:qt`;
-    await this.REDIS.set(key, req.body.total);
+    const key = `sk:${body.proId}:qt`;
+    await this.REDIS.set(key, body.total);
     return {
       msg: "设置成功",
     };

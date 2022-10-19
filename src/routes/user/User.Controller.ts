@@ -6,13 +6,13 @@ import {
   Curd,
   Get,
   CODE,
-  Pipe,
+  UsePipe,
+  Query,
 } from "ado-node";
-import { Query } from "ado-node/index.d";
 import { RedisClientType } from "redis";
 import { CONSTANT } from "../../config/constant";
+import { UserIdPipe } from "../../pipe/User.pipe";
 import { User } from "./User.Enity";
-import { UserIdPipe } from "./User.pipe";
 import { UserService } from "./User.Service";
 @Controller("/user")
 class UserController extends HandleController {
@@ -21,12 +21,11 @@ class UserController extends HandleController {
   @UseCache(CONSTANT.REDIS)
   Redis!: RedisClientType;
 
+  @UsePipe(new UserIdPipe())
   @Get("/getUser")
-  @Pipe([UserIdPipe])
-  async getUser(req: Query<{ id: number }>, _res: Response) {
-    let data = await this.UserService.getList(req.query.id);
+  async getUser(@Query() query: any) {
     return {
-      data,
+      data: query.id,
       code: CODE.SUCCESS,
     };
   }

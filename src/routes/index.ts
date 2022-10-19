@@ -1,18 +1,15 @@
-import { GoodsController } from "./goods/Goods.Controller";
-import { MenuController } from "./menu/Menu.Controller";
+import { defineAdoNodeOptions } from "ado-node";
+import { FundCompanyController } from "./company/Company.controller";
 import { SeckillController } from "./seckill/Seckill.Controller";
 import { UserController } from "./user/User.Controller";
 
-const options = {
-  controller: [
-    UserController,
-    SeckillController,
-    GoodsController,
-    MenuController,
-  ],
+const options = defineAdoNodeOptions({
+  controller: [UserController, SeckillController, FundCompanyController],
   base: "/api",
-  port: 3000,
-  staticDist: "dist/app",
-};
+  port: 3786,
+  staticDist: "/dist/app",
+  globalPipes: [],
+  cluster: true,
+});
 
 export { options };

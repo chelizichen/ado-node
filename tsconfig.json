@@ -21,6 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "paths": {
+      "@": ["./src/client"],
+      "@/*": ["./src/client/*"],
     },
   },
+  "include": ["src/client","src"]
 }

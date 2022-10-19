@@ -2,10 +2,10 @@
 // 拦截器会在守卫之后执行
 // 单独路由拦截
 import { ref } from "../core";
-import { Request, Response } from "express";
+import { Request } from "express";
 interface AdoNodeControllerInterceptor {
-  before(req: Request, res: Response): Promise<any>;
-  after(req: Request, res: Response): Promise<any>;
+  before?(req: Request): Promise<any>;
+  after?(req: Request): Promise<any>;
 }
 const UseControllerInterceptor = (
   fn: AdoNodeControllerInterceptor

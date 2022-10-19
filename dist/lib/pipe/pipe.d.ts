@@ -7,7 +7,7 @@ declare const UsePipe: (fn: AdoNodePipe) => MethodDecorator;
  * @params context
  */
 interface AdoNodePipe {
-    run(req: Request, res: Response): Promise<boolean>;
+    run(req: Request): Promise<any>;
 }
 declare function validate(inst: any): true | FieldError;
 interface AdoNodeGlobalPipe {

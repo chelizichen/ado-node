@@ -6,9 +6,10 @@ const core_1 = require("../core");
 function useRunTimeInterceptor(Interceptor, time, options) {
     if (Interceptor) {
         if (Interceptor[time]) {
-            Interceptor[time](options.req, options.res);
+            return Interceptor[time](options.req);
         }
     }
+    return undefined;
 }
 exports.useRunTimeInterceptor = useRunTimeInterceptor;
 /**
@@ -19,40 +20,79 @@ const createMethod = (method) => {
         return function (target, propertyKey, descriptor) {
             const fn = descriptor.value;
             core_1.ref.def(propertyKey, URL, target.constructor.prototype, ":url");
-            descriptor.value = async function (req, res) {
+            descriptor.value = async function (req) {
                 target.constructor.prototype[propertyKey] = fn;
                 // AOP Interceptor
                 const interceptor = core_1.ref.get(propertyKey, target.constructor.prototype, ":interceptor");
-                if (!req.closed) {
-                    await useRunTimeInterceptor(interceptor, "before", { req, res });
+                const before_data = await useRunTimeInterceptor(interceptor, "before", {
+                    req,
+                });
+                if (before_data) {
+                    return before_data;
                 }
                 // AOP Pipe
                 const pipe = core_1.ref.get(propertyKey, target.constructor.prototype, ":pipe");
-                if (pipe && !req.closed) {
-                    const isNext = await pipe.run(req, res);
-                    if (isNext) {
-                        return;
+                if (pipe) {
+                    const pipe_data = await pipe.run(req);
+                    if (pipe_data) {
+                        return pipe_data;
                     }
                 }
-                console.log("req.closed useRuntime", req.closed);
-                req.closed ||
-                    (await useRunTimeInterceptor(interceptor, "hack", {
-                        req,
-                        res,
-                    }));
-                // run server
-                if (!req.closed) {
-                    const ret = await target.constructor.prototype[propertyKey](req, res);
-                    res.json(ret);
+                const hack_data = await useRunTimeInterceptor(interceptor, "hack", {
+                    req,
+                });
+                if (hack_data) {
+                    return hack_data;
+                }
+                const hasQuery = core_1.ref.get(propertyKey, target.constructor.prototype, ":query");
+                const hasBody = core_1.ref.get(propertyKey, target.constructor.prototype, ":body");
+                const hasHeaders = core_1.ref.get(propertyKey, target.constructor.prototype, ":headers");
+                if (typeof hasQuery === "number" ||
+                    typeof hasBody === "number" ||
+                    typeof hasHeaders === "number") {
+                    // const arguments = [req.query]
+                    let arg = [];
+                    arg[hasQuery] = req.query;
+                    arg[hasBody] = req.body;
+                    arg[hasHeaders] = req.headers;
+                    const ret = await target.constructor.prototype[propertyKey](...arg);
+                    if (ret && interceptor && interceptor.after) {
+                        return {
+                            data: ret,
+                            after: interceptor.after,
+                        };
+                    }
+                    if (ret && !interceptor) {
+                        return {
+                            data: ret,
+                        };
+                    }
+                }
+                else {
+                    const ret = await target.constructor.prototype[propertyKey](req);
+                    if (ret && interceptor && interceptor.after) {
+                        return {
+                            data: ret,
+                            after: interceptor.after,
+                        };
+                    }
+                    if (ret && !interceptor) {
+                        return {
+                            data: ret,
+                        };
+                    }
                 }
                 // unMounted
-                if (req.closed) {
-                    await useRunTimeInterceptor(interceptor, "after", {
-                        req,
-                        res,
-                    });
-                }
-                return;
+                // if (req.closed) {
+                //   useRunTimeInterceptor(interceptor, "after", {
+                //     req,
+                //     res,
+                //   });
+                // }
+                return {
+                    msg: "ok",
+                    code: 0,
+                };
             };
             service_1.SerivceMap.set(URL, {
                 fn: descriptor.value,

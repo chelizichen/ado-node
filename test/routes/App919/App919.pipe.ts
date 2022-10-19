@@ -1,14 +1,12 @@
-import { Response } from "express";
 import { FieldError } from "../../../lib/core";
 import { AdoNodePipe } from "../../../lib/types";
 
 class FundCodePipe implements AdoNodePipe {
-  async run(req: any, res: Response) {
+  async run(req: any) {
     if (!req.query.fundcode) {
-      res.json(new FieldError("没有 fundcode 参数"));
-      return true;
+      return new FieldError("没有 fundcode 参数");
     }
-    return false;
+    return;
   }
 }
 

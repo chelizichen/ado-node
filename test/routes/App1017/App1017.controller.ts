@@ -1,7 +1,14 @@
 // @ts-nocheck
-import { HandleController, Controller, Get, UsePipe } from "../../../lib/core";
+import {
+  HandleController,
+  Controller,
+  Get,
+  UsePipe,
+  Post,
+} from "../../../lib/core";
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
+import { Body, Headers, Query, URLParam } from "../../../lib/params/params";
 import {
   UserControllerInterceptor,
   UserLogInterceptor,
@@ -28,6 +35,25 @@ class App1017Controller extends HandleController {
   @Get("/a2")
   public async a2() {
     console.log("this.a", this.a);
+    return {
+      data: "ok",
+    };
+  }
+
+  @Get("/a3")
+  public async a3(@Query() query: any) {
+    console.log(query);
+
+    // console.log(query);
+    return {
+      data: "ok",
+    };
+  }
+  @Post("/a4")
+  public async a4(@Body() body: any, @Headers() headers) {
+    console.log("headers", headers);
+
+    console.log(body);
     return {
       data: "ok",
     };

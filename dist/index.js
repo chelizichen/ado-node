@@ -35,6 +35,7 @@ __export(ado_node_exports, {
   AdoNodeServer: () => AdoNodeServer,
   AdoOrmBaseEnity: () => AdoOrmBaseEnity,
   AutoCreate: () => AutoCreate,
+  Body: () => Body,
   CODE: () => CODE,
   CONSTANT: () => CONSTANT,
   ClientError: () => ClientError,
@@ -54,6 +55,7 @@ __export(ado_node_exports, {
   GenereateRouter: () => GenereateRouter,
   Get: () => Get,
   HandleController: () => HandleController,
+  Headers: () => Headers,
   Inject: () => Inject,
   Insert: () => Insert,
   IsEmail: () => IsEmail,
@@ -65,6 +67,7 @@ __export(ado_node_exports, {
   Mapper: () => Mapper,
   OberServer: () => OberServer,
   Post: () => Post,
+  Query: () => Query,
   Select: () => Select,
   SerivceMap: () => SerivceMap,
   TypesError: () => TypesError,
@@ -1551,40 +1554,64 @@ var HandleController = class {
     );
     const app = express.Router();
     this.Service.forEach((service, URL) => {
+      let fn = service.fn;
+      service.fn = async function(req, res) {
+        if (AdoNodeGlobalInterceptor) {
+          if (AdoNodeGlobalInterceptor.before) {
+            const data = await AdoNodeGlobalInterceptor.before(req);
+            if (data) {
+              res.json(data);
+              return;
+            }
+          }
+          const ret = await fn(req, res);
+          if (ret instanceof Error) {
+            res.json(ret);
+            return;
+          }
+          if (ret.data && ret.after) {
+            res.json(ret.data);
+            ret.after(req, res);
+            return;
+          } else if (ret.data && !ret.after) {
+            res.json(ret.data);
+            return;
+          }
+          if (ret) {
+            res.json(ret);
+            return;
+          }
+          if (AdoNodeGlobalInterceptor.after) {
+            AdoNodeGlobalInterceptor.after(req);
+          }
+          return;
+        } else {
+          const ret = await fn(req, res);
+          if (ret instanceof Error) {
+            res.json(ret);
+            return;
+          }
+          if (ret.data && ret.after) {
+            res.json(ret.data);
+            ret.after(req, res);
+            return;
+          } else if (ret.data && !ret.after) {
+            res.json(ret.data);
+            return;
+          }
+          if (ret) {
+            res.json(ret);
+            return;
+          }
+          return;
+        }
+      };
       if (service.method == "Get") {
         URL = this.Base + URL;
-        let fn = service.fn;
-        service.fn = async function(req, res) {
-          if (AdoNodeGlobalInterceptor) {
-            if (AdoNodeGlobalInterceptor.before) {
-              AdoNodeGlobalInterceptor.before(req, res);
-            }
-            fn(req, res);
-            if (AdoNodeGlobalInterceptor.after) {
-              AdoNodeGlobalInterceptor.after(req, res);
-            }
-          } else {
-            fn(req, res);
-          }
-        };
         app.get(URL, service.fn);
       }
       if (service.method == "Post") {
         URL = this.Base + URL;
-        let fn = service.fn;
-        service.fn = async function(req, res) {
-          if (AdoNodeGlobalInterceptor) {
-            if (AdoNodeGlobalInterceptor.before) {
-              AdoNodeGlobalInterceptor.before(req, res);
-            }
-            fn(req, res);
-            if (AdoNodeGlobalInterceptor.after) {
-              AdoNodeGlobalInterceptor.after(req, res);
-            }
-          } else {
-            fn(req, res);
-          }
-        };
         app.post(URL, service.fn);
       }
       if (service.method == "All") {
@@ -2014,52 +2041,96 @@ var AdoNodeServer = class {
 function useRunTimeInterceptor(Interceptor, time, options) {
   if (Interceptor) {
     if (Interceptor[time]) {
-      Interceptor[time](options.req, options.res);
+      return Interceptor[time](options.req);
     }
   }
+  return void 0;
 }
 var createMethod = (method) => {
   return (URL) => {
     return function(target, propertyKey, descriptor) {
       const fn = descriptor.value;
       ref.def(propertyKey, URL, target.constructor.prototype, ":url");
-      descriptor.value = async function(req, res) {
+      descriptor.value = async function(req) {
         target.constructor.prototype[propertyKey] = fn;
         const interceptor = ref.get(
           propertyKey,
           target.constructor.prototype,
           ":interceptor"
         );
-        if (!req.closed) {
-          await useRunTimeInterceptor(interceptor, "before", { req, res });
+        const before_data = await useRunTimeInterceptor(interceptor, "before", {
+          req
+        });
+        if (before_data) {
+          return before_data;
         }
         const pipe = ref.get(
           propertyKey,
           target.constructor.prototype,
           ":pipe"
         );
-        if (pipe && !req.closed) {
-          const isNext = await pipe.run(req, res);
-          if (isNext) {
-            return;
+        if (pipe) {
+          const pipe_data = await pipe.run(req);
+          if (pipe_data) {
+            return pipe_data;
           }
         }
-        console.log("req.closed useRuntime", req.closed);
-        req.closed || await useRunTimeInterceptor(interceptor, "hack", {
-          req,
-          res
+        const hack_data = await useRunTimeInterceptor(interceptor, "hack", {
+          req
         });
-        if (!req.closed) {
-          const ret = await target.constructor.prototype[propertyKey](req, res);
-          res.json(ret);
+        if (hack_data) {
+          return hack_data;
         }
-        if (req.closed) {
-          await useRunTimeInterceptor(interceptor, "after", {
-            req,
-            res
-          });
+        const hasQuery = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":query"
+        );
+        const hasBody = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":body"
+        );
+        const hasHeaders = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":headers"
+        );
+        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number") {
+          let arg = [];
+          arg[hasQuery] = req.query;
+          arg[hasBody] = req.body;
+          arg[hasHeaders] = req.headers;
+          const ret = await target.constructor.prototype[propertyKey](...arg);
+          if (ret && interceptor && interceptor.after) {
+            return {
+              data: ret,
+              after: interceptor.after
+            };
+          }
+          if (ret && !interceptor) {
+            return {
+              data: ret
+            };
+          }
+        } else {
+          const ret = await target.constructor.prototype[propertyKey](req);
+          if (ret && interceptor && interceptor.after) {
+            return {
+              data: ret,
+              after: interceptor.after
+            };
+          }
+          if (ret && !interceptor) {
+            return {
+              data: ret
+            };
+          }
         }
-        return;
+        return {
+          msg: "ok",
+          code: 0
+        };
       };
       SerivceMap.set(URL, {
         fn: descriptor.value,
@@ -2203,12 +2274,45 @@ var UseInterceptor = (fn) => {
     );
   };
 };
+
+// lib/params/params.ts
+function Query() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":query"
+    );
+  };
+}
+function Body() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":body"
+    );
+  };
+}
+function Headers() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":headers"
+    );
+  };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AdoNodeConfig,
   AdoNodeServer,
   AdoOrmBaseEnity,
   AutoCreate,
+  Body,
   CODE,
   CONSTANT,
   ClientError,
@@ -2228,6 +2332,7 @@ var UseInterceptor = (fn) => {
   GenereateRouter,
   Get,
   HandleController,
+  Headers,
   Inject,
   Insert,
   IsEmail,
@@ -2239,6 +2344,7 @@ var UseInterceptor = (fn) => {
   Mapper,
   OberServer,
   Post,
+  Query,
   Select,
   SerivceMap,
   TypesError,

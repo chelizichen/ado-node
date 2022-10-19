@@ -1,5 +1,5 @@
 import { SerivceMap } from "../ioc/service";
-import { Request, Response } from "express";
+import { Request } from "express";
 import { ref } from "../core";
 import { AdoNodePipe } from "../pipe/pipe";
 import { AdoNodeInterceptor } from "../interceptor/interceptor";
@@ -9,14 +9,14 @@ export function useRunTimeInterceptor(
   time: keyof AdoNodeInterceptor,
   options: {
     req: any;
-    res: any;
   }
 ) {
   if (Interceptor) {
     if (Interceptor[time]) {
-      Interceptor[time](options.req, options.res);
+      return Interceptor[time](options.req);
     }
   }
+  return undefined;
 }
 
 /**
@@ -33,7 +33,7 @@ const createMethod = (method: string) => {
 
       ref.def(propertyKey as string, URL, target.constructor.prototype, ":url");
 
-      descriptor.value = async function (req: Request, res: Response) {
+      descriptor.value = async function (req: Request) {
         target.constructor.prototype[propertyKey] = fn;
 
         // AOP Interceptor
@@ -42,8 +42,11 @@ const createMethod = (method: string) => {
           target.constructor.prototype,
           ":interceptor"
         );
-        if (!req.closed) {
-          await useRunTimeInterceptor(interceptor, "before", { req, res });
+        const before_data = await useRunTimeInterceptor(interceptor, "before", {
+          req,
+        });
+        if (before_data) {
+          return before_data;
         }
 
         // AOP Pipe
@@ -53,37 +56,84 @@ const createMethod = (method: string) => {
           ":pipe"
         );
 
-        if (pipe && !req.closed) {
-          const isNext = await pipe.run(req, res);
-          if (isNext) {
-            return;
+        if (pipe) {
+          const pipe_data = await pipe.run(req);
+          if (pipe_data) {
+            return pipe_data;
           }
         }
 
-        console.log("req.closed useRuntime", req.closed);
+        const hack_data = await useRunTimeInterceptor(interceptor, "hack", {
+          req,
+        });
+        if (hack_data) {
+          return hack_data;
+        }
 
-        req.closed ||
-          (await useRunTimeInterceptor(interceptor, "hack", {
-            req,
-            res,
-          }));
-
-        // run server
-        if (!req.closed) {
-          const ret = await target.constructor.prototype[propertyKey](req, res);
-          res.json(ret);
+        const hasQuery = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":query"
+        );
+        const hasBody = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":body"
+        );
+        const hasHeaders = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":headers"
+        );
+        if (
+          typeof hasQuery === "number" ||
+          typeof hasBody === "number" ||
+          typeof hasHeaders === "number"
+        ) {
+          // const arguments = [req.query]
+          let arg = [];
+          arg[hasQuery] = req.query;
+          arg[hasBody] = req.body;
+          arg[hasHeaders] = req.headers;
+          const ret = await target.constructor.prototype[propertyKey](...arg);
+          if (ret && interceptor && interceptor.after) {
+            return {
+              data: ret,
+              after: interceptor.after,
+            };
+          }
+          if (ret && !interceptor) {
+            return {
+              data: ret,
+            };
+          }
+        } else {
+          const ret = await target.constructor.prototype[propertyKey](req);
+          if (ret && interceptor && interceptor.after) {
+            return {
+              data: ret,
+              after: interceptor.after,
+            };
+          }
+          if (ret && !interceptor) {
+            return {
+              data: ret,
+            };
+          }
         }
 
         // unMounted
 
-        if (req.closed) {
-          await useRunTimeInterceptor(interceptor, "after", {
-            req,
-            res,
-          });
-        }
-
-        return;
+        // if (req.closed) {
+        //   useRunTimeInterceptor(interceptor, "after", {
+        //     req,
+        //     res,
+        //   });
+        // }
+        return {
+          msg: "ok",
+          code: 0,
+        };
       };
 
       SerivceMap.set(URL, {

@@ -8,19 +8,24 @@ import { App917Service } from "./App917.service";
 import { UseCache } from "../../../lib/store/cache";
 import { RedisClientType } from "redis";
 import { Body } from "../../../lib/types";
-import { UserNamePipe } from "./App917.pipe";
+import { UserIdPipe, UserInfoInterceptor, UserNamePipe } from "./App917.pipe";
 import { del, query, update } from "../../../lib/orm/sql";
 import { Request } from "express";
 import { UsePipe } from "../../../lib/pipe/pipe";
+import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 @Controller("/app917")
+@UseControllerInterceptor(new UserInfoInterceptor())
 class App917Controller extends HandleController {
   @Inject(App917Service)
   App917Service!: App917Service;
   @UseCache("redis")
   Redis!: RedisClientType;
+
   @Get("/a1")
-  public async a1() {
+  @UsePipe(new UserIdPipe())
+  public async a1(_: Request) {
     const ret = await this.App917Service.a1();
+    console.log("ret", ret);
 
     return {
       Msg: "测试中",
@@ -28,6 +33,7 @@ class App917Controller extends HandleController {
       ret,
     };
   }
+
   @Get("/b1")
   @UsePipe(new UserNamePipe())
   public async b1(_req: Request, _res: any) {

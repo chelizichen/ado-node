@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 declare const UseInterceptor: (fn: AdoNodeInterceptor) => MethodDecorator;
 interface AdoNodeInterceptor {
-    before(req: Request, res: Response): Promise<any>;
-    hack(req: Request, res: Response): Promise<any>;
-    after(req: Request, res: Response): Promise<any>;
+    before(req: Request): Promise<any>;
+    hack(req: Request): Promise<any>;
+    after(req: Request): Promise<any>;
 }
 export { UseInterceptor };
 export type { AdoNodeInterceptor };

@@ -1,10 +1,29 @@
 # - *AdoNode*
 
-#### <i style="color:royalblue"> typescript express ioc decorate </i>
+#### <i style="color:royalblue"> typescript express ioc decorate aop </i>
 
 ## 以极简的代码构建高效的 Node.js 服务
 
-### 案例
+***
+设计思想：
+  **高度使用 IOC 和 AOP， 将 请求 - 响应分为不同的生命周期 每个生命周期实现不同的逻辑功能**
+
+1. 请求
+2. 全局管道 -〉req , res , next
+3. 控制层
+4. 全局控制层 **Before** 拦截器
+5. 具体控制层 **Before** 拦截器
+6. 具体控制层 **Pipe** 管道 在具体方法之前
+7. 具体控制层 **Hack** 拦截器 在具体方法之前
+8. 执行具体控制层逻辑
+9. 执行服务层逻辑
+10. 服务层返回对数据库的操作
+11. 具体控制层 **After** 拦截器 在具体方法之后
+12. 全局控制层 **After** 拦截器之后
+
+*在拦截器或者管道的任何各个阶段都可以执行响应中断操作（返回不为空的值即可）*
+
+***
 
 ***
 
@@ -18,6 +37,9 @@
 * @Post(url:string)
 * @<i style="color:royalblue">Interface</i> AdoNodePipe
 * @Error({message:string;code?:Code;force?: boolean;})
+* @Query 等同于 Express -> type Request['query']
+* @Body  等同于 Express -> type Request['body']
+* @Headers 等同于 Express -> type Request['headers']
 
 ### Service层所需要的装饰器
 
@@ -202,6 +224,7 @@ sql: 'insert into  goods SET ? '
 ````
 
 #### *ORM*
+
 ````
 
 this.AnyEnity.getOneBy(val)
@@ -224,7 +247,9 @@ this.AnyEnity.getList(val)
 ````
 
 export class TestGlobalPipe implements AdoNodeGlobalPipe {
-  run(req,res){}
+  run(req:Request,res:Response,next:NextFunction){
+    next()
+  }
 }
 ````
 
@@ -233,33 +258,35 @@ export class TestGlobalPipe implements AdoNodeGlobalPipe {
 ````
 
 class FundCodePipe implements AdoNodePipe {
-  run(req: Request,res: Response){
-
+  run(req: Request){
+    // 任何返回值 判断为真时都将被 res.json() 处理
+    // 只有返回false 或者 void 时会进入下一个生命周期
   }
 }
 ````
 
-拦截器 
+拦截器
 implyments AdoNodeInterceptor
 UseInterceptor(new InterceptorConstructor())
-**可以实现 请求开始 处理请求前 响应后 四个钩子**
+
+**可以实现 请求开始 处理请求前 响应后 三个钩子**
 
 ````
 class UserLogInterceptor implements AdoNodeInterceptor {
-  async hack(req: Request, _res: Response) {
+  async hack(req: Request) {
     console.log("处理中", !req.headers);
   }
-  async after(req: Request, _res: Response) {
+  async after(req: Request) {
     console.log("处理后", !req.headers);
   }
 
-  async before(req: Request, _res: Response) {
+  async before(req: Request) {
     console.log("处理前", req.headers);
     if (!req.headers["token"]) {
       req.headers["token"] =
         "token a5sdimkgdsa2134ij213saklnbgjoasjdaskjdal1231";
+      return req.headers
     }
-    res.json(req.headers);
   }
 }
 ````

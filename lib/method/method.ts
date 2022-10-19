@@ -85,16 +85,23 @@ const createMethod = (method: string) => {
           target.constructor.prototype,
           ":headers"
         );
+        const hasRequest = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":request"
+        );
         if (
           typeof hasQuery === "number" ||
           typeof hasBody === "number" ||
-          typeof hasHeaders === "number"
+          typeof hasHeaders === "number" ||
+          typeof hasRequest == "number"
         ) {
           // const arguments = [req.query]
           let arg = [];
           arg[hasQuery] = req.query;
           arg[hasBody] = req.body;
           arg[hasHeaders] = req.headers;
+          arg[hasRequest] = req;
           const ret = await target.constructor.prototype[propertyKey](...arg);
           if (ret && interceptor && interceptor.after) {
             return {

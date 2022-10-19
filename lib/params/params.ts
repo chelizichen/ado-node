@@ -44,4 +44,19 @@ function Headers() {
   };
 }
 
-export { Query, Body, Headers };
+function Req() {
+  return function (
+    target: Object,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) {
+    ref.def(
+      propertyKey as string,
+      parameterIndex,
+      target.constructor.prototype,
+      ":request"
+    );
+  };
+}
+
+export { Query, Body, Headers, Req };

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   HandleController,
   Controller,
@@ -8,7 +7,7 @@ import {
 } from "../../../lib/core";
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
-import { Body, Headers, Query, URLParam } from "../../../lib/params/params";
+import { Body, Headers, Query, Req } from "../../../lib/params/params";
 import {
   UserControllerInterceptor,
   UserLogInterceptor,
@@ -34,7 +33,6 @@ class App1017Controller extends HandleController {
 
   @Get("/a2")
   public async a2() {
-    console.log("this.a", this.a);
     return {
       data: "ok",
     };
@@ -50,8 +48,13 @@ class App1017Controller extends HandleController {
     };
   }
   @Post("/a4")
-  public async a4(@Body() body: any, @Headers() headers) {
+  public async a4(
+    @Req() req: Request,
+    @Body() body: any,
+    @Headers() headers: any
+  ) {
     console.log("headers", headers);
+    console.log("req", req);
 
     console.log(body);
     return {

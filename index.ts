@@ -56,7 +56,7 @@ import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
 import { defineAdoNodeOptions } from "./lib/method/server";
 import { save, update } from "./lib/orm/sql";
-import { Query, Body, Headers } from "./lib/params/params";
+import { Query, Body, Headers, Req } from "./lib/params/params";
 
 // constant
 export { MESSAGE, CONSTANT, CODE };
@@ -125,4 +125,4 @@ export { Mapper, Connect, Select, Update, Insert, Delete };
 export { UseControllerInterceptor };
 export { UseInterceptor };
 
-export { Query, Body, Headers };
+export { Query, Body, Headers, Req };

@@ -1,0 +1,63 @@
+.App {
+  text-align: center;
+}
+
+*{
+  margin: 0;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+.viteSvg{
+  height: 100px;
+  width: 100px;
+  /* box-shadow: 20px 20px 20px red; */
+}
+.logoSvg{
+  height: 200px;
+  width: 200px;
+}
+.center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-image: linear-gradient(to right, rgba(255,0,0,0), rgb(144, 202, 218));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+.author{
+  font-size: 24px;
+  color: #051501;
+  background-image: linear-gradient(to right, rgba(239, 239, 239, 0), rgb(14, 141, 176));
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+button {
+  font-size: calc(10px + 2vmin);
+}

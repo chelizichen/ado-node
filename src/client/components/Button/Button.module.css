@@ -1,0 +1,9 @@
+.button {
+  color: white;
+  background: linear-gradient(90deg, #b8808f, hsl(238deg 76% 35%));
+  font-size: 0.8em;
+  padding: 0.8em 2em;
+  border: none;
+  border-radius: 0.4em;
+  text-transform: uppercase;
+}

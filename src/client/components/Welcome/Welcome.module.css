@@ -1,0 +1,9 @@
+.message {
+  font-weight: bold;
+  color: transparent;
+  background-image:linear-gradient(to bottom, rgb(60, 71, 78) 30%, #77B6FF);
+  -webkit-background-clip:text;
+  display: inline-block;
+  font-size: 30px;
+  margin-bottom: 20px;
+}

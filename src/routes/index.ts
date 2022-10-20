@@ -7,7 +7,7 @@ const options = defineAdoNodeOptions({
   controller: [UserController, SeckillController, FundCompanyController],
   base: "/api",
   port: 3001,
-  staticDist: "/dist/app",
+  staticDist: "dist/app",
   globalPipes: [],
   cluster: false,
 });

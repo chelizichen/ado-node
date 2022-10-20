@@ -30,6 +30,10 @@ class UserController extends HandleController {
     };
   }
 
+  @Get("/list")
+  async getList() {
+    return await this.UserService.List();
+  }
   @Curd("/curd", User, [CONSTANT.MYSQL, CONSTANT.REDIS])
   public async CurdUser() {}
 }

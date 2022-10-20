@@ -22,8 +22,9 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "paths": {
+      "@": ["./src/client"],
+      "@/*": ["./src/client/*"],
     },
   },
   "include": ["src"],
-
 }

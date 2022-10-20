@@ -1,6 +1,7 @@
 import {
   AdoOrmBaseEnity,
   AutoCreate,
+  Collect,
   Enity,
   IsEmail,
   Key,
@@ -9,6 +10,7 @@ import {
 import { CONSTANT } from "../../config/constant";
 
 @Enity(CONSTANT.MYSQL)
+@Collect()
 class User extends AdoOrmBaseEnity {
   @Key
   id!: number;

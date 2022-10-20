@@ -5,5 +5,4 @@
     "module": "commonjs",
     "noEmit": false
   },
-    "include": ["vite.config.ts"]
 }

@@ -6,10 +6,10 @@ import { UserController } from "./user/User.Controller";
 const options = defineAdoNodeOptions({
   controller: [UserController, SeckillController, FundCompanyController],
   base: "/api",
-  port: 3786,
+  port: 3001,
   staticDist: "/dist/app",
   globalPipes: [],
-  cluster: true,
+  cluster: false,
 });
 
 export { options };

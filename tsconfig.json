@@ -6,7 +6,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleResolution": "Node",
     "strict": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "types": [ "node"],
@@ -20,10 +20,10 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
+    "jsx": "react",
     "paths": {
-      "@": ["./src/client"],
-      "@/*": ["./src/client/*"],
     },
   },
-  "include": ["src/client","src"]
+  "include": ["src"],
+
 }

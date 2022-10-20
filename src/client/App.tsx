@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import styles from "@/App.module.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "@/views/Home/index";

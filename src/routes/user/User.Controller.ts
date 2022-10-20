@@ -30,6 +30,19 @@ class UserController extends HandleController {
     };
   }
 
+  @Get("/hello")
+  async hello() {
+    return await {
+      data: "AdoNodeSSR-React",
+    };
+  }
+  @Get("/author")
+  async author() {
+    return await {
+      data: "Chelizichen",
+    };
+  }
+
   @Get("/list")
   async getList() {
     return await this.UserService.List();

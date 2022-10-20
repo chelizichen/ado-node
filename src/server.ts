@@ -5,6 +5,7 @@ import express, { Express } from "express";
 import path from "path";
 @AdoNodeConfig(CommonClass)
 class AdoNodeServerImpl extends AdoNodeServer {
+  // 通过回掉函数 返回 app 进行其他操作
   static SSRServer() {
     const app: Express = express();
     // 使用管道

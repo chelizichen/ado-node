@@ -59,4 +59,19 @@ function Req() {
   };
 }
 
-export { Query, Body, Headers, Req };
+function Res() {
+  return function (
+    target: Object,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) {
+    ref.def(
+      propertyKey as string,
+      parameterIndex,
+      target.constructor.prototype,
+      ":response"
+    );
+  };
+}
+
+export { Query, Body, Headers, Req, Res };

@@ -33,7 +33,7 @@ const createMethod = (method: string) => {
 
       ref.def(propertyKey as string, URL, target.constructor.prototype, ":url");
 
-      descriptor.value = async function (req: Request) {
+      descriptor.value = async function (req: Request, res: Response) {
         target.constructor.prototype[propertyKey] = fn;
 
         // AOP Interceptor
@@ -90,11 +90,17 @@ const createMethod = (method: string) => {
           target.constructor.prototype,
           ":request"
         );
+        const hasResponse = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":response"
+        );
         if (
           typeof hasQuery === "number" ||
           typeof hasBody === "number" ||
           typeof hasHeaders === "number" ||
-          typeof hasRequest == "number"
+          typeof hasRequest == "number" ||
+          typeof hasResponse == "number"
         ) {
           // const arguments = [req.query]
           let arg = [];
@@ -102,6 +108,7 @@ const createMethod = (method: string) => {
           arg[hasBody] = req.body;
           arg[hasHeaders] = req.headers;
           arg[hasRequest] = req;
+          arg[hasResponse] = res;
           const ret = await target.constructor.prototype[propertyKey](...arg);
           if (ret && interceptor && interceptor.after) {
             return {
@@ -128,15 +135,6 @@ const createMethod = (method: string) => {
             };
           }
         }
-
-        // unMounted
-
-        // if (req.closed) {
-        //   useRunTimeInterceptor(interceptor, "after", {
-        //     req,
-        //     res,
-        //   });
-        // }
         return {
           msg: "ok",
           code: 0,

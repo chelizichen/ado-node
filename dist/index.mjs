@@ -1878,29 +1878,10 @@ function createUpdateSql(Enity2, options) {
 
 // lib/method/server.ts
 import express2 from "express";
-import path from "path";
 import { cpus } from "os";
 import cluster from "cluster";
 function defineAdoNodeOptions(options) {
   return options;
-}
-function createSSRServer(options) {
-  const app = express2();
-  app.use(express2.json());
-  const { port, staticDist } = options;
-  const { base, controller } = options;
-  controller.forEach((el) => {
-    const router = ref.get(el);
-    console.log("router", router);
-    app.use(base, router);
-  });
-  app.use(express2.static(staticDist));
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(__dirname, "app/index.html"));
-  });
-  app.listen(port, () => {
-    console.log(`c http://localhost:${port}`);
-  });
 }
 var AdoNodeServer = class {
   static run(options) {
@@ -1946,6 +1927,22 @@ var AdoNodeServer = class {
       );
     });
   }
+  static runSSRServer(options, callBack) {
+    const app = express2();
+    if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
+      options.globalPipes.forEach((pipe) => {
+        const inst = new pipe();
+        app.use("*", inst.run);
+      });
+    }
+    app.use(express2.json());
+    const { controller, base } = options;
+    controller.forEach((el) => {
+      const router = ref.get(el);
+      app.use(base, router);
+    });
+    callBack(app);
+  }
 };
 
 // lib/method/method.ts
@@ -1962,7 +1959,7 @@ var createMethod = (method) => {
     return function(target, propertyKey, descriptor) {
       const fn = descriptor.value;
       ref.def(propertyKey, URL, target.constructor.prototype, ":url");
-      descriptor.value = async function(req) {
+      descriptor.value = async function(req, res) {
         target.constructor.prototype[propertyKey] = fn;
         const interceptor = ref.get(
           propertyKey,
@@ -2007,11 +2004,23 @@ var createMethod = (method) => {
           target.constructor.prototype,
           ":headers"
         );
-        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number") {
+        const hasRequest = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":request"
+        );
+        const hasResponse = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":response"
+        );
+        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number" || typeof hasRequest == "number" || typeof hasResponse == "number") {
           let arg = [];
           arg[hasQuery] = req.query;
           arg[hasBody] = req.body;
           arg[hasHeaders] = req.headers;
+          arg[hasRequest] = req;
+          arg[hasResponse] = res;
           const ret = await target.constructor.prototype[propertyKey](...arg);
           if (ret && interceptor && interceptor.after) {
             return {
@@ -2217,6 +2226,26 @@ function Headers() {
     );
   };
 }
+function Req() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":request"
+    );
+  };
+}
+function Res() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":response"
+    );
+  };
+}
 export {
   AdoNodeConfig,
   AdoNodeServer,
@@ -2255,6 +2284,8 @@ export {
   OberServer,
   Post,
   Query,
+  Req,
+  Res,
   Select,
   SerivceMap,
   TypesError,
@@ -2265,7 +2296,6 @@ export {
   UseInterceptor,
   UsePipe,
   cfjs,
-  createSSRServer,
   defineAdoNodeOptions,
   del,
   getCachekey,

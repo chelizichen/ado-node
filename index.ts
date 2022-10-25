@@ -15,7 +15,6 @@ import {
   GenereateRouter,
   Get,
   Post,
-  createSSRServer,
   AdoNodeServer,
   useCffn,
   useRunCf,
@@ -56,7 +55,7 @@ import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
 import { defineAdoNodeOptions } from "./lib/method/server";
 import { save, update } from "./lib/orm/sql";
-import { Query, Body, Headers, Req } from "./lib/params/params";
+import { Query, Body, Headers, Req, Res } from "./lib/params/params";
 
 // constant
 export { MESSAGE, CONSTANT, CODE };
@@ -77,7 +76,7 @@ export { SerivceMap, GenereateRouter };
 
 // method
 export { Get, Post };
-export { createSSRServer, AdoNodeServer, defineAdoNodeOptions };
+export { AdoNodeServer, defineAdoNodeOptions };
 
 // ober
 export { useCffn, useRunCf, cfjs };
@@ -125,4 +124,4 @@ export { Mapper, Connect, Select, Update, Insert, Delete };
 export { UseControllerInterceptor };
 export { UseInterceptor };
 
-export { Query, Body, Headers, Req };
+export { Query, Body, Headers, Req, Res };

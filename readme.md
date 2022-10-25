@@ -25,6 +25,28 @@
 
 ***
 
+**构建node服务所需要的额外的Package**
+
+***
+
+````
+  "dependencies": {
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1",
+    "redis": "^4.3.1",
+  },
+    "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.9",
+    "@types/mysql": "^2.15.21",
+    "@types/node": "^18.6.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.6.4",
+    "ts-node": "^10.9.1"
+  }
+````
+***
 ***
 
 ### 控制层所需要的装饰器

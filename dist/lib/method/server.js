@@ -3,9 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineAdoNodeOptions = exports.AdoNodeServer = exports.createSSRServer = void 0;
+exports.defineAdoNodeOptions = exports.AdoNodeServer = void 0;
 const express_1 = __importDefault(require("express"));
-const path_1 = __importDefault(require("path"));
 const ref_1 = require("../ioc/ref");
 const os_1 = require("os");
 const cluster_1 = __importDefault(require("cluster"));
@@ -15,25 +14,6 @@ function defineAdoNodeOptions(options) {
     return options;
 }
 exports.defineAdoNodeOptions = defineAdoNodeOptions;
-function createSSRServer(options) {
-    const app = (0, express_1.default)();
-    app.use(express_1.default.json());
-    const { port, staticDist } = options;
-    const { base, controller } = options;
-    controller.forEach((el) => {
-        const router = ref_1.ref.get(el);
-        console.log("router", router);
-        app.use(base, router);
-    });
-    app.use(express_1.default.static(staticDist));
-    app.get("*", (_req, res) => {
-        res.sendFile(path_1.default.join(__dirname, "app/index.html"));
-    });
-    app.listen(port, () => {
-        console.log(`c http://localhost:${port}`);
-    });
-}
-exports.createSSRServer = createSSRServer;
 class AdoNodeServer {
     static run(options) {
         // 开启多进程
@@ -89,6 +69,44 @@ class AdoNodeServer {
         app.listen(port, () => {
             console.log(`create server at  http://localhost:${port} Worker ${process.pid} started`);
         });
+    }
+    static runSSRServer(options, callBack) {
+        const app = (0, express_1.default)();
+        // 使用管道
+        if (options.globalPipes &&
+            options.globalPipes.length &&
+            options instanceof Array) {
+            options.globalPipes.forEach((pipe) => {
+                const inst = new pipe();
+                app.use("*", inst.run);
+            });
+        }
+        // 使用JSON
+        app.use(express_1.default.json());
+        // 创建Router
+        const { controller, base } = options;
+        controller.forEach((el) => {
+            const router = ref_1.ref.get(el);
+            app.use(base, router);
+        });
+        /**
+         * // if use vite ssr
+         * app.use(express.static("dist/app"));
+         * // create port
+         * app.set("port", options.port);
+         * app.get("*", (_req, res) => {
+         *
+         * // send ssr html
+         * res.sendFile(path.join(__dirname, "app/index.html"));
+         * });
+         * // listen
+         * app.listen(port, () => {
+         *    console.log(
+         *    `create server at  http://localhost:${port} Worker ${process.pid} started`
+         *    );
+         * });
+         */
+        callBack(app);
     }
 }
 exports.AdoNodeServer = AdoNodeServer;

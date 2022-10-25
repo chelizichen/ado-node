@@ -68,6 +68,8 @@ __export(ado_node_exports, {
   OberServer: () => OberServer,
   Post: () => Post,
   Query: () => Query,
+  Req: () => Req,
+  Res: () => Res,
   Select: () => Select,
   SerivceMap: () => SerivceMap,
   TypesError: () => TypesError,
@@ -78,7 +80,6 @@ __export(ado_node_exports, {
   UseInterceptor: () => UseInterceptor,
   UsePipe: () => UsePipe,
   cfjs: () => cfjs,
-  createSSRServer: () => createSSRServer,
   defineAdoNodeOptions: () => defineAdoNodeOptions,
   del: () => del,
   getCachekey: () => getCachekey,
@@ -1967,29 +1968,10 @@ function createUpdateSql(Enity2, options) {
 
 // lib/method/server.ts
 var import_express = __toESM(require("express"));
-var import_path = __toESM(require("path"));
 var import_os = require("os");
 var import_cluster = __toESM(require("cluster"));
 function defineAdoNodeOptions(options) {
   return options;
-}
-function createSSRServer(options) {
-  const app = (0, import_express.default)();
-  app.use(import_express.default.json());
-  const { port, staticDist } = options;
-  const { base, controller } = options;
-  controller.forEach((el) => {
-    const router = ref.get(el);
-    console.log("router", router);
-    app.use(base, router);
-  });
-  app.use(import_express.default.static(staticDist));
-  app.get("*", (_req, res) => {
-    res.sendFile(import_path.default.join(__dirname, "app/index.html"));
-  });
-  app.listen(port, () => {
-    console.log(`c http://localhost:${port}`);
-  });
 }
 var AdoNodeServer = class {
   static run(options) {
@@ -2035,6 +2017,22 @@ var AdoNodeServer = class {
       );
     });
   }
+  static runSSRServer(options, callBack) {
+    const app = (0, import_express.default)();
+    if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
+      options.globalPipes.forEach((pipe) => {
+        const inst = new pipe();
+        app.use("*", inst.run);
+      });
+    }
+    app.use(import_express.default.json());
+    const { controller, base } = options;
+    controller.forEach((el) => {
+      const router = ref.get(el);
+      app.use(base, router);
+    });
+    callBack(app);
+  }
 };
 
 // lib/method/method.ts
@@ -2051,7 +2049,7 @@ var createMethod = (method) => {
     return function(target, propertyKey, descriptor) {
       const fn = descriptor.value;
       ref.def(propertyKey, URL, target.constructor.prototype, ":url");
-      descriptor.value = async function(req) {
+      descriptor.value = async function(req, res) {
         target.constructor.prototype[propertyKey] = fn;
         const interceptor = ref.get(
           propertyKey,
@@ -2096,11 +2094,23 @@ var createMethod = (method) => {
           target.constructor.prototype,
           ":headers"
         );
-        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number") {
+        const hasRequest = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":request"
+        );
+        const hasResponse = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":response"
+        );
+        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number" || typeof hasRequest == "number" || typeof hasResponse == "number") {
           let arg = [];
           arg[hasQuery] = req.query;
           arg[hasBody] = req.body;
           arg[hasHeaders] = req.headers;
+          arg[hasRequest] = req;
+          arg[hasResponse] = res;
           const ret = await target.constructor.prototype[propertyKey](...arg);
           if (ret && interceptor && interceptor.after) {
             return {
@@ -2306,6 +2316,26 @@ function Headers() {
     );
   };
 }
+function Req() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":request"
+    );
+  };
+}
+function Res() {
+  return function(target, propertyKey, parameterIndex) {
+    ref.def(
+      propertyKey,
+      parameterIndex,
+      target.constructor.prototype,
+      ":response"
+    );
+  };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AdoNodeConfig,
@@ -2345,6 +2375,8 @@ function Headers() {
   OberServer,
   Post,
   Query,
+  Req,
+  Res,
   Select,
   SerivceMap,
   TypesError,
@@ -2355,7 +2387,6 @@ function Headers() {
   UseInterceptor,
   UsePipe,
   cfjs,
-  createSSRServer,
   defineAdoNodeOptions,
   del,
   getCachekey,

@@ -24,7 +24,7 @@ import { Controller } from "./ioc/controller";
 import { Collect, Inject } from "./ioc/ioc";
 import { ref } from "./ioc/ref";
 import { Curd } from "./oper/curd";
-import { AdoNodeServer, createSSRServer } from "./method/server";
+import { AdoNodeServer } from "./method/server";
 import { Get, Post } from "./method/method";
 import { GenereateRouter, SerivceMap } from "./ioc/service";
 import { UsePipe, validate } from "./pipe/pipe";
@@ -58,7 +58,7 @@ export { SerivceMap, GenereateRouter };
 
 // method
 export { Get, Post };
-export { createSSRServer, AdoNodeServer };
+export { AdoNodeServer };
 
 // ober
 export { useCffn, useRunCf, cfjs };

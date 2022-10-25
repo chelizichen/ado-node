@@ -39,8 +39,9 @@ class App1017Controller extends HandleController {
   }
 
   @Get("/a3")
-  public async a3(@Query() query: any) {
-    console.log(query);
+  public async a3(@Req() req: any, @Query() query: any) {
+    console.log("req", req);
+    console.log("query", query);
 
     // console.log(query);
     return {

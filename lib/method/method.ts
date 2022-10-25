@@ -19,6 +19,55 @@ export function useRunTimeInterceptor(
   return undefined;
 }
 
+function useArgs(
+  propertyKey: string,
+  target: Object,
+  req: Request,
+  res: Response
+): any[] {
+  const hasQuery = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":query"
+  );
+  const hasBody = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":body"
+  );
+  const hasHeaders = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":headers"
+  );
+  const hasRequest = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":request"
+  );
+  const hasResponse = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":response"
+  );
+  let arg = [];
+  if (
+    typeof hasQuery === "number" ||
+    typeof hasBody === "number" ||
+    typeof hasHeaders === "number" ||
+    typeof hasRequest == "number" ||
+    typeof hasResponse == "number"
+  ) {
+    arg[hasQuery] = req.query;
+    arg[hasBody] = req.body;
+    arg[hasHeaders] = req.headers;
+    arg[hasRequest] = req;
+    arg[hasResponse] = res;
+    return arg;
+  }
+  return [];
+}
+
 /**
  * @Params Method Like GET POST
  */
@@ -69,72 +118,27 @@ const createMethod = (method: string) => {
         if (hack_data) {
           return hack_data;
         }
+        const args = useArgs(propertyKey as string, target, req, res);
 
-        const hasQuery = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":query"
-        );
-        const hasBody = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":body"
-        );
-        const hasHeaders = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":headers"
-        );
-        const hasRequest = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":request"
-        );
-        const hasResponse = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":response"
-        );
-        if (
-          typeof hasQuery === "number" ||
-          typeof hasBody === "number" ||
-          typeof hasHeaders === "number" ||
-          typeof hasRequest == "number" ||
-          typeof hasResponse == "number"
-        ) {
-          // const arguments = [req.query]
-          let arg = [];
-          arg[hasQuery] = req.query;
-          arg[hasBody] = req.body;
-          arg[hasHeaders] = req.headers;
-          arg[hasRequest] = req;
-          arg[hasResponse] = res;
-          const ret = await target.constructor.prototype[propertyKey](...arg);
-          if (ret && interceptor && interceptor.after) {
-            return {
-              data: ret,
-              after: interceptor.after,
-            };
-          }
-          if (ret && !interceptor) {
-            return {
-              data: ret,
-            };
-          }
+        let ret;
+
+        if (args.length > 0) {
+          ret = await target.constructor.prototype[propertyKey](...args);
         } else {
-          const ret = await target.constructor.prototype[propertyKey](req);
-          if (ret && interceptor && interceptor.after) {
-            return {
-              data: ret,
-              after: interceptor.after,
-            };
-          }
-          if (ret && !interceptor) {
-            return {
-              data: ret,
-            };
-          }
+          ret = await target.constructor.prototype[propertyKey](req, res);
         }
+        if (ret && interceptor && interceptor.after) {
+          return {
+            data: ret,
+            after: interceptor.after,
+          };
+        }
+        if (ret && !interceptor) {
+          return {
+            data: ret,
+          };
+        }
+
         return {
           msg: "ok",
           code: 0,
@@ -151,4 +155,5 @@ const createMethod = (method: string) => {
 
 const Get = createMethod("Get");
 const Post = createMethod("Post");
-export { Get, Post };
+const All = createMethod("All");
+export { Get, Post, All };

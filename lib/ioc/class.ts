@@ -93,7 +93,6 @@ class HandleController {
       }
       if (service.method == "Post") {
         URL = this.Base + URL;
-
         app.post(URL, service.fn);
       }
       if (service.method == "All") {

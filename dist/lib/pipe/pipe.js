@@ -10,14 +10,16 @@ const UsePipe = (fn) => {
     };
 };
 exports.UsePipe = UsePipe;
-function validate(inst) {
+function validate(Proto, inst) {
     let errorfield = {};
     // 得到所有自动生成的
-    const Autocreate = core_1.ref.get(enity_1.ENITY_CONSTANT.AutoCreate, inst.__proto__);
+    const Autocreate = core_1.ref.get(enity_1.ENITY_CONSTANT.AutoCreate, Proto.prototype);
+    console.log("Autocreate", Autocreate);
     // 过滤不需要判断的
-    const Filter = Object.getOwnPropertyNames(inst).filter((el) => Autocreate.indexOf(el) == -1);
+    const Filter = Object.getOwnPropertyNames(new Proto()).filter((el) => Autocreate.indexOf(el) == -1);
+    console.log("Filter", Filter);
     const isError = Filter.some((el) => {
-        const func = core_1.ref.get(el, inst.__proto__);
+        const func = core_1.ref.get(el, Proto.prototype);
         const ret = func(inst[el]);
         if (!ret) {
             errorfield = {

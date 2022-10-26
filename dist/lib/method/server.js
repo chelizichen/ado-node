@@ -8,8 +8,6 @@ const express_1 = __importDefault(require("express"));
 const ref_1 = require("../ioc/ref");
 const os_1 = require("os");
 const cluster_1 = __importDefault(require("cluster"));
-// import http from "http";
-// import { debug } from "node:util";
 function defineAdoNodeOptions(options) {
     return options;
 }

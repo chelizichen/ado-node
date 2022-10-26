@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "ts-decorator for express server",
   "exports": {
     ".": {

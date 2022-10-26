@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Post = exports.Get = exports.useRunTimeInterceptor = void 0;
+exports.All = exports.Post = exports.Get = exports.useRunTimeInterceptor = void 0;
 const service_1 = require("../ioc/service");
 const core_1 = require("../core");
 function useRunTimeInterceptor(Interceptor, time, options) {
@@ -12,6 +12,27 @@ function useRunTimeInterceptor(Interceptor, time, options) {
     return undefined;
 }
 exports.useRunTimeInterceptor = useRunTimeInterceptor;
+function useArgs(propertyKey, target, req, res) {
+    const hasQuery = core_1.ref.get(propertyKey, target.constructor.prototype, ":query");
+    const hasBody = core_1.ref.get(propertyKey, target.constructor.prototype, ":body");
+    const hasHeaders = core_1.ref.get(propertyKey, target.constructor.prototype, ":headers");
+    const hasRequest = core_1.ref.get(propertyKey, target.constructor.prototype, ":request");
+    const hasResponse = core_1.ref.get(propertyKey, target.constructor.prototype, ":response");
+    let arg = [];
+    if (typeof hasQuery === "number" ||
+        typeof hasBody === "number" ||
+        typeof hasHeaders === "number" ||
+        typeof hasRequest == "number" ||
+        typeof hasResponse == "number") {
+        arg[hasQuery] = req.query;
+        arg[hasBody] = req.body;
+        arg[hasHeaders] = req.headers;
+        arg[hasRequest] = req;
+        arg[hasResponse] = res;
+        return arg;
+    }
+    return [req, res];
+}
 /**
  * @Params Method Like GET POST
  */
@@ -44,49 +65,18 @@ const createMethod = (method) => {
                 if (hack_data) {
                     return hack_data;
                 }
-                const hasQuery = core_1.ref.get(propertyKey, target.constructor.prototype, ":query");
-                const hasBody = core_1.ref.get(propertyKey, target.constructor.prototype, ":body");
-                const hasHeaders = core_1.ref.get(propertyKey, target.constructor.prototype, ":headers");
-                const hasRequest = core_1.ref.get(propertyKey, target.constructor.prototype, ":request");
-                const hasResponse = core_1.ref.get(propertyKey, target.constructor.prototype, ":response");
-                if (typeof hasQuery === "number" ||
-                    typeof hasBody === "number" ||
-                    typeof hasHeaders === "number" ||
-                    typeof hasRequest == "number" ||
-                    typeof hasResponse == "number") {
-                    // const arguments = [req.query]
-                    let arg = [];
-                    arg[hasQuery] = req.query;
-                    arg[hasBody] = req.body;
-                    arg[hasHeaders] = req.headers;
-                    arg[hasRequest] = req;
-                    arg[hasResponse] = res;
-                    const ret = await target.constructor.prototype[propertyKey](...arg);
-                    if (ret && interceptor && interceptor.after) {
-                        return {
-                            data: ret,
-                            after: interceptor.after,
-                        };
-                    }
-                    if (ret && !interceptor) {
-                        return {
-                            data: ret,
-                        };
-                    }
+                const args = useArgs(propertyKey, target, req, res);
+                const ret = await target.constructor.prototype[propertyKey](...args);
+                if (ret && interceptor && interceptor.after) {
+                    return {
+                        data: ret,
+                        after: interceptor.after,
+                    };
                 }
-                else {
-                    const ret = await target.constructor.prototype[propertyKey](req);
-                    if (ret && interceptor && interceptor.after) {
-                        return {
-                            data: ret,
-                            after: interceptor.after,
-                        };
-                    }
-                    if (ret && !interceptor) {
-                        return {
-                            data: ret,
-                        };
-                    }
+                if (ret && !interceptor) {
+                    return {
+                        data: ret,
+                    };
                 }
                 return {
                     msg: "ok",
@@ -104,4 +94,6 @@ const Get = createMethod("Get");
 exports.Get = Get;
 const Post = createMethod("Post");
 exports.Post = Post;
+const All = createMethod("All");
+exports.All = All;
 //# sourceMappingURL=method.js.map

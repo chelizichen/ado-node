@@ -10,7 +10,6 @@ export class TestGlobalPipe implements AdoNodeGlobalPipe {
     next: NextFunction
   ): void {
     console.log("req.query", req.query);
-
     next();
   }
 }

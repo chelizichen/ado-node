@@ -29,4 +29,5 @@ class commonClass {
     return coon;
   }
 }
+
 export { commonClass };

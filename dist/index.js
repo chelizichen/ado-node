@@ -5,7 +5,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -23,10 +22,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
 
 // index.ts
 var ado_node_exports = {};
@@ -79,7 +74,7 @@ __export(ado_node_exports, {
   UseDataBase: () => UseDataBase,
   UseInterceptor: () => UseInterceptor,
   UsePipe: () => UsePipe,
-  cfjs: () => cfjs,
+  class_transform: () => class_transform,
   defineAdoNodeOptions: () => defineAdoNodeOptions,
   del: () => del,
   getCachekey: () => getCachekey,
@@ -88,9 +83,7 @@ __export(ado_node_exports, {
   ref: () => ref,
   save: () => save,
   update: () => update,
-  useCffn: () => useCffn,
   useConfig: () => useConfig,
-  useRunCf: () => useRunCf,
   validate: () => validate
 });
 module.exports = __toCommonJS(ado_node_exports);
@@ -955,32 +948,6 @@ var TypesError = class extends Error {
     };
   }
 };
-
-// lib/ober/cfjs.ts
-function useCffn(fn, weight) {
-  cfjs.add(fn, weight);
-}
-function useRunCf() {
-  cfjs.run();
-}
-var _cfjs = class {
-  static add(fn, weight) {
-    _cfjs.store.push({ fn, weight });
-  }
-  static sort() {
-    _cfjs.store.sort((a, b) => {
-      return a.weight - b.weight;
-    });
-  }
-  static run() {
-    _cfjs.sort();
-    _cfjs.store.forEach((el) => {
-      el.fn();
-    });
-  }
-};
-var cfjs = _cfjs;
-__publicField(cfjs, "store", []);
 
 // lib/ober/oberserver.ts
 var OberServer = class {
@@ -2044,6 +2011,43 @@ function useRunTimeInterceptor(Interceptor, time, options) {
   }
   return void 0;
 }
+function useArgs(propertyKey, target, req, res) {
+  const hasQuery = ref.get(
+    propertyKey,
+    target.constructor.prototype,
+    ":query"
+  );
+  const hasBody = ref.get(
+    propertyKey,
+    target.constructor.prototype,
+    ":body"
+  );
+  const hasHeaders = ref.get(
+    propertyKey,
+    target.constructor.prototype,
+    ":headers"
+  );
+  const hasRequest = ref.get(
+    propertyKey,
+    target.constructor.prototype,
+    ":request"
+  );
+  const hasResponse = ref.get(
+    propertyKey,
+    target.constructor.prototype,
+    ":response"
+  );
+  let arg = [];
+  if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number" || typeof hasRequest == "number" || typeof hasResponse == "number") {
+    arg[hasQuery] = req.query;
+    arg[hasBody] = req.body;
+    arg[hasHeaders] = req.headers;
+    arg[hasRequest] = req;
+    arg[hasResponse] = res;
+    return arg;
+  }
+  return [req, res];
+}
 var createMethod = (method) => {
   return (URL) => {
     return function(target, propertyKey, descriptor) {
@@ -2079,63 +2083,18 @@ var createMethod = (method) => {
         if (hack_data) {
           return hack_data;
         }
-        const hasQuery = ref.get(
-          propertyKey,
-          target.constructor.prototype,
-          ":query"
-        );
-        const hasBody = ref.get(
-          propertyKey,
-          target.constructor.prototype,
-          ":body"
-        );
-        const hasHeaders = ref.get(
-          propertyKey,
-          target.constructor.prototype,
-          ":headers"
-        );
-        const hasRequest = ref.get(
-          propertyKey,
-          target.constructor.prototype,
-          ":request"
-        );
-        const hasResponse = ref.get(
-          propertyKey,
-          target.constructor.prototype,
-          ":response"
-        );
-        if (typeof hasQuery === "number" || typeof hasBody === "number" || typeof hasHeaders === "number" || typeof hasRequest == "number" || typeof hasResponse == "number") {
-          let arg = [];
-          arg[hasQuery] = req.query;
-          arg[hasBody] = req.body;
-          arg[hasHeaders] = req.headers;
-          arg[hasRequest] = req;
-          arg[hasResponse] = res;
-          const ret = await target.constructor.prototype[propertyKey](...arg);
-          if (ret && interceptor && interceptor.after) {
-            return {
-              data: ret,
-              after: interceptor.after
-            };
-          }
-          if (ret && !interceptor) {
-            return {
-              data: ret
-            };
-          }
-        } else {
-          const ret = await target.constructor.prototype[propertyKey](req);
-          if (ret && interceptor && interceptor.after) {
-            return {
-              data: ret,
-              after: interceptor.after
-            };
-          }
-          if (ret && !interceptor) {
-            return {
-              data: ret
-            };
-          }
+        const args = useArgs(propertyKey, target, req, res);
+        const ret = await target.constructor.prototype[propertyKey](...args);
+        if (ret && interceptor && interceptor.after) {
+          return {
+            data: ret,
+            after: interceptor.after
+          };
+        }
+        if (ret && !interceptor) {
+          return {
+            data: ret
+          };
         }
         return {
           msg: "ok",
@@ -2151,6 +2110,7 @@ var createMethod = (method) => {
 };
 var Get = createMethod("Get");
 var Post = createMethod("Post");
+var All = createMethod("All");
 
 // lib/pipe/pipe.ts
 var UsePipe = (fn) => {
@@ -2158,17 +2118,19 @@ var UsePipe = (fn) => {
     ref.def(propertyKey, fn, target.constructor.prototype, ":pipe");
   };
 };
-function validate(inst) {
+function validate(Proto, inst) {
   let errorfield = {};
   const Autocreate = ref.get(
     "AutoCreate" /* AutoCreate */,
-    inst.__proto__
+    Proto.prototype
   );
-  const Filter = Object.getOwnPropertyNames(inst).filter(
+  console.log("Autocreate", Autocreate);
+  const Filter = Object.getOwnPropertyNames(new Proto()).filter(
     (el) => Autocreate.indexOf(el) == -1
   );
+  console.log("Filter", Filter);
   const isError = Filter.some((el) => {
-    const func = ref.get(el, inst.__proto__);
+    const func = ref.get(el, Proto.prototype);
     const ret = func(inst[el]);
     if (!ret) {
       errorfield = {
@@ -2336,6 +2298,70 @@ function Res() {
     );
   };
 }
+
+// lib/pipe/tansformer.ts
+var __ = __toESM(require("lodash"));
+var class_transform = class {
+  static plainToClass(toClass, plain) {
+    if (plain instanceof Array) {
+      let retPlain = plain.map((el) => {
+        const inst = new toClass();
+        return __.assign(inst, el);
+      });
+      return retPlain;
+    } else {
+      const inst = new toClass();
+      let retPlain = __.assign(inst, plain);
+      return retPlain;
+    }
+  }
+  static __classToPlain__(get, inst) {
+    const plain = {};
+    get.forEach((el) => {
+      plain[el] = inst[el];
+    });
+    return plain;
+  }
+  static classToPlain(classInst, options) {
+    if (!options || options.exclude) {
+      if (classInst instanceof Array) {
+        let plain = classInst.map((inst) => {
+          const filt = ref.get(
+            "AutoCreate" /* AutoCreate */,
+            inst.constructor.prototype
+          );
+          const keys = Object.getOwnPropertyNames(inst);
+          const get = keys.map((el) => {
+            return filt.indexOf(el) == -1 ? el : void 0;
+          }).filter((el) => el);
+          return this.__classToPlain__(get, inst);
+        });
+        return plain;
+      } else {
+        const filt = ref.get(
+          "AutoCreate" /* AutoCreate */,
+          classInst.constructor.prototype
+        );
+        const keys = Object.getOwnPropertyNames(classInst);
+        const get = keys.map((el) => {
+          return filt.indexOf(el) == -1 ? el : void 0;
+        }).filter((el) => el);
+        return this.__classToPlain__(get, classInst);
+      }
+    } else {
+      if (classInst instanceof Array) {
+        let plain = classInst.map((inst) => {
+          const keys = Object.getOwnPropertyNames(inst).filter((el) => el);
+          return this.__classToPlain__(keys, inst);
+        });
+        return plain;
+      } else {
+        const keys = Object.getOwnPropertyNames(classInst).filter((el) => el);
+        return this.__classToPlain__(keys, classInst);
+      }
+    }
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AdoNodeConfig,
@@ -2386,7 +2412,7 @@ function Res() {
   UseDataBase,
   UseInterceptor,
   UsePipe,
-  cfjs,
+  class_transform,
   defineAdoNodeOptions,
   del,
   getCachekey,
@@ -2395,9 +2421,7 @@ function Res() {
   ref,
   save,
   update,
-  useCffn,
   useConfig,
-  useRunCf,
   validate
 });
 /*! *****************************************************************************

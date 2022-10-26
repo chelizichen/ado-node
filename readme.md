@@ -245,7 +245,43 @@ opt: [ { g_price: '666', g_type: '222', g_name: '商品安利' } ],
 sql: 'insert into  goods SET ? '
 ````
 
-#### *ORM*
+### 配置类
+
+*全局共享一个配置类,通过 @CreateCache(string) 或者 @CreateDb(string) 来创建数据库连接实例 和 Redis实例，可以用 useConfig 函数获得此类的实例*
+
+````
+@Config
+class commonClass {
+
+  @CreateCache("redis")
+  public async getRedis() {
+    return await createClient();
+  }
+
+  @CreateDb("mysql")
+  public async getConn() {
+    const config = {
+      host: "localhost",
+      user: "root",
+      password: "12345678",
+      database: "boot", //所用数据库
+      port: 3306,
+    };
+    const coon = await mysql.createConnection({
+      host: config.host,
+      user: config.user,
+      password: config.password,
+      database: config.database,
+      port: config.port,
+      multipleStatements: true,
+    });
+    return coon;
+  }
+}
+````
+
+
+### *ORM*
 
 ````
 
@@ -257,7 +293,7 @@ this.AnyEnity.getMany(val)
 this.AnyEnity.getList(val)
 ````
 
-#### *Pipe* 使用管道
+### *Pipe* 使用管道
 
 ````
   // 全局管道本质上等同于
@@ -286,9 +322,8 @@ class FundCodePipe implements AdoNodePipe {
   }
 }
 ````
-#### 10.26 Update
-*class_transform*
-*将 朴素的 数据 变成为 类的实例*
+### 结合 *class_transform* 的一个完整的例子
+* class_transform -> 将 朴素的 数据(JSON) 变成为 类的实例*
 ````
 // Pipe 层
 class UserInfoPlainPipe implements AdoNodePipe {
@@ -307,7 +342,9 @@ class UserInfoPlainPipe implements AdoNodePipe {
 }
 
 // Controller 层
-  @Post("/a5")
+@Controller("/app")
+class App1017Controller extends HandleController {
+  @Post("/a1")
   @UsePipe(new UserInfoPlainPipe())
   public async a5(@Body() user: User) {
     return {
@@ -315,6 +352,7 @@ class UserInfoPlainPipe implements AdoNodePipe {
       msg: "ok",
     };
   }
+}
 
 // Enity 层
 
@@ -373,4 +411,23 @@ class UserLogInterceptor implements AdoNodeInterceptor {
     }
   }
 }
+````
+
+
+
+### 启动服务
+
+````
+const options = defineAdoNodeOptions({
+  controller: HandlController[],
+  base: string,
+  port: number,
+  staticDist: string,
+  globalPipes: AdoNodeGolbalPipe[],
+  cluster: boolean,
+});
+
+@AdoNodeConfig(ClassConstructor)
+export class AdoNodeServerImpl extends AdoNodeServer {}
+AdoNodeServerImpl.run(options);
 ````

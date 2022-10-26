@@ -2,6 +2,11 @@ import { AdoNodeInterceptor } from "../../../lib/interceptor/interceptor";
 import { Request } from "express";
 import { AdoNodePipe } from "../../../lib/types";
 import { AdoNodeControllerInterceptor } from "../../../lib/interceptor/global";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
+import { class_transform } from "../../../lib/pipe/tansformer";
+import { User } from "../App917/App917.enity";
+import { validate } from "../../../lib/core";
 class UserLogInterceptor implements AdoNodeInterceptor {
   async hack(req: Request) {
     if (req.closed) {
@@ -45,4 +50,24 @@ class UserLogPipe implements AdoNodePipe {
   }
 }
 
-export { UserLogInterceptor, UserLogPipe, UserControllerInterceptor };
+class UserInfoPlainPipe implements AdoNodePipe {
+  async run(
+    req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>
+  ) {
+    const error = validate(User, req.body);
+
+    if (error instanceof Error) {
+      return error;
+    } else {
+      const user = class_transform.plainToClass(User, req.body);
+      req.body = user;
+    }
+    return;
+  }
+}
+export {
+  UserLogInterceptor,
+  UserLogPipe,
+  UserControllerInterceptor,
+  UserInfoPlainPipe,
+};

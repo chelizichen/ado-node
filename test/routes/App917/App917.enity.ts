@@ -31,6 +31,11 @@ export class User extends AdoOrmBaseEnity {
   @AutoCreate
   @IsOptional
   createTime!: string;
+
+  @AutoCreate
+  FullName() {
+    return this.username + this.email;
+  }
 }
 
 export class Ret {

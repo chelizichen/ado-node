@@ -7,9 +7,7 @@ import { AdoNodePipe, validate } from "../../../lib/pipe/pipe";
 import { User } from "./App917.enity";
 export class UserNamePipe implements AdoNodePipe {
   async run(req: Request) {
-    let inst = new User();
-    const merge = Object.assign(inst, req.query);
-    const isError = validate(merge);
+    const isError = validate(User, req.body);
     if (isError !== true) {
       return isError;
     }

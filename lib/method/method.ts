@@ -65,7 +65,7 @@ function useArgs(
     arg[hasResponse] = res;
     return arg;
   }
-  return [];
+  return [req, res];
 }
 
 /**
@@ -120,13 +120,7 @@ const createMethod = (method: string) => {
         }
         const args = useArgs(propertyKey as string, target, req, res);
 
-        let ret;
-
-        if (args.length > 0) {
-          ret = await target.constructor.prototype[propertyKey](...args);
-        } else {
-          ret = await target.constructor.prototype[propertyKey](req, res);
-        }
+        const ret = await target.constructor.prototype[propertyKey](...args);
         if (ret && interceptor && interceptor.after) {
           return {
             data: ret,

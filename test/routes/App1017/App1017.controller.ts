@@ -8,8 +8,10 @@ import {
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
 import { Body, Headers, Query, Req } from "../../../lib/params/params";
+import { User } from "../App917/App917.enity";
 import {
   UserControllerInterceptor,
+  UserInfoPlainPipe,
   UserLogInterceptor,
   UserLogPipe,
 } from "./App1017.utils";
@@ -46,6 +48,8 @@ class App1017Controller extends HandleController {
     // console.log(query);
     return {
       data: "ok",
+      userName: "lee",
+      password: "leemulus21",
     };
   }
   @Post("/a4")
@@ -60,6 +64,15 @@ class App1017Controller extends HandleController {
     console.log(body);
     return {
       data: "ok",
+    };
+  }
+
+  @Post("/a5")
+  @UsePipe(new UserInfoPlainPipe())
+  public async a5(@Body() body: User) {
+    return {
+      data: body.FullName(),
+      msg: "ok",
     };
   }
 }

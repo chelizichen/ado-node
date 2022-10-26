@@ -4,7 +4,6 @@ import { Error } from "./error/error";
 import { DataBaseError } from "./error/dababase";
 import { FieldError } from "./error/field";
 import { TypesError } from "./error/type";
-import { useCffn, useRunCf, cfjs } from "./ober/cfjs";
 import { OberServer } from "./ober/oberserver";
 import { getStrCount } from "./oper/protect";
 import {
@@ -61,7 +60,6 @@ export { Get, Post };
 export { AdoNodeServer };
 
 // ober
-export { useCffn, useRunCf, cfjs };
 export { OberServer };
 
 // oper

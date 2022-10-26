@@ -19,19 +19,23 @@ interface AdoNodePipe {
   run(req: Request): Promise<any>;
 }
 
-function validate(inst: any) {
+function validate(Proto: any, inst: any) {
   let errorfield: Record<string, any> = {};
   // 得到所有自动生成的
   const Autocreate = ref.get(
     ENITY_CONSTANT.AutoCreate,
-    inst.__proto__
+    Proto.prototype
   ) as string[];
+  console.log("Autocreate", Autocreate);
+
   // 过滤不需要判断的
-  const Filter = Object.getOwnPropertyNames(inst).filter(
+  const Filter = Object.getOwnPropertyNames(new Proto()).filter(
     (el) => Autocreate.indexOf(el) == -1
   );
+  console.log("Filter", Filter);
+
   const isError = Filter.some((el) => {
-    const func = ref.get(el, inst.__proto__);
+    const func = ref.get(el, Proto.prototype);
     const ret = func(inst[el]);
     if (!ret) {
       errorfield = {

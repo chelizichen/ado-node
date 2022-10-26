@@ -343,7 +343,7 @@ class UserInfoPlainPipe implements AdoNodePipe {
 
 // Controller 层
 @Controller("/app")
-class App1017Controller extends HandleController {
+class AppController extends HandleController {
   @Post("/a1")
   @UsePipe(new UserInfoPlainPipe())
   public async a5(@Body() user: User) {

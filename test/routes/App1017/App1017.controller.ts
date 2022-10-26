@@ -69,9 +69,9 @@ class App1017Controller extends HandleController {
 
   @Post("/a5")
   @UsePipe(new UserInfoPlainPipe())
-  public async a5(@Body() body: User) {
+  public async a5(@Body() user: User) {
     return {
-      data: body.FullName(),
+      data: user.FullName(),
       msg: "ok",
     };
   }

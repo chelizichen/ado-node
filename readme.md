@@ -95,7 +95,7 @@
 * del
 * update
 * save
-* validate(inst:DTO instantce )
+* validate(Enity,plain)
 
 ##### Pipe 管道验证
 
@@ -283,6 +283,68 @@ class FundCodePipe implements AdoNodePipe {
   run(req: Request){
     // 任何返回值 判断为真时都将被 res.json() 处理
     // 只有返回false 或者 void 时会进入下一个生命周期
+  }
+}
+````
+#### 10.26 Update
+*class_transform*
+*将 朴素的 数据 变成为 类的实例*
+````
+// Pipe 层
+class UserInfoPlainPipe implements AdoNodePipe {
+  async run(
+    req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>
+  ) {
+    const error = validate(User, req.body);
+    if (error instanceof Error) {
+      return error;
+    } else {
+      const user = class_transform.plainToClass(User, req.body);
+      req.body = user;
+    }
+    return;
+  }
+}
+
+// Controller 层
+  @Post("/a5")
+  @UsePipe(new UserInfoPlainPipe())
+  public async a5(@Body() user: User) {
+    return {
+      data: user.FullName(),
+      msg: "ok",
+    };
+  }
+
+// Enity 层
+
+@Enity("mysql")
+@Collect()
+export class User extends AdoOrmBaseEnity {
+  @Key
+  @AutoCreate
+  id!: number;
+
+  @IsNumber
+  phone!: number;
+
+  @Keyword
+  @IsOptional
+  username!: string;
+
+  @IsNumber
+  password!: string;
+
+  @IsEmail
+  email!: string;
+
+  @AutoCreate
+  @IsOptional
+  createTime!: string;
+
+  @AutoCreate
+  FullName() {
+    return this.username + this.email;
   }
 }
 ````

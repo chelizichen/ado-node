@@ -15,7 +15,11 @@ const options = defineAdoNodeOptions({
   port: 3000,
   staticDist: "dist/app",
   globalPipes: [TestGlobalPipe],
-  cluster: true,
 });
+
+// @Module({
+//
+// })
+// class AppModule {}
 
 export { options };

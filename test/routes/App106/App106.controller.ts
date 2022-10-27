@@ -2,14 +2,14 @@ import { RedisClientType } from "redis";
 import {
   Controller,
   UseCache,
-  HandleController,
+  AdoNodeController,
   Get,
   Inject,
 } from "../../../index";
 import { Goods } from "./App106.enity";
 
 @Controller("/app106")
-class App106Controller extends HandleController {
+class App106Controller extends AdoNodeController {
   @UseCache("redis")
   Redis!: RedisClientType;
 

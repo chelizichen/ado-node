@@ -3,7 +3,7 @@ import * as express from "express";
 import { ref } from "./ref";
 import { Request, Response } from "express";
 import { AdoNodeControllerInterceptor } from "../interceptor/global";
-class HandleController {
+class AdoNodeController {
   constructor(
     public readonly Base: string,
     public readonly Service: Map<
@@ -103,4 +103,4 @@ class HandleController {
   }
 }
 
-export { HandleController };
+export { AdoNodeController };

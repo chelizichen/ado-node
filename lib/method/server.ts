@@ -1,14 +1,14 @@
 import express, { Express } from "express";
 import { ref } from "../ioc/ref";
-import { HandleProxyOptions } from "../types";
+import { AdoNodeOptions } from "../types";
 import { cpus } from "os";
 import cluster from "cluster";
-function defineAdoNodeOptions(options: HandleProxyOptions) {
+function defineAdoNodeOptions(options: AdoNodeOptions) {
   return options;
 }
 
 class AdoNodeServer {
-  static run(options: HandleProxyOptions) {
+  static run(options: AdoNodeOptions) {
     // 开启多进程
 
     if (options.cluster) {
@@ -40,7 +40,7 @@ class AdoNodeServer {
     }
   }
 
-  static runServer(options: HandleProxyOptions) {
+  static runServer(options: AdoNodeOptions) {
     const app: Express = express();
     // 使用管道
     if (
@@ -76,7 +76,7 @@ class AdoNodeServer {
   }
 
   static runSSRServer(
-    options: HandleProxyOptions,
+    options: AdoNodeOptions,
     callBack: (app: Express) => void
   ) {
     const app: Express = express();

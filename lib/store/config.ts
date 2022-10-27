@@ -2,6 +2,7 @@ import { ref, CONSTANT } from "../core";
 import { OberServer } from "../ober/oberserver";
 import { ClassConstructor } from "../types";
 
+// Config 绑入原型链
 const Config: ClassDecorator = (target: Function) => {
   let OberInst = ref.get(CONSTANT.Observer, OberServer.prototype) as OberServer;
   if (!OberInst) {
@@ -11,6 +12,7 @@ const Config: ClassDecorator = (target: Function) => {
   OberInst.set(CONSTANT.Config, target);
 };
 
+// Config_Inst 特定情况下使用
 const AdoNodeConfig = (ConfigClass: ClassConstructor): ClassDecorator => {
   return function () {
     const config_inst = new ConfigClass();

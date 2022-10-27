@@ -1,5 +1,5 @@
 import {
-  HandleController,
+  AdoNodeController,
   Controller,
   Get,
   UsePipe,
@@ -8,6 +8,7 @@ import {
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
 import { Body, Headers, Query, Req } from "../../../lib/params/params";
+import { class_transform } from "../../../lib/pipe/tansformer";
 import { User } from "../App917/App917.enity";
 import {
   UserControllerInterceptor,
@@ -18,7 +19,7 @@ import {
 
 @Controller("/app1017")
 @UseControllerInterceptor(new UserControllerInterceptor())
-class App1017Controller extends HandleController {
+class App1017Controller extends AdoNodeController {
   @Get("/list")
   public async getList() {}
 
@@ -70,8 +71,10 @@ class App1017Controller extends HandleController {
   @Post("/a5")
   @UsePipe(new UserInfoPlainPipe())
   public async a5(@Body() user: User) {
+    let data = class_transform.classToPlain(user);
     return {
-      data: user.FullName(),
+      data,
+      user,
       msg: "ok",
     };
   }

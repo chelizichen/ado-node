@@ -6,7 +6,7 @@ import {
   DataBaseError,
   FieldError,
   TypesError,
-  HandleController,
+  AdoNodeController,
   Controller,
   Inject,
   Collect,
@@ -36,7 +36,6 @@ import {
   useConfig,
   Config,
   AdoNodeConfig,
-  CreateDb,
   Mapper,
   Connect,
   Select,
@@ -47,6 +46,7 @@ import {
   Error,
   validate,
   UseDataBase,
+  CreateDataBase,
 } from "./lib/core";
 import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
@@ -66,7 +66,7 @@ export { Error };
 export { TypesError };
 
 // ioc
-export { HandleController };
+export { AdoNodeController };
 export { Controller };
 export { Inject, Collect };
 export { ref };
@@ -106,13 +106,13 @@ export { UsePipe, validate };
 
 // store
 // cache
-export { getCachekey, CreateCache, UseCache, UseDataBase };
+export { getCachekey, CreateCache, UseCache };
 
 // config
 export { useConfig, Config, AdoNodeConfig };
 
 // db
-export { CreateDb };
+export { CreateDataBase, UseDataBase };
 
 // mapper
 export { Mapper, Connect, Select, Update, Insert, Delete };

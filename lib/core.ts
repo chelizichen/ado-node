@@ -17,8 +17,8 @@ import {
   Keyword,
 } from "./orm/enity";
 import { del, query } from "./orm/sql";
-import { CreateCache, getCachekey, UseCache, UseDataBase } from "./store/cache";
-import { HandleController } from "./ioc/class";
+import { CreateCache, getCachekey, UseCache } from "./store/cache";
+import { AdoNodeController } from "./ioc/class";
 import { Controller } from "./ioc/controller";
 import { Collect, Inject } from "./ioc/ioc";
 import { ref } from "./ioc/ref";
@@ -29,7 +29,7 @@ import { GenereateRouter, SerivceMap } from "./ioc/service";
 import { UsePipe, validate } from "./pipe/pipe";
 import { AdoOrmBaseEnity } from "./orm/orm";
 import { AdoNodeConfig, Config, useConfig } from "./store/config";
-import { CreateDb } from "./store/db";
+import { CreateDataBase, UseDataBase } from "./store/db";
 import {
   Mapper,
   Connect,
@@ -49,7 +49,7 @@ export { Error };
 export { TypesError };
 
 // ioc
-export { HandleController };
+export { AdoNodeController };
 export { Controller };
 export { Inject, Collect };
 export { ref };
@@ -92,13 +92,13 @@ export { UsePipe, validate };
 
 // store
 // cache
-export { getCachekey, CreateCache, UseCache, UseDataBase };
+export { getCachekey, CreateCache, UseCache };
 
 // config
 export { useConfig, Config, AdoNodeConfig };
 
 // db
-export { CreateDb };
+export { CreateDataBase, UseDataBase };
 
 // mapper
 export { Mapper, Connect, Select, Update, Insert, Delete };

@@ -7,3 +7,7 @@ import { options } from "./routes";
 export class AdoNodeServerImpl extends AdoNodeServer {}
 
 AdoNodeServerImpl.run(options);
+
+// @AdoNodeConfig(commonClass)
+// export class AdoNodeServerImpl1 extends AdoNodeServer {}
+// AdoNodeServerImpl.run(options1);

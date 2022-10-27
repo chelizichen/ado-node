@@ -1,4 +1,4 @@
-import { HandleController } from "../../../lib/ioc/class";
+import { AdoNodeController } from "../../../lib/ioc/class";
 import { Controller } from "../../../lib/ioc/controller";
 import { Curd } from "../../../lib/oper/curd";
 import { Inject } from "../../../lib/ioc/ioc";
@@ -15,7 +15,7 @@ import { UsePipe } from "../../../lib/pipe/pipe";
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 @Controller("/app917")
 @UseControllerInterceptor(new UserInfoInterceptor())
-class App917Controller extends HandleController {
+class App917Controller extends AdoNodeController {
   @Inject(App917Service)
   App917Service!: App917Service;
   @UseCache("redis")

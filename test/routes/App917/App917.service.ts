@@ -10,7 +10,7 @@ class App917Service {
   User!: User;
 
   @UseDataBase("mysql")
-  conn!: mysql.Connection;
+  conn!: mysql.Pool;
   public async a1() {
     const sql = new query()
       .setEnity(User)
@@ -23,6 +23,8 @@ class App917Service {
     const data = await this.User.getMany(sql);
     return data;
   }
+
+  public async b1() {}
   public async getRestKey(
     redis: RedisClientType<any, any, any>,
     ProdId: string

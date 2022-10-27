@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  HandleController,
+  AdoNodeController,
   Inject,
   UseCache,
   UsePipe,
@@ -13,7 +13,7 @@ import { Fund_Star } from "./App919.enity";
 import { FundCodePipe } from "./App919.pipe";
 
 @Controller("/app919")
-class App919Controller extends HandleController {
+class App919Controller extends AdoNodeController {
   @UseCache("redis")
   Redis!: RedisClientType;
 

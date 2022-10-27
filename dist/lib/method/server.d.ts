@@ -1,9 +1,12 @@
 import { Express } from "express";
-import { HandleProxyOptions } from "../types";
-declare function defineAdoNodeOptions(options: HandleProxyOptions): HandleProxyOptions;
+import { AdoNodeOptions } from "../types";
+declare function defineAdoNodeOptions(options: AdoNodeOptions): AdoNodeOptions;
 declare class AdoNodeServer {
-    static run(options: HandleProxyOptions): void;
-    static runServer(options: HandleProxyOptions): void;
-    static runSSRServer(options: HandleProxyOptions, callBack: (app: Express) => void): void;
+    static Controllers: any[];
+    static __getProvider__(provider: any[]): void;
+    static createControllers(): any[];
+    static run(): void;
+    static runServer(): void;
+    static runSSRServer(callBack: (app: Express) => void): void;
 }
 export { AdoNodeServer, defineAdoNodeOptions };

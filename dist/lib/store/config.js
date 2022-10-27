@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdoNodeConfig = exports.Config = exports.useConfig = void 0;
 const core_1 = require("../core");
 const oberserver_1 = require("../ober/oberserver");
+// Config 绑入原型链
 const Config = (target) => {
     let OberInst = core_1.ref.get(core_1.CONSTANT.Observer, oberserver_1.OberServer.prototype);
     if (!OberInst) {
@@ -12,6 +13,7 @@ const Config = (target) => {
     OberInst.set(core_1.CONSTANT.Config, target);
 };
 exports.Config = Config;
+// Config_Inst 特定情况下使用
 const AdoNodeConfig = (ConfigClass) => {
     return function () {
         const config_inst = new ConfigClass();

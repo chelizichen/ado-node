@@ -23,10 +23,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HandleController = void 0;
+exports.AdoNodeController = void 0;
 const express = __importStar(require("express"));
 const ref_1 = require("./ref");
-class HandleController {
+class AdoNodeController {
     Base;
     Service;
     constructor(Base, Service) {
@@ -114,5 +114,5 @@ class HandleController {
         return app;
     }
 }
-exports.HandleController = HandleController;
+exports.AdoNodeController = AdoNodeController;
 //# sourceMappingURL=class.js.map

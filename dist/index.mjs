@@ -1,3 +1,10 @@
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+
 // lib/constant/constant.ts
 var CONSTANT = /* @__PURE__ */ ((CONSTANT2) => {
   CONSTANT2["Observer"] = "Observer";
@@ -1357,9 +1364,10 @@ var save = class {
 };
 
 // lib/store/cache.ts
+import { nextTick } from "process";
 var CreateCache = (cacheName) => {
   return function(target, _propertyKey, descriptor) {
-    const val = descriptor.value;
+    const val = descriptor.value();
     ref.def(cacheName, val, target.constructor.prototype);
   };
 };
@@ -1373,23 +1381,8 @@ var UseCache = (cacheName) => {
     const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
     const CacheInst = ref.get(cacheName, CommonClass.prototype);
     target.constructor.prototype[propertyKey] = CacheInst;
-    CacheInst().then((res) => {
-      target.constructor.prototype[propertyKey] = res;
-    });
-  };
-};
-var UseDataBase = (dbName) => {
-  return async function(target, propertyKey) {
-    var _a;
-    let OberInst = ref.get(
-      "Observer" /* Observer */,
-      OberServer.prototype
-    );
-    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
-    const DbInst = ref.get(dbName, CommonClass.prototype);
-    target.constructor.prototype[propertyKey] = DbInst;
-    DbInst.then((res) => {
-      target.constructor.prototype[propertyKey] = res;
+    nextTick(async () => {
+      target.constructor.prototype[propertyKey] = await CacheInst;
     });
   };
 };
@@ -1419,7 +1412,7 @@ function getCachekey(type, table, options) {
 
 // lib/ioc/class.ts
 import * as express from "express";
-var HandleController = class {
+var AdoNodeController = class {
   constructor(Base, Service) {
     this.Base = Base;
     this.Service = Service;
@@ -1850,9 +1843,47 @@ import cluster from "cluster";
 function defineAdoNodeOptions(options) {
   return options;
 }
-var AdoNodeServer = class {
-  static run(options) {
-    if (options.cluster) {
+var _AdoNodeServer = class {
+  static __getProvider__(provider) {
+    if (provider.length && provider.length >= 1) {
+      provider.forEach((el) => {
+        const controller = ref.get(el.name, el.prototype, ":controller");
+        const provider2 = ref.get(el.name, el.prototype, ":provider");
+        this.__getProvider__(provider2);
+        if (controller.length && controller.length >= 1 && controller instanceof Array) {
+          controller.forEach((el2) => {
+            this.Controllers.push(el2);
+          });
+        }
+      });
+    }
+  }
+  static createControllers() {
+    const opt = ref.get(
+      _AdoNodeServer.name,
+      _AdoNodeServer.prototype,
+      ":modules"
+    );
+    opt.forEach((el) => {
+      const controller = ref.get(el.name, el.prototype, ":controller");
+      const provider = ref.get(el.name, el.prototype, ":provider");
+      this.__getProvider__(provider);
+      if (controller.length && controller.length >= 1 && controller instanceof Array) {
+        controller.forEach((el2) => {
+          this.Controllers.push(el2);
+        });
+      }
+    });
+    const Controller2 = [...new Set(this.Controllers)];
+    return Controller2;
+  }
+  static run() {
+    const isCluster = ref.get(
+      _AdoNodeServer.name,
+      _AdoNodeServer.prototype,
+      ":cluster"
+    );
+    if (isCluster) {
       let workers = {};
       if (cluster.isPrimary) {
         cluster.on("exit", (worker, _code, _signal) => {
@@ -1866,44 +1897,56 @@ var AdoNodeServer = class {
           workers[worker.process.pid] = worker;
         }
       } else {
-        this.runServer(options);
+        this.runServer();
       }
     } else {
-      this.runServer(options);
+      this.runServer();
     }
   }
-  static runServer(options) {
+  static runServer() {
     const app = express2();
-    if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
-      options.globalPipes.forEach((pipe) => {
+    const globalPipes = ref.get(
+      _AdoNodeServer.name,
+      _AdoNodeServer.prototype,
+      ":globalPipes"
+    );
+    if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+      globalPipes.forEach((pipe) => {
         const inst = new pipe();
         app.use("*", inst.run);
       });
     }
     app.use(express2.json());
-    const { port, staticDist, controller, base } = options;
+    const port = ref.get(_AdoNodeServer.name, _AdoNodeServer.prototype, ":port");
+    const base = ref.get(_AdoNodeServer.name, _AdoNodeServer.prototype, ":base");
+    const controller = this.createControllers();
     controller.forEach((el) => {
       const router = ref.get(el);
       app.use(base, router);
     });
-    app.use(express2.static(staticDist));
-    app.set("port", options.port);
+    app.set("port", port);
     app.listen(port, () => {
       console.log(
         `create server at  http://localhost:${port} Worker ${process.pid} started`
       );
     });
   }
-  static runSSRServer(options, callBack) {
+  static runSSRServer(callBack) {
     const app = express2();
-    if (options.globalPipes && options.globalPipes.length && options instanceof Array) {
-      options.globalPipes.forEach((pipe) => {
+    const globalPipes = ref.get(
+      _AdoNodeServer.name,
+      _AdoNodeServer.prototype,
+      ":globalPipes"
+    );
+    if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+      globalPipes.forEach((pipe) => {
         const inst = new pipe();
         app.use("*", inst.run);
       });
     }
     app.use(express2.json());
-    const { controller, base } = options;
+    const base = ref.get(_AdoNodeServer.name, _AdoNodeServer.prototype, ":base");
+    const controller = this.createControllers();
     controller.forEach((el) => {
       const router = ref.get(el);
       app.use(base, router);
@@ -1911,6 +1954,8 @@ var AdoNodeServer = class {
     callBack(app);
   }
 };
+var AdoNodeServer = _AdoNodeServer;
+__publicField(AdoNodeServer, "Controllers", []);
 
 // lib/method/method.ts
 function useRunTimeInterceptor(Interceptor, time, options) {
@@ -2089,10 +2134,26 @@ var useConfig = () => {
 };
 
 // lib/store/db.ts
-var CreateDb = (dbname) => {
+import { nextTick as nextTick2 } from "process";
+var CreateDataBase = (dbname) => {
   return function(target, _propertyKey, descriptor) {
     const val = descriptor.value();
     ref.def(dbname, val, target.constructor.prototype);
+  };
+};
+var UseDataBase = (dbName) => {
+  return function(target, propertyKey) {
+    var _a;
+    let OberInst = ref.get(
+      "Observer" /* Observer */,
+      OberServer.prototype
+    );
+    const CommonClass = (_a = OberInst.get("Config" /* Config */)) == null ? void 0 : _a.value;
+    const DbInst = ref.get(dbName, CommonClass.prototype);
+    target.constructor.prototype[propertyKey] = DbInst;
+    nextTick2(async () => {
+      target.constructor.prototype[propertyKey] = await DbInst;
+    });
   };
 };
 
@@ -2153,6 +2214,55 @@ var UseInterceptor = (fn) => {
       fn,
       target.constructor.prototype,
       ":interceptor"
+    );
+  };
+};
+
+// lib/module/module.ts
+var Module = (AdoNodeOptions) => {
+  return function(target) {
+    ref.def(
+      target.name,
+      AdoNodeOptions.Controller,
+      target.prototype,
+      ":controller"
+    );
+    ref.def(
+      target.name,
+      AdoNodeOptions.Provider,
+      target.prototype,
+      ":provider"
+    );
+    ref.def(target.name, true, target.prototype, ":module");
+  };
+};
+var Modules = (modules) => {
+  modules.Modules.forEach((el) => {
+    const isModule = ref.get(el.name, el.prototype, ":module");
+    if (!isModule) {
+      throw new Error(`${el.name} is Not a Moudle`);
+    }
+  });
+  return function() {
+    ref.def(
+      AdoNodeServer.name,
+      modules.Modules,
+      AdoNodeServer.prototype,
+      ":modules"
+    );
+    ref.def(AdoNodeServer.name, modules.Base, AdoNodeServer.prototype, ":base");
+    ref.def(
+      AdoNodeServer.name,
+      modules.GlobalPipes,
+      AdoNodeServer.prototype,
+      ":globalPipes"
+    );
+    ref.def(AdoNodeServer.name, modules.Port, AdoNodeServer.prototype, ":port");
+    ref.def(
+      AdoNodeServer.name,
+      modules.Cluster,
+      AdoNodeServer.prototype,
+      ":cluster"
     );
   };
 };
@@ -2274,6 +2384,7 @@ var class_transform = class {
 };
 export {
   AdoNodeConfig,
+  AdoNodeController,
   AdoNodeServer,
   AdoOrmBaseEnity,
   AutoCreate,
@@ -2286,7 +2397,7 @@ export {
   Connect,
   Controller,
   CreateCache,
-  CreateDb,
+  CreateDataBase,
   Curd,
   DataBaseError,
   Delete,
@@ -2296,7 +2407,6 @@ export {
   FieldError,
   GenereateRouter,
   Get,
-  HandleController,
   Headers,
   Inject,
   Insert,
@@ -2307,6 +2417,8 @@ export {
   Keyword,
   MESSAGE,
   Mapper,
+  Module,
+  Modules,
   OberServer,
   Post,
   Query,

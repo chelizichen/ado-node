@@ -13,9 +13,44 @@ function defineAdoNodeOptions(options) {
 }
 exports.defineAdoNodeOptions = defineAdoNodeOptions;
 class AdoNodeServer {
-    static run(options) {
+    static Controllers = [];
+    static __getProvider__(provider) {
+        if (provider.length && provider.length >= 1) {
+            provider.forEach((el) => {
+                const controller = ref_1.ref.get(el.name, el.prototype, ":controller");
+                const provider = ref_1.ref.get(el.name, el.prototype, ":provider");
+                this.__getProvider__(provider);
+                if (controller.length &&
+                    controller.length >= 1 &&
+                    controller instanceof Array) {
+                    controller.forEach((el) => {
+                        this.Controllers.push(el);
+                    });
+                }
+            });
+        }
+    }
+    static createControllers() {
+        const opt = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":modules");
+        opt.forEach((el) => {
+            const controller = ref_1.ref.get(el.name, el.prototype, ":controller");
+            const provider = ref_1.ref.get(el.name, el.prototype, ":provider");
+            this.__getProvider__(provider);
+            if (controller.length &&
+                controller.length >= 1 &&
+                controller instanceof Array) {
+                controller.forEach((el) => {
+                    this.Controllers.push(el);
+                });
+            }
+        });
+        const Controller = [...new Set(this.Controllers)];
+        return Controller;
+    }
+    static run() {
         // 开启多进程
-        if (options.cluster) {
+        const isCluster = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":cluster");
+        if (isCluster) {
             let workers = {};
             if (cluster_1.default.isPrimary) {
                 cluster_1.default.on("exit", (worker, _code, _signal) => {
@@ -34,20 +69,19 @@ class AdoNodeServer {
                 }
             }
             else {
-                this.runServer(options);
+                this.runServer();
             }
         }
         else {
-            this.runServer(options);
+            this.runServer();
         }
     }
-    static runServer(options) {
+    static runServer() {
         const app = (0, express_1.default)();
+        const globalPipes = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":globalPipes");
         // 使用管道
-        if (options.globalPipes &&
-            options.globalPipes.length &&
-            options instanceof Array) {
-            options.globalPipes.forEach((pipe) => {
+        if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+            globalPipes.forEach((pipe) => {
                 const inst = new pipe();
                 app.use("*", inst.run);
             });
@@ -55,34 +89,35 @@ class AdoNodeServer {
         // 使用JSON
         app.use(express_1.default.json());
         // 创建Router
-        const { port, staticDist, controller, base } = options;
+        const port = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
+        const base = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
+        const controller = this.createControllers();
         controller.forEach((el) => {
             const router = ref_1.ref.get(el);
             app.use(base, router);
         });
         // 创建静态目录
-        app.use(express_1.default.static(staticDist));
         // 创建端口号
-        app.set("port", options.port);
+        app.set("port", port);
         app.listen(port, () => {
             console.log(`create server at  http://localhost:${port} Worker ${process.pid} started`);
         });
     }
-    static runSSRServer(options, callBack) {
+    static runSSRServer(callBack) {
         const app = (0, express_1.default)();
+        const globalPipes = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":globalPipes");
         // 使用管道
-        if (options.globalPipes &&
-            options.globalPipes.length &&
-            options instanceof Array) {
-            options.globalPipes.forEach((pipe) => {
+        if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+            globalPipes.forEach((pipe) => {
                 const inst = new pipe();
                 app.use("*", inst.run);
             });
         }
         // 使用JSON
         app.use(express_1.default.json());
+        const base = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
         // 创建Router
-        const { controller, base } = options;
+        const controller = this.createControllers();
         controller.forEach((el) => {
             const router = ref_1.ref.get(el);
             app.use(base, router);

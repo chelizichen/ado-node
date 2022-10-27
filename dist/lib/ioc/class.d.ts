@@ -1,6 +1,6 @@
 import { BaseController } from "./../../index.d";
 import * as express from "express";
-declare class HandleController {
+declare class AdoNodeController {
     readonly Base: string;
     readonly Service: Map<string, {
         method: "Get" | "Post" | "All";
@@ -12,4 +12,4 @@ declare class HandleController {
     }>);
     Boost(Base: BaseController): express.IRouter;
 }
-export { HandleController };
+export { AdoNodeController };

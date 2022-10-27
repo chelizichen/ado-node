@@ -1,13 +1,15 @@
-import { AdoNodeConfig } from "../lib/core";
-import { AdoNodeServer } from "../lib/method/server";
+import { AdoNodeConfig, AdoNodeServer } from "../lib/core";
+import { Modules } from "../lib/module/module";
 import { commonClass } from "./config/common";
-import { options } from "./routes";
+import { AppModule } from "./routes";
+import { TestGlobalPipe } from "./routes/GlobalPipe";
 
 @AdoNodeConfig(commonClass)
+@Modules({
+  Modules: [AppModule],
+  Base: "/api",
+  Port: 3000,
+  GlobalPipes: [TestGlobalPipe],
+})
 export class AdoNodeServerImpl extends AdoNodeServer {}
-
-AdoNodeServerImpl.run(options);
-
-// @AdoNodeConfig(commonClass)
-// export class AdoNodeServerImpl1 extends AdoNodeServer {}
-// AdoNodeServerImpl.run(options1);
+AdoNodeServerImpl.run();

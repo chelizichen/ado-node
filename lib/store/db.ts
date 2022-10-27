@@ -21,6 +21,7 @@ const UseDataBase = (dbName: string): PropertyDecorator => {
       CONSTANT.Observer,
       OberServer.prototype
     ) as OberServer;
+
     const CommonClass = OberInst.get(CONSTANT.Config)?.value;
     const DbInst = ref.get(dbName, CommonClass.prototype);
 

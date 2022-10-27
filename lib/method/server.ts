@@ -8,10 +8,61 @@ function defineAdoNodeOptions(options: AdoNodeOptions) {
 }
 
 class AdoNodeServer {
-  static run(options: AdoNodeOptions) {
-    // 开启多进程
+  static Controllers: any[] = [];
 
-    if (options.cluster) {
+  static __getProvider__(provider: any[]) {
+    if (provider.length && provider.length >= 1) {
+      provider.forEach((el: any) => {
+        const controller = ref.get(el.name, el.prototype, ":controller");
+        const provider = ref.get(el.name, el.prototype, ":provider");
+        this.__getProvider__(provider);
+        if (
+          controller.length &&
+          controller.length >= 1 &&
+          controller instanceof Array
+        ) {
+          controller.forEach((el) => {
+            this.Controllers.push(el);
+          });
+        }
+      });
+    }
+  }
+
+  static createControllers() {
+    const opt = ref.get(
+      AdoNodeServer.name,
+      AdoNodeServer.prototype,
+      ":modules"
+    );
+    opt.forEach((el: any) => {
+      const controller = ref.get(el.name, el.prototype, ":controller");
+      const provider = ref.get(el.name, el.prototype, ":provider");
+
+      this.__getProvider__(provider);
+      if (
+        controller.length &&
+        controller.length >= 1 &&
+        controller instanceof Array
+      ) {
+        controller.forEach((el) => {
+          this.Controllers.push(el);
+        });
+      }
+    });
+    const Controller = [...new Set(this.Controllers)];
+    return Controller;
+  }
+
+  static run() {
+    // 开启多进程
+    const isCluster = ref.get(
+      AdoNodeServer.name,
+      AdoNodeServer.prototype,
+      ":cluster"
+    );
+
+    if (isCluster) {
       let workers: Record<any, any> = {};
 
       if (cluster.isPrimary) {
@@ -33,22 +84,24 @@ class AdoNodeServer {
           workers[worker.process.pid] = worker;
         }
       } else {
-        this.runServer(options);
+        this.runServer();
       }
     } else {
-      this.runServer(options);
+      this.runServer();
     }
   }
 
-  static runServer(options: AdoNodeOptions) {
+  static runServer() {
     const app: Express = express();
+    const globalPipes = ref.get(
+      AdoNodeServer.name,
+      AdoNodeServer.prototype,
+      ":globalPipes"
+    );
+
     // 使用管道
-    if (
-      options.globalPipes &&
-      options.globalPipes.length &&
-      options instanceof Array
-    ) {
-      options.globalPipes.forEach((pipe: any) => {
+    if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+      globalPipes.forEach((pipe: any) => {
         const inst = new pipe();
         app.use("*", inst.run);
       });
@@ -57,16 +110,18 @@ class AdoNodeServer {
     app.use(express.json());
 
     // 创建Router
-    const { port, staticDist, controller, base } = options;
+    const port = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
+    const base = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
+
+    const controller = this.createControllers();
     controller.forEach((el) => {
       const router = ref.get(el);
       app.use(base, router);
     });
     // 创建静态目录
-    app.use(express.static(staticDist));
 
     // 创建端口号
-    app.set("port", options.port);
+    app.set("port", port);
 
     app.listen(port, () => {
       console.log(
@@ -75,31 +130,32 @@ class AdoNodeServer {
     });
   }
 
-  static runSSRServer(
-    options: AdoNodeOptions,
-    callBack: (app: Express) => void
-  ) {
+  static runSSRServer(callBack: (app: Express) => void) {
     const app: Express = express();
+    const globalPipes = ref.get(
+      AdoNodeServer.name,
+      AdoNodeServer.prototype,
+      ":globalPipes"
+    );
+
     // 使用管道
-    if (
-      options.globalPipes &&
-      options.globalPipes.length &&
-      options instanceof Array
-    ) {
-      options.globalPipes.forEach((pipe: any) => {
+    if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
+      globalPipes.forEach((pipe: any) => {
         const inst = new pipe();
         app.use("*", inst.run);
       });
     }
     // 使用JSON
     app.use(express.json());
+    const base = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
 
     // 创建Router
-    const { controller, base } = options;
+    const controller = this.createControllers();
     controller.forEach((el) => {
       const router = ref.get(el);
       app.use(base, router);
     });
+
     /**
      * // if use vite ssr
      * app.use(express.static("dist/app"));

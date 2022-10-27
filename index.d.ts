@@ -29,3 +29,16 @@ export type { AdoNodePipe, AdoNodeGlobalPipe };
 
 export type { AdoNodeInterceptor };
 export type { AdoNodeControllerInterceptor };
+
+export type AdoModuleOptions = {
+  Controller: BaseController[];
+  Provider: any[];
+};
+
+export type AdoModulesOptions = {
+  Modules: any[];
+  GlobalPipes: any[];
+  Base: "/api";
+  Port: 3000;
+  Cluster?: boolean;
+};

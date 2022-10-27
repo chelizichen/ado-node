@@ -51,6 +51,7 @@ import {
 import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
 import { defineAdoNodeOptions } from "./lib/method/server";
+import { Module, Modules } from "./lib/module/module";
 import { save, update } from "./lib/orm/sql";
 import { Query, Body, Headers, Req, Res } from "./lib/params/params";
 import { class_transform } from "./lib/pipe/tansformer";
@@ -123,3 +124,6 @@ export { UseInterceptor };
 export { Query, Body, Headers, Req, Res };
 
 export { class_transform };
+
+// Modules
+export { Module, Modules };

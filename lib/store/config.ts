@@ -20,10 +20,12 @@ const AdoNodeConfig = (ConfigClass: ClassConstructor): ClassDecorator => {
       CONSTANT.Observer,
       OberServer.prototype
     ) as OberServer;
+
     if (!OberInst) {
       OberInst = new OberServer();
       ref.def(CONSTANT.Observer, OberInst, OberServer.prototype);
     }
+
     OberInst.set(CONSTANT.Config_INST, config_inst);
   };
 };

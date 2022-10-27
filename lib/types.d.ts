@@ -21,9 +21,15 @@ export type AdoNodeOptions = {
 
 export type AdoModuleOptions = {
   Controller: BaseController[];
-  Base: string;
-  Port: number;
-  GlobalPipes?: any[];
+  Provider: any[];
+};
+
+export type AdoModulesOptions = {
+  Modules: any[];
+  GlobalPipes: any[];
+  Base: "/api";
+  Port: 3000;
+  Cluster?: boolean;
 };
 
 export type AppServer = (Options: ServerOptions) => void;

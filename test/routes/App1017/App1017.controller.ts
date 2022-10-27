@@ -1,9 +1,11 @@
+import { App919Service } from "./../App919/App919.service";
 import {
   AdoNodeController,
   Controller,
   Get,
   UsePipe,
   Post,
+  Inject,
 } from "../../../lib/core";
 import { UseControllerInterceptor } from "../../../lib/interceptor/global";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
@@ -20,6 +22,8 @@ import {
 @Controller("/app1017")
 @UseControllerInterceptor(new UserControllerInterceptor())
 class App1017Controller extends AdoNodeController {
+  @Inject(App919Service)
+  APp919Service!: App919Service;
   @Get("/list")
   public async getList() {}
 
@@ -27,7 +31,8 @@ class App1017Controller extends AdoNodeController {
   @UseInterceptor(new UserLogInterceptor())
   @UsePipe(new UserLogPipe())
   public async a1(req: any, _res: any) {
-    console.log("thisa1", this);
+    const num = await this.APp919Service.getCompanyList();
+    console.log(num);
 
     return {
       data: req.headers,
@@ -43,7 +48,7 @@ class App1017Controller extends AdoNodeController {
 
   @Get("/a3")
   public async a3(@Req() req: any, @Query() query: any) {
-    console.log("req", req);
+    console.log("req", !!req);
     console.log("query", query);
 
     // console.log(query);
@@ -60,7 +65,7 @@ class App1017Controller extends AdoNodeController {
     @Headers() headers: any
   ) {
     console.log("headers", headers);
-    console.log("req", req);
+    console.log("req", !!req);
 
     console.log(body);
     return {

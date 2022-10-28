@@ -1,3 +1,5 @@
+import express from "express";
+import path from "path";
 import { AdoNodeConfig, AdoNodeServer } from "../lib/core";
 import { Modules } from "../lib/module/module";
 import { commonClass } from "./config/common";
@@ -11,5 +13,7 @@ import { TestGlobalPipe } from "./routes/GlobalPipe";
   Port: 3000,
   GlobalPipes: [TestGlobalPipe],
 })
-export class AdoNodeServerImpl extends AdoNodeServer {}
-AdoNodeServerImpl.run();
+class AdoNodeServerImpl extends AdoNodeServer {}
+AdoNodeServerImpl.runSSRServer((app) => {
+  app.use("/AdoServer", express.static(path.join(__dirname, "../public")));
+});

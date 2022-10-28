@@ -1,5 +1,5 @@
 import { ref } from "../core";
-function Query() {
+function Query(): ParameterDecorator {
   return function (
     target: Object,
     propertyKey: string | symbol,
@@ -74,4 +74,19 @@ function Res() {
   };
 }
 
-export { Query, Body, Headers, Req, Res };
+function Params() {
+  return function (
+    target: Object,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) {
+    ref.def(
+      propertyKey as string,
+      parameterIndex,
+      target.constructor.prototype,
+      ":params"
+    );
+  };
+}
+
+export { Query, Body, Headers, Req, Res, Params };

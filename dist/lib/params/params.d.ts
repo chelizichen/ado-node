@@ -1,4 +1,4 @@
-declare function Query(): (target: Object, propertyKey: string | symbol, parameterIndex: number) => void;
+declare function Query(): ParameterDecorator;
 declare function Body(): (target: Object, propertyKey: string | symbol, parameterIndex: number) => void;
 declare function Headers(): (target: Object, propertyKey: string | symbol, parameterIndex: number) => void;
 declare function Req(): (target: Object, propertyKey: string | symbol, parameterIndex: number) => void;

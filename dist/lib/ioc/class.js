@@ -110,6 +110,7 @@ class AdoNodeController {
             if (service.method == "All") {
                 app.all(URL, service.fn);
             }
+            console.log("url", URL);
         });
         return app;
     }

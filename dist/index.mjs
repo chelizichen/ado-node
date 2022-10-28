@@ -1488,6 +1488,7 @@ var AdoNodeController = class {
       if (service.method == "All") {
         app.all(URL, service.fn);
       }
+      console.log("url", URL);
     });
     return app;
   }
@@ -1946,12 +1947,18 @@ var _AdoNodeServer = class {
     }
     app.use(express2.json());
     const base = ref.get(_AdoNodeServer.name, _AdoNodeServer.prototype, ":base");
+    const port = ref.get(_AdoNodeServer.name, _AdoNodeServer.prototype, ":port");
     const controller = this.createControllers();
     controller.forEach((el) => {
       const router = ref.get(el);
       app.use(base, router);
     });
     callBack(app);
+    app.listen(port, () => {
+      console.log(
+        `create server at  http://localhost:${port} Worker ${process.pid} started`
+      );
+    });
   }
 };
 var AdoNodeServer = _AdoNodeServer;
@@ -2040,6 +2047,11 @@ var createMethod = (method) => {
         }
         const args = useArgs(propertyKey, target, req, res);
         const ret = await target.constructor.prototype[propertyKey](...args);
+        const code = ref.get(
+          propertyKey,
+          target.constructor.prototype,
+          ":status"
+        );
         if (ret && interceptor && interceptor.after) {
           return {
             data: ret,

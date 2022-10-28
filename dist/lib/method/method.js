@@ -67,6 +67,8 @@ const createMethod = (method) => {
                 }
                 const args = useArgs(propertyKey, target, req, res);
                 const ret = await target.constructor.prototype[propertyKey](...args);
+                // @ts-ignore
+                const code = core_1.ref.get(propertyKey, target.constructor.prototype, ":status");
                 if (ret && interceptor && interceptor.after) {
                     return {
                         data: ret,

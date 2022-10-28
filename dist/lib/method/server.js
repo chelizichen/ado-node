@@ -116,6 +116,7 @@ class AdoNodeServer {
         // 使用JSON
         app.use(express_1.default.json());
         const base = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
+        const port = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
         // 创建Router
         const controller = this.createControllers();
         controller.forEach((el) => {
@@ -140,6 +141,9 @@ class AdoNodeServer {
          * });
          */
         callBack(app);
+        app.listen(port, () => {
+            console.log(`create server at  http://localhost:${port} Worker ${process.pid} started`);
+        });
     }
 }
 exports.AdoNodeServer = AdoNodeServer;

@@ -37,7 +37,6 @@ class AdoNodeController {
             res.json(ret);
             return;
           }
-
           // 判断是不是Controller 层返回
           if (ret.data && ret.after) {
             res.json(ret.data);
@@ -98,6 +97,7 @@ class AdoNodeController {
       if (service.method == "All") {
         app.all(URL, service.fn);
       }
+      console.log("url", URL);
     });
     return app;
   }

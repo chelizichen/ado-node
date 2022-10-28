@@ -35,11 +35,17 @@ function useArgs(
     target.constructor.prototype,
     ":body"
   );
+  const hasParams = ref.get(
+    propertyKey as string,
+    target.constructor.prototype,
+    ":params"
+  );
   const hasHeaders = ref.get(
     propertyKey as string,
     target.constructor.prototype,
     ":headers"
   );
+
   const hasRequest = ref.get(
     propertyKey as string,
     target.constructor.prototype,
@@ -56,10 +62,12 @@ function useArgs(
     typeof hasBody === "number" ||
     typeof hasHeaders === "number" ||
     typeof hasRequest == "number" ||
-    typeof hasResponse == "number"
+    typeof hasResponse == "number" ||
+    typeof hasParams == "number"
   ) {
     arg[hasQuery] = req.query;
     arg[hasBody] = req.body;
+    arg[hasParams] = req.params;
     arg[hasHeaders] = req.headers;
     arg[hasRequest] = req;
     arg[hasResponse] = res;
@@ -121,6 +129,13 @@ const createMethod = (method: string) => {
         const args = useArgs(propertyKey as string, target, req, res);
 
         const ret = await target.constructor.prototype[propertyKey](...args);
+        // @ts-ignore
+        const code = ref.get(
+          propertyKey as string,
+          target.constructor.prototype,
+          ":status"
+        );
+
         if (ret && interceptor && interceptor.after) {
           return {
             data: ret,

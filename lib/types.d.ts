@@ -27,8 +27,8 @@ export type AdoModuleOptions = {
 export type AdoModulesOptions = {
   Modules: any[];
   GlobalPipes: any[];
-  Base: "/api";
-  Port: 3000;
+  Base: string;
+  Port: number;
   Cluster?: boolean;
 };
 

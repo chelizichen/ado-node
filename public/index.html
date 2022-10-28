@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdoCloudServer</title>
+</head>
+<body>
+  <div> 云服务 </div>
+  <script>
+    fetch('/api/app919/testgetList').then(res=>res.json()).then(res=>{
+      console.log(res);
+    })
+  </script>
+</body>
+</html>

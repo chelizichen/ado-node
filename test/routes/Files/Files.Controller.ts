@@ -20,8 +20,8 @@ export class FilesController extends AdoNodeController {
   @Get("/decompression")
   public async deCompression(@Query() query: any) {
     console.log(query);
-
-    const data = this.FilesService.test();
+    // await 阻塞响应
+    const data = await this.FilesService.runServer();
     return {
       data,
       msg: "ok",

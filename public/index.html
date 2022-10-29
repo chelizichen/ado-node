@@ -8,10 +8,27 @@
 </head>
 <body>
   <div> 云服务 </div>
+  <section>
+    <ul id="cloudServer">
+    </ul>
+  </section>
   <script>
-    fetch('/api/app919/testgetList').then(res=>res.json()).then(res=>{
-      console.log(res);
+
+    // 得到文件夹下的所有文件信息
+    fetch('/api/files/list').then(res=>res.json()).then(res=>{
+      
+      // 可以从公共路径下 下载 tgz文件了
+
+      fetch(`/AdoServer/server/${res.data[0]}`).then(res=>{
+        console.log(res);
+      })
+      
     })
+
+
+
+    // 实际路径 等于 /AdoServer/AdoDemoServer.tgz
+
   </script>
 </body>
 </html>

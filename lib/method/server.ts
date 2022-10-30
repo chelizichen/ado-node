@@ -3,6 +3,7 @@ import { ref } from "../ioc/ref";
 import { AdoNodeOptions } from "../types";
 import { cpus } from "os";
 import cluster from "cluster";
+import multer from "multer";
 function defineAdoNodeOptions(options: AdoNodeOptions) {
   return options;
 }
@@ -132,6 +133,7 @@ class AdoNodeServer {
 
   static runSSRServer(callBack: (app: Express) => void) {
     const app: Express = express();
+
     const globalPipes = ref.get(
       AdoNodeServer.name,
       AdoNodeServer.prototype,
@@ -147,6 +149,10 @@ class AdoNodeServer {
     }
     // 使用JSON
     app.use(express.json());
+
+    // 使用文件上传
+    app.use(multer({ dest: "public/server" }).any());
+
     const base = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
     const port = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
     // 创建Router

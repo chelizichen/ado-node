@@ -1,4 +1,4 @@
-import { exec } from "node:child_process";
+import { exec, spawn } from "node:child_process";
 // import path from "path";
 import { Collect } from "../../../lib/core";
 
@@ -52,19 +52,28 @@ export class FilesService {
   }
 
   upload(fileName: string, fileAndDirName: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _rej) => {
       this.cd_dir(fileAndDirName).then((res) => {
         if (res === true) {
           this.de_comp(fileName, fileAndDirName).then((res) => {
             if (res == true) {
               const nodePath = `node public/server/${fileAndDirName}/dist/index.js`;
-              console.log(nodePath);
 
-              exec(nodePath, function (err) {
-                if (err) {
-                  reject(err);
-                }
+              const c_process = spawn(nodePath, {
+                stdio: "pipe",
+                shell: true,
+                env: process.env,
               });
+              console.log("c_process.pid", c_process.pid);
+
+              c_process.stdout?.on("data", function (chunk) {
+                console.log("chunk", chunk.toString());
+              });
+
+              // childProcess.on("message", function (message) {
+              //   console.log("message", message);
+              // });
+
               resolve(fileAndDirName + " 服务开启！");
             }
           });

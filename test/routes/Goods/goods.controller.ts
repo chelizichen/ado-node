@@ -1,9 +1,16 @@
-import { AdoNodeController, Controller, Get, Inject, Post, UsePipe } from "../../../lib/core";
+import {
+  AdoNodeController,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  UsePipe,
+} from "../../../lib/core";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
 import { Body, Query } from "../../../lib/params/params";
 import { TokenInterceptor } from "../../interceptor/header";
 import { Pagination } from "../../interceptor/pagination";
-import { GoodsService } from './goods.service';
+import { GoodsService } from "./goods.service";
 import { plainToGoods } from "./goods.pipe";
 import { Goods } from "./goods.enity";
 
@@ -32,7 +39,13 @@ export class GoodsController extends AdoNodeController {
   @Post("/update")
   @UsePipe(new plainToGoods())
   async update(@Body() body: Goods) {
-    const str = body.getNameAndPrice()
-    return str
+    const str = body.getNameAndPrice();
+    return str;
+  }
+
+  @Get("/sql")
+  sql() {
+    const sql = this.GoodsService.sql();
+    return sql;
   }
 }

@@ -1,18 +1,19 @@
 declare class query {
     sql: string;
     Enity: string;
-    andsql: string;
-    orsql: string;
-    likesql: string;
-    setEnity(Enity: Function | string): this;
+    and_sql: string;
+    or_sql: string;
+    likeand_sql: string;
+    likeor_sql: string;
+    pagination_sql: string;
+    column_sql: string;
+    setEnity(Enity: string[] | string): this;
     setColumn<T extends string[]>(keys: T): query;
     and<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
     or<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
-    like(key: string, value: string, andor: "and" | "or"): this;
-    pagination<T extends {
-        page: number;
-        size: number;
-    } | number>(options: T, value: T extends number ? number : any): query;
+    like_or<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
+    like_and<T extends string | Record<string, string>>(options: T, value?: T extends string ? T : any): this;
+    pagination(page: number, size: number): query;
     getSql(): string;
 }
 declare class del {

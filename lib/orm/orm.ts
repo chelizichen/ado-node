@@ -163,7 +163,7 @@ class AdoOrmBaseEnity {
     });
   }
 
-  public async query(sql: string, options: any[]) {
+  public async query(sql: string, options?: string[]) {
     return new Promise((resolve, reject) => {
       this[Conn].query(sql, options, (err, res) => {
         if (err) {

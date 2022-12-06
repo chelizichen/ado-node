@@ -73,7 +73,7 @@
 ### 对象关系映射(ORM)层
 
 * @**<i style="color:royalblue">Interface</i>** AdoOrmBaseEnity
-* @Enity(dbInst:string)
+* @Enity(tableName:string,connect:mysql.PoolConnection)
 * @Collect() **收集 ORM 层对象**
 * @Key 对应 关系型 数据库 的 主键
 * @Keyword 用于 模糊查询
@@ -104,89 +104,50 @@
 * AdoNodeGlobalPipe
 * validate
 
-##### 配置类
 
-* @Config
-* @AdoNodeConfig
-* @CreateDb(dbInst:string)
-* @CreateCache(cacheInst:string)
-* **useConfig**
 
-#### Run
-
-* func defineAdoNodeOptions(options) 定义需要的选项
-* <i style="color:royalblue"> Extends AdoNodeServer </i>
-
-````
-
-@AdoNodeConfig(configClass:@Config -- 使用 @Config 定义 的配置类)
-
-class AdoNodeServerImpl extends AdoNodeServer {}
-
-AdoNodeServerImpl.run(options);
-````
-
-***
 
 ##### *query*
 
-````
+````js
 const sql = new query()
-  .setEnity(User)
-  .and("username", "leemulus")
-  .and("age", "13")
-  .pagination(1, 10)
-  .getSql();
-
-const sql1 = new query()
-  .setEnity(User)
+  .setEnity(["goods", "seckill"])
   .and({
-    username: "leemulus",
-    phone: "13476973442",
+    "seckill.go_id": "goods.id",
+    "seckill.sk_status": "0",
   })
   .pagination(0, 10)
   .getSql();
 
-const sql2 = new query()
-  .setEnity(User)
-  .setColumn(["phone", "username", "age"])
+const sql1 = new query()
+  .setEnity(["goods", "seckill"])
   .getSql();
+
+const sql2 = new query()
+  .setEnity("goods")
+  .like_and({ goods_name: "?" })
+  .pagination(0, 10)
+  .getSql();
+
+const opt2 = ["%名称2%"];
 
 const sql3 = new query()
-  .setEnity(User)
-  .setColumn(["phone", "username", "age"])
+  .setEnity("goods")
+  .and("goods_rest_num", "20")
+  .or("sort_child_id", "4")
   .pagination(0, 10)
   .getSql();
 
-const sql4 = new query()
-  .setEnity(User)
-  .setColumn(["phone", "username", "age"])
-  .and("key", "value")
-  .like("key1", "value1", "and")
-  .pagination(0, 10)
-  .getSql();
-
-const sql5 = new query()
-  .setEnity(User)
-  .setColumn(["phone", "username", "age"])
-  .like("key3", "value3", "and")
-  .or("key", "value")
-  .or("key2", "value2")
-  .pagination(0, 10)
-  .getSql();
-
-select * from User  where username = "leemulus" and age = "13" limit 1,10
-select * from User  where username = "leemulus" and phone = "13476973442" limit 0,10
-select phone,username,age from User
-select phone,username,age from User limit 0,10
-select phone,username,age from User where key = "value" and key1 like "%value1%"  limit 0,10
-select phone,username,age from User where key3 like "%value3%"  or key = "value" or key2 = "value2" limit 0,10
+"sql": "select * from goods,seckill where seckill.go_id = goods.id and seckill.sk_status = 0 limit 0,10",
+"sql1": "select * from goods,seckill",
+"sql2": "select * from goods where goods_name like ? limit 0,10",
+"sql3": "select * from goods where goods_rest_num = 20 or sort_child_id = 4  limit 0,10",
 
 ````
 
 ##### *delete*
 
-````
+````js
 const sql1 = new del()
   .setEnity(User)
   .getSql();
@@ -223,7 +184,7 @@ sql3 delete from User  where username = "leemulus" or phone = "13476973442"
 
 ##### *update* &&  *save*
 
-````
+````js
 const sql = new update()
   .setEnity("hotkeyword")
   .setOptions({ thekeys: "疫情新闻" })
@@ -245,64 +206,19 @@ opt: [ { g_price: '666', g_type: '222', g_name: '商品安利' } ],
 sql: 'insert into  goods SET ? '
 ````
 
-### 配置类
-
-*全局共享一个配置类,通过 @CreateCache(string) 或者 @CreateDb(string) 来创建数据库连接实例 和 Redis实例，可以用 useConfig 函数获得此类的实例*
-
-````
-@Config
-class commonClass {
-
-  @CreateCache("redis")
-  public async getRedis() {
-    return await createClient();
-  }
-
-  @CreateDb("mysql")
-  public async getConn() {
-    const config = {
-      host: "localhost",
-      user: "root",
-      password: "12345678",
-      database: "boot", //所用数据库
-      port: 3306,
-    };
-    const coon = await mysql.createConnection({
-      host: config.host,
-      user: config.user,
-      password: config.password,
-      database: config.database,
-      port: config.port,
-      multipleStatements: true,
-    });
-    return coon;
-  }
-}
-````
 
 
-### *ORM*
-
-````
-
-this.AnyEnity.getOneBy(val)
-this.AnyEnity.countBy(val)
-this.AnyEnity.getBy(val)
-this.AnyEnity.save(val)
-this.AnyEnity.getMany(val)
-this.AnyEnity.getList(val)
-````
 
 ### *Pipe* 使用管道
 
-````
-  // 全局管道本质上等同于
-  app.get(" * ",func(req,res,next){})
+````js
+// 全局管道本质上等同于
+app.get(" * ",func(req,res,next){})
 ````
 
 *全局管道*
 
-````
+````ts
 
 export class TestGlobalPipe implements AdoNodeGlobalPipe {
   run(req:Request,res:Response,next:NextFunction){
@@ -313,7 +229,7 @@ export class TestGlobalPipe implements AdoNodeGlobalPipe {
 
 *普通管道*
 
-````
+````ts
 
 class FundCodePipe implements AdoNodePipe {
   run(req: Request){
@@ -322,9 +238,12 @@ class FundCodePipe implements AdoNodePipe {
   }
 }
 ````
+
 ### 结合 *class_transform* 的一个完整的例子
+
 * class_transform -> 将 朴素的 数据(JSON) 变成为 类的实例*
-````
+
+````ts
 // Pipe 层
 class UserInfoPlainPipe implements AdoNodePipe {
   async run(
@@ -340,60 +259,15 @@ class UserInfoPlainPipe implements AdoNodePipe {
     return;
   }
 }
-
-// Controller 层
-@Controller("/app")
-class AppController extends HandleController {
-  @Post("/a1")
-  @UsePipe(new UserInfoPlainPipe())
-  public async a5(@Body() user: User) {
-    return {
-      data: user.FullName(),
-      msg: "ok",
-    };
-  }
-}
-
-// Enity 层
-
-@Enity("mysql")
-@Collect()
-export class User extends AdoOrmBaseEnity {
-  @Key
-  @AutoCreate
-  id!: number;
-
-  @IsNumber
-  phone!: number;
-
-  @Keyword
-  @IsOptional
-  username!: string;
-
-  @IsNumber
-  password!: string;
-
-  @IsEmail
-  email!: string;
-
-  @AutoCreate
-  @IsOptional
-  createTime!: string;
-
-  @AutoCreate
-  FullName() {
-    return this.username + this.email;
-  }
-}
 ````
 
-拦截器
+*拦截器*
 implyments AdoNodeInterceptor
 UseInterceptor(new InterceptorConstructor())
 
 **可以实现 请求开始 处理请求前 响应后 三个钩子**
 
-````
+````ts
 class UserLogInterceptor implements AdoNodeInterceptor {
   async hack(req: Request) {
     console.log("处理中", !req.headers);
@@ -406,28 +280,102 @@ class UserLogInterceptor implements AdoNodeInterceptor {
     console.log("处理前", req.headers);
     if (!req.headers["token"]) {
       req.headers["token"] =
-        "token a5sdimkgdsa2134ij213saklnbgjoasjdaskjdal1231";
+        "token abcdefg";
       return req.headers
     }
   }
 }
 ````
 
+#### Controller 
+
+控制层的类必须继承 *AdoNodeControlelr*，否则 将会提示错误
+在控制层里面可以使用
+@UsePipe
+@UseInterceptor
+@Get
+@Post
+@Inject *依赖注入*
+等装饰器
+
+````ts
+@Controller("/app")
+class AppController extends AdoNodeControlelr{}
+````
+
+#### Service
+
+服务层提供相应的业务服务
+服务层的类 需要使用 @Collect 装饰器 收集原型
+
+````ts
+
+@Collect()
+class AppService{
+  getList(){
+    return '......'
+  }
+}
+````
+
+#### Enity ｜ ORM 对象关系映射
+
+使用@Enity 并且继承 *AdoBaseEnity* 的类，会带有各类的方法
+
+````ts
+@Enity(tableName,connect)
+class AppEnity extends AdoBaseEnity{}
+
+～
+
+const appEnity = new AppEnity()
+appEnity.getOneBy(val)
+appEnity.countBy(val)
+appEnity.getBy(val)
+appEnity.save(val)
+appEnity.getMany(val)
+appEnity.getList(val)
+appEnity.query(sql,options?)
+````
+
+#### Module 模块化
+
+Provider 里 可以包含各类的 Module
+比如 一个商品 Module ： GoodsModule
+他的  Provider 可以是 SeckillModule , SellerModule,
+他的 Controller 则为 GoodsController
+形成一个模块
+
+````ts
+@Module({
+  Provider: [UserModule,StudentModule],
+  Controller: [AppController],
+})
+export class AppModule {}
+````
+
 
 
 ### 启动服务
 
-````
-const options = defineAdoNodeOptions({
-  controller: HandlController[],
-  base: string,
-  port: number,
-  staticDist: string,
-  globalPipes: AdoNodeGolbalPipe[],
-  cluster: boolean,
-});
+* <i style="color:royalblue"> Extends AdoNodeServer </i>
 
-@AdoNodeConfig(ClassConstructor)
-export class AdoNodeServerImpl extends AdoNodeServer {}
-AdoNodeServerImpl.run(options);
+Modules 里面包含各种 Module
+Base 为基础的 Api路径
+Port 为端口号
+GlobalPipes 为全局管道
+
+````typescript
+
+@Modules({
+  Modules: [AppModule],
+  Base: "/api",
+  Port: 3000,
+  GlobalPipes: [TestGlobalPipe],
+})
+class AdoNodeServerImpl extends AdoNodeServer { }
+
+AdoNodeServerImpl.runSSRServer((app) => {
+  app.use("/AdoServer", express.static(path.join(__dirname, "../public")));
+});
 ````

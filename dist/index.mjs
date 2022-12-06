@@ -1086,94 +1086,98 @@ var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/orm/sql.ts
 var query = class {
-  sql = "select";
+  sql = "";
   Enity = "";
-  andsql = "";
-  orsql = "";
-  likesql = "";
+  and_sql = "";
+  or_sql = "";
+  likeand_sql = "";
+  likeor_sql = "";
+  pagination_sql = "";
+  column_sql = "";
   setEnity(Enity2) {
-    if (typeof Enity2 === "function") {
-      this.Enity = Enity2.name;
+    if (Enity2 instanceof Array) {
+      this.Enity = Enity2.join(",");
     } else {
       this.Enity = Enity2;
     }
-    this.sql = "select * from " + this.Enity + " ";
     return this;
   }
   setColumn(keys) {
     let columns = "";
     this.sql = "";
-    keys.forEach((el, index) => {
-      if (index != keys.length - 1) {
-        columns += "" + el + ",";
-      } else {
-        columns += "" + el + " ";
-      }
-    });
-    this.sql = "select " + columns + "from " + this.Enity;
+    columns = keys.join(",");
+    this.column_sql = columns;
+    this.column_sql = this.column_sql + " from ";
     return this;
   }
   and(options, value) {
     if (value) {
-      if (!this.andsql && !this.likesql) {
-        this.andsql += " where ";
-      } else {
-        this.andsql = "";
-        this.andsql += " and ";
-      }
-      this.andsql += options + ' = "' + value + '"';
-      this.sql += this.andsql;
-    }
-    if (typeof options == "object") {
-      const entries = Object.keys(options);
-      entries.forEach((el) => {
-        this.and(el, options[el]);
-      });
+      this.and_sql = options + " = " + value;
+    } else {
+      const option = Object.entries(options);
+      const sql = option.join(" and ").replaceAll(",", " = ");
+      this.and_sql = sql;
     }
     return this;
   }
   or(options, value) {
     if (value) {
-      if (!this.orsql && !this.likesql) {
-        this.orsql += " where ";
-      } else {
-        this.orsql = "";
-        this.orsql += " or ";
-      }
-      this.orsql += options + ' = "' + value + '"';
-      this.sql += this.orsql;
-    }
-    if (typeof options == "object") {
-      const entries = Object.keys(options);
-      entries.forEach((el) => {
-        this.or(el, options[el]);
-      });
-    }
-    return this;
-  }
-  like(key, value, andor) {
-    if (!this.likesql && !this.andsql && !this.orsql) {
-      this.likesql += " where ";
+      this.or_sql = options + " = " + value;
     } else {
-      this.likesql = "";
-      this.likesql += " " + andor + " ";
+      const option = Object.entries(options);
+      const sql = option.join(" or ").replaceAll(",", " = ");
+      this.or_sql = sql;
     }
-    this.likesql += key + ' like "%' + value + '%" ';
-    this.sql += this.likesql;
     return this;
   }
-  pagination(options, value) {
-    let paginationsql = " limit ";
+  like_or(options, value) {
     if (value) {
-      paginationsql += options + "," + value;
+      this.likeor_sql = options + " like " + value;
+    } else {
+      const option = Object.entries(options);
+      const sql = option.join(" or ").replaceAll(",", " like ");
+      this.likeor_sql = sql;
     }
-    if (typeof options == "object") {
-      paginationsql += options.page + "," + options.size;
+    return this;
+  }
+  like_and(options, value) {
+    if (value) {
+      this.likeand_sql = options + " like " + value;
+    } else {
+      const option = Object.entries(options);
+      const sql = option.join(" or ").replaceAll(",", " like ");
+      this.likeand_sql = sql;
     }
-    this.sql += paginationsql;
+    return this;
+  }
+  pagination(page, size) {
+    this.pagination_sql += page + "," + size;
+    this.pagination_sql = " limit " + this.pagination_sql;
     return this;
   }
   getSql() {
+    let andor = "";
+    let like_andor = "";
+    if (this.and_sql || this.or_sql) {
+      andor = this.and_sql ? this.and_sql : this.or_sql;
+      andor = " where " + andor;
+      if (this.and_sql && this.or_sql) {
+        andor = " where " + this.and_sql + " or " + this.or_sql + " ";
+      }
+    }
+    if (this.likeand_sql || this.likeor_sql) {
+      like_andor = this.likeand_sql ? this.likeand_sql : this.likeor_sql;
+      if (this.likeand_sql && this.likeor_sql) {
+        like_andor = this.likeand_sql + " or " + this.likeor_sql + " ";
+      }
+      if (!andor) {
+        like_andor = " where " + like_andor;
+      }
+    }
+    if (!this.column_sql) {
+      this.column_sql = " * from ";
+    }
+    this.sql = "select" + this.column_sql + this.Enity + andor + like_andor + this.pagination_sql;
     return this.sql;
   }
 };

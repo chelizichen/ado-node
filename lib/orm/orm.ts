@@ -1,8 +1,8 @@
 import * as mysql from "mysql";
-import { CONSTANT, ref } from "../core";
+// import { AdoBaseConfig } from "../config";
+import { ref } from "../core";
 import { ClientError } from "../error/client";
 import { DataBaseError } from "../error/dababase";
-import { OberServer } from "../ober/oberserver";
 import { getStrCount } from "../oper/protect";
 
 export const RunConfig = Symbol("RUNCONFIG");
@@ -10,46 +10,34 @@ export const BASEENITY = Symbol("BASEENITY");
 export const Conn = Symbol("CONN");
 export const Target = Symbol("TARGET");
 export const GetConn = Symbol("GETCONN");
+export const TableName = Symbol("TableName");
+
 class AdoOrmBaseEnity {
   public [BASEENITY]!: Function;
-  public [Conn]!: mysql.Connection;
+  public [Conn]!: mysql.PoolConnection;
   public [Target]: any;
+  public [TableName]!: string;
   constructor() {
     this[Target] = AdoOrmBaseEnity.name;
   }
   public async [RunConfig](BaseEnity: Function, dbname: string) {
-    if (this[Target] !== "AdoOrmBaseEnity") {
-      console.log("this.target.name", this[Target]);
-      console.log("不是AdoOrmBaseEnity 函数调用 拒绝访问");
-      return false;
-    }
-    this[GetConn](dbname);
     this[BASEENITY] = BaseEnity;
-    return true;
+    this[TableName] = dbname;
+    this[GetConn]();
   }
-  public async [GetConn](dbname: string) {
-    if (this[Target] !== "AdoOrmBaseEnity") {
-      console.log("this.target.name", this[Target]);
-      console.log("不是AdoOrmBaseEnity 函数调用 拒绝访问");
-      return false;
-    }
-    let OberInst = ref.get(
-      CONSTANT.Observer,
-      OberServer.prototype
-    ) as OberServer;
-    const CommonClass = OberInst.get(CONSTANT.Config)?.value;
-    const CacheInst = ref.get(dbname, CommonClass.prototype);
-    this[Conn] = await CacheInst;
-    return;
+  public async [GetConn]() {
+    const Connection = ref.get(":pool", this[BASEENITY].prototype);
+    this[Conn] = await Connection();
   }
   /**
    * @method getList
    * @description 获取所有的数据
    */
-  public async getList() {
+  public async getList(page: string, size: string) {
     return new Promise((resolve, reject) => {
       this[Conn].query(
-        `select * from ${this[BASEENITY].name} limit 0,10`,
+        `select * from ?? limit ?,?`,
+        [this[TableName], parseInt(page), parseInt(size)],
         function (err, res) {
           if (err) {
             reject(err);
@@ -70,12 +58,10 @@ class AdoOrmBaseEnity {
       const Error = new ClientError("非法参数，可能为恶意sql注入");
       return Error;
     }
-    const options = [this[BASEENITY].name, key, val];
-
     return new Promise((resolve) => {
       this[Conn].query(
         `select * from ?? where ?? = ?`,
-        options,
+        [this[TableName], key, val],
         function (err, res) {
           if (err) {
             const Error = new DataBaseError(
@@ -85,6 +71,7 @@ class AdoOrmBaseEnity {
             resolve(Error);
           }
           resolve(res);
+          // this[Conn]
         }
       );
     });
@@ -95,11 +82,10 @@ class AdoOrmBaseEnity {
    */
   public async delOneBy(val: any) {
     const key = ref.get("key", this[BASEENITY].prototype);
-    const options = [this[BASEENITY].name, key, val];
     return new Promise((resolve, reject) => {
       this[Conn].query(
         `DELETE FROM ?? WHERE ?? = ?`,
-        options,
+        [this[TableName], key, val],
         function (err, res) {
           if (err) {
             reject(err);
@@ -119,7 +105,7 @@ class AdoOrmBaseEnity {
     return new Promise((resolve, reject) => {
       this[Conn].query(
         countSql + jonitSql,
-        [this[BASEENITY].name],
+        [this[TableName]],
         function (err, res) {
           if (err) {
             reject(err);
@@ -139,7 +125,7 @@ class AdoOrmBaseEnity {
     return new Promise((resolve, reject) => {
       this[Conn].query(
         "select * from ?? where " + sql,
-        [this[BASEENITY].name],
+        [this[TableName]],
         function (err, res) {
           if (err) {
             reject(err);
@@ -155,9 +141,8 @@ class AdoOrmBaseEnity {
    */
   public async save<T extends Record<string, string> | Object>(val: T) {
     const filterUndefined = JSON.parse(JSON.stringify(val));
-    let opt = [this[BASEENITY].name, filterUndefined];
     return new Promise((resolve, reject) => {
-      this[Conn].query(`insert into ??  SET ? `, opt, function (err, res) {
+      this[Conn].query(`insert into ??  SET ? `, [this[TableName], filterUndefined], function (err, res) {
         if (err) {
           reject(err);
         }
@@ -176,6 +161,18 @@ class AdoOrmBaseEnity {
         }
       });
     });
+  }
+
+  public async query(sql: string, options: any[]) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(sql, options, (err, res) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(res)
+        }
+      })
+    })
   }
 }
 export { AdoOrmBaseEnity };

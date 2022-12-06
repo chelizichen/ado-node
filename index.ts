@@ -16,8 +16,6 @@ import {
   Get,
   Post,
   AdoNodeServer,
-  OberServer,
-  Curd,
   getStrCount,
   Enity,
   Key,
@@ -30,23 +28,9 @@ import {
   AdoOrmBaseEnity,
   del,
   UsePipe,
-  getCachekey,
-  CreateCache,
-  UseCache,
-  useConfig,
-  Config,
-  AdoNodeConfig,
-  Mapper,
-  Connect,
-  Select,
-  Update,
-  Insert,
-  Delete,
   query,
   Error,
   validate,
-  UseDataBase,
-  CreateDataBase,
 } from "./lib/core";
 import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
@@ -77,10 +61,6 @@ export { SerivceMap, GenereateRouter };
 export { Get, Post };
 export { AdoNodeServer, defineAdoNodeOptions };
 
-export { OberServer };
-// oper
-// curd
-export { Curd };
 // protect
 export { getStrCount };
 
@@ -105,18 +85,6 @@ export { query, del, update, save };
 // pipe
 export { UsePipe, validate };
 
-// store
-// cache
-export { getCachekey, CreateCache, UseCache };
-
-// config
-export { useConfig, Config, AdoNodeConfig };
-
-// db
-export { CreateDataBase, UseDataBase };
-
-// mapper
-export { Mapper, Connect, Select, Update, Insert, Delete };
 
 export { UseControllerInterceptor };
 export { UseInterceptor };

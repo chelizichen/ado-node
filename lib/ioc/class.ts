@@ -61,6 +61,7 @@ class AdoNodeController {
           return;
         } else {
           const ret = await fn(req, res);
+          
           if (ret instanceof Error) {
             res.json(ret);
             return;

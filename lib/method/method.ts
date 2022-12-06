@@ -102,6 +102,9 @@ const createMethod = (method: string) => {
         const before_data = await useRunTimeInterceptor(interceptor, "before", {
           req,
         });
+        
+        console.log(before_data);
+        
         if (before_data) {
           return before_data;
         }
@@ -129,12 +132,7 @@ const createMethod = (method: string) => {
         const args = useArgs(propertyKey as string, target, req, res);
 
         const ret = await target.constructor.prototype[propertyKey](...args);
-        // @ts-ignore
-        const code = ref.get(
-          propertyKey as string,
-          target.constructor.prototype,
-          ":status"
-        );
+
 
         if (ret && interceptor && interceptor.after) {
           return {

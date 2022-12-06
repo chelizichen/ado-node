@@ -16,9 +16,9 @@ const UseInterceptor = (fn: AdoNodeInterceptor): MethodDecorator => {
 };
 
 interface AdoNodeInterceptor {
-  before(req: Request): Promise<any>;
-  hack(req: Request): Promise<any>;
-  after(req: Request): Promise<any>;
+  before(req: Request):any;
+  hack(req: Request): any;
+  after(req: Request): void;
 }
 
 export { UseInterceptor };

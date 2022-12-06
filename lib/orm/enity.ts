@@ -1,6 +1,6 @@
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEnity, RunConfig } from "./orm";
-
+import * as mysql from 'mysql'
 export enum ENITY_CONSTANT {
   Key = "keys",
   Keyword = "keyword",
@@ -8,11 +8,13 @@ export enum ENITY_CONSTANT {
   DefaultValue = "__default__",
   IsOptional = "__isoptional__",
 }
-const Enity = (dbname: string) => {
+const Enity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
   return function (target: typeof AdoOrmBaseEnity) {
+    ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
-    targetInst[RunConfig](target, dbname);
     ref.def(target.name, targetInst, target.prototype);
+    targetInst[RunConfig](target, dbname);
+
   };
 };
 const Key: PropertyDecorator = (

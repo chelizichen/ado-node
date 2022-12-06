@@ -26,7 +26,7 @@
       <el-upload
       class="upload-demo"
       drag
-      action="http://localhost:3000/api/files/upload"
+      action="/api/files/upload"
       multiple
     
       :on-success="handle_success"
@@ -41,6 +41,7 @@
     <div>{{license}}</div>
   </div>
   <script type="text/javascript">
+
     var vm = new Vue({
         el: '#root',
         data: {

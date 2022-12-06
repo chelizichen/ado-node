@@ -1,51 +1,43 @@
 import { createClient } from "redis";
-import { CreateCache } from "../../lib/store/cache";
-import { CreateDataBase } from "../../lib/store/db";
 import * as mysql from "mysql";
-import { Config } from "../../lib/store/config";
-@Config
+
+const config = {
+    host: "localhost",
+    user: "root",
+    password: "leemulus21",
+    database: "zrq_shop", //所用数据库
+    port: 3306,
+  };
 class commonClass {
-  @CreateCache("redis")
-  public async getRedis() {
+  static pool: mysql.Pool
+  
+  static async getRedis() {
     return await createClient();
   }
-  @CreateDataBase("mysql")
-  public async getConn() {
-    const config = {
-      host: "localhost",
-      user: "root",
-      password: "12345678",
-      database: "boot", //所用数据库
-      port: 3306,
-    };
-    const coon = await mysql.createConnection({
+
+  static async createPool() {
+    commonClass.pool = await mysql.createPool({
       host: config.host,
       user: config.user,
       password: config.password,
       database: config.database,
       port: config.port,
-      multipleStatements: true,
+      connectionLimit: 10,
     });
-    return coon;
   }
 
-  @CreateDataBase("mysqlPool")
-  public async getMysqlPool() {
-    const config = {
-      host: "localhost",
-      user: "root",
-      password: "12345678",
-      database: "boot", //所用数据库
-      port: 3306,
-    };
-    const coon = await mysql.createPool({
-      host: config.host,
-      user: config.user,
-      password: config.password,
-      database: config.database,
-      port: config.port,
-    });
-    return coon;
+  static async getMysqlPoolConnection():Promise<mysql.PoolConnection>{
+    return new Promise(async (resolve, reject) => {
+      if (commonClass.pool == null) {
+        await commonClass.createPool();
+      }
+      commonClass.pool.getConnection(async (err, connetion) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(connetion);
+      });
+    })
   }
 }
 

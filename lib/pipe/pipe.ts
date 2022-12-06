@@ -16,7 +16,9 @@ const UsePipe = (fn: AdoNodePipe): MethodDecorator => {
  */
 
 interface AdoNodePipe {
-  run(req: Request): Promise<any>;
+  run(
+    req: Request
+  ): any;
 }
 
 function validate(Proto: any, inst: any) {

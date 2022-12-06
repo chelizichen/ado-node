@@ -1,4 +1,4 @@
-import { BaseController } from "../types";
+import { AdoNodeControllerType } from "../types";
 import { IRouter } from "express";
 import { ref } from "./ref";
 
@@ -10,7 +10,7 @@ const SerivceMap = new Map<string, any>();
  * @param Controller
  * @returns
  */
-function GenereateRouter(Controller: BaseController): IRouter {
+function GenereateRouter(Controller: AdoNodeControllerType): IRouter {
   const URL = ref.get("BaseUrl", Controller.prototype);
   const GetService = new Controller(URL, SerivceMap);
   return GetService.Boost(Controller);

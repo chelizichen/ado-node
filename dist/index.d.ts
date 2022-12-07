@@ -1,4 +1,4 @@
-import { MESSAGE, CONSTANT, CODE, ClientError, DataBaseError, FieldError, TypesError, AdoNodeController, Controller, Inject, Collect, ref, SerivceMap, GenereateRouter, Get, Post, AdoNodeServer, getStrCount, Enity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, AdoOrmBaseEnity, del, UsePipe, query, Error, validate } from "./lib/core";
+import { MESSAGE, CONSTANT, CODE, ClientError, DataBaseError, FieldError, TypesError, AdoNodeController, Controller, Inject, Collect, ref, SerivceMap, GenereateRouter, Get, Post, AdoNodeServer, getStrCount, Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, AdoOrmBaseEnity, del, UsePipe, query, Error, validate } from "./lib/core";
 import { UseControllerInterceptor } from "./lib/interceptor/global";
 import { UseInterceptor } from "./lib/interceptor/interceptor";
 import { defineAdoNodeOptions } from "./lib/method/server";
@@ -20,7 +20,7 @@ export { SerivceMap, GenereateRouter };
 export { Get, Post };
 export { AdoNodeServer, defineAdoNodeOptions };
 export { getStrCount };
-export { Enity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, };
+export { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, };
 export { AdoOrmBaseEnity };
 export { query, del, update, save };
 export { UsePipe, validate };

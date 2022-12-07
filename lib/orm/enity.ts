@@ -8,7 +8,7 @@ export enum ENITY_CONSTANT {
   DefaultValue = "__default__",
   IsOptional = "__isoptional__",
 }
-const Enity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
+const Entity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
   return function (target: typeof AdoOrmBaseEnity) {
     ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
@@ -84,7 +84,7 @@ const IsOptional: PropertyDecorator = (
 
 const EnityTable = new Map();
 export {
-  Enity,
+  Entity,
   Key,
   Keyword,
   IsEmail,

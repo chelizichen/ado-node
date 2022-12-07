@@ -17,7 +17,7 @@ import {
   Post,
   AdoNodeServer,
   getStrCount,
-  Enity,
+  Entity,
   Key,
   Keyword,
   IsEmail,
@@ -67,7 +67,7 @@ export { getStrCount };
 // orm
 // enity
 export {
-  Enity,
+  Entity,
   Key,
   Keyword,
   IsEmail,

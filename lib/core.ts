@@ -11,7 +11,7 @@ import {
   IsNumber,
   EnityTable,
   AutoCreate,
-  Enity,
+  Entity,
   Key,
   Keyword,
 } from "./orm/enity";
@@ -55,7 +55,7 @@ export { getStrCount };
 // orm
 // enity
 export {
-  Enity,
+  Entity,
   Key,
   Keyword,
   IsEmail,

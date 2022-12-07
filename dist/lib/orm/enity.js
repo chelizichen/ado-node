@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.ENITY_CONSTANT = void 0;
+exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.ENITY_CONSTANT = void 0;
 const ref_1 = require("../ioc/ref");
 const orm_1 = require("./orm");
 var ENITY_CONSTANT;
@@ -11,7 +11,7 @@ var ENITY_CONSTANT;
     ENITY_CONSTANT["DefaultValue"] = "__default__";
     ENITY_CONSTANT["IsOptional"] = "__isoptional__";
 })(ENITY_CONSTANT = exports.ENITY_CONSTANT || (exports.ENITY_CONSTANT = {}));
-const Enity = (dbname, poolConnection) => {
+const Entity = (dbname, poolConnection) => {
     return function (target) {
         ref_1.ref.def(":pool", poolConnection, target.prototype);
         const targetInst = new target();
@@ -19,7 +19,7 @@ const Enity = (dbname, poolConnection) => {
         targetInst[orm_1.RunConfig](target, dbname);
     };
 };
-exports.Enity = Enity;
+exports.Entity = Entity;
 const Key = (target, propertyKey) => {
     ref_1.ref.def("key", propertyKey, target.constructor.prototype);
 };

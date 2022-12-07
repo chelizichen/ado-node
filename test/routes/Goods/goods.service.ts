@@ -50,12 +50,12 @@ export class GoodsService {
       .pagination(0, 10)
       .getSql();
 
-    const data = await this.Goods.query(sql);
-    const data1 = await this.Goods.query(sql1);
+    const data = await this.Goods.getMany(sql);
+    const data1 = await this.Goods.getMany(sql1);
 
-    const data2 = await this.Goods.query(sql2, opt2);
+    const data2 = await this.Goods.getMany(sql2, opt2);
 
-    const data3 = await this.Goods.query(sql3);
+    const data3 = await this.Goods.getMany(sql3);
 
     return {
       sql,

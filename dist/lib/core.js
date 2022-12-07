@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Enity = exports.getStrCount = exports.AdoNodeServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.AdoNodeController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
+exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.getStrCount = exports.AdoNodeServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.AdoNodeController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
 const constant_1 = require("./constant/constant");
 Object.defineProperty(exports, "MESSAGE", { enumerable: true, get: function () { return constant_1.MESSAGE; } });
 Object.defineProperty(exports, "CODE", { enumerable: true, get: function () { return constant_1.CODE; } });
@@ -23,7 +23,7 @@ Object.defineProperty(exports, "IsOptional", { enumerable: true, get: function (
 Object.defineProperty(exports, "IsNumber", { enumerable: true, get: function () { return enity_1.IsNumber; } });
 Object.defineProperty(exports, "EnityTable", { enumerable: true, get: function () { return enity_1.EnityTable; } });
 Object.defineProperty(exports, "AutoCreate", { enumerable: true, get: function () { return enity_1.AutoCreate; } });
-Object.defineProperty(exports, "Enity", { enumerable: true, get: function () { return enity_1.Enity; } });
+Object.defineProperty(exports, "Entity", { enumerable: true, get: function () { return enity_1.Entity; } });
 Object.defineProperty(exports, "Key", { enumerable: true, get: function () { return enity_1.Key; } });
 Object.defineProperty(exports, "Keyword", { enumerable: true, get: function () { return enity_1.Keyword; } });
 const sql_1 = require("./orm/sql");

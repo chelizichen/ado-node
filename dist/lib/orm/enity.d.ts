@@ -7,7 +7,7 @@ export declare enum ENITY_CONSTANT {
     DefaultValue = "__default__",
     IsOptional = "__isoptional__"
 }
-declare const Enity: (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => (target: typeof AdoOrmBaseEnity) => void;
+declare const Entity: (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => (target: typeof AdoOrmBaseEnity) => void;
 declare const Key: PropertyDecorator;
 declare const Keyword: PropertyDecorator;
 declare const AutoCreate: PropertyDecorator;
@@ -18,4 +18,4 @@ declare const IsNumber: PropertyDecorator;
  */
 declare const IsOptional: PropertyDecorator;
 declare const EnityTable: Map<any, any>;
-export { Enity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, };
+export { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, };

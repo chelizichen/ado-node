@@ -1,8 +1,8 @@
-import { AdoOrmBaseEnity, Enity, IsNumber, Key } from "../../../lib/core";
+import { AdoOrmBaseEnity, Entity, IsNumber, Key } from "../../../lib/core";
 import { commonClass } from "../../config/common";
 
 
-@Enity("goods",commonClass.getMysqlPoolConnection)
+@Entity("goods", commonClass.getMysqlPoolConnection)
 export class Goods extends AdoOrmBaseEnity {
   @Key
   id!: string;
@@ -27,4 +27,6 @@ export class Goods extends AdoOrmBaseEnity {
   getNameAndPrice() {
     return this.goods_name + this.goods_price;
   }
+
+  // @ToOne()
 }

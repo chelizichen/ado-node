@@ -42,8 +42,8 @@ __export(ado_node_exports, {
   Collect: () => Collect,
   Controller: () => Controller,
   DataBaseError: () => DataBaseError,
-  Enity: () => Enity,
   EnityTable: () => EnityTable,
+  Entity: () => Entity,
   Error: () => Error2,
   FieldError: () => FieldError,
   GenereateRouter: () => GenereateRouter,
@@ -961,204 +961,6 @@ function getStrCount(aStr, aChar) {
   return count;
 }
 
-// lib/orm/orm.ts
-var RunConfig = Symbol("RUNCONFIG");
-var BASEENITY = Symbol("BASEENITY");
-var Conn = Symbol("CONN");
-var Target = Symbol("TARGET");
-var GetConn = Symbol("GETCONN");
-var TableName = Symbol("TableName");
-var AdoOrmBaseEnity = class {
-  [BASEENITY];
-  [Conn];
-  [Target];
-  [TableName];
-  constructor() {
-    this[Target] = AdoOrmBaseEnity.name;
-  }
-  async [RunConfig](BaseEnity, dbname) {
-    this[BASEENITY] = BaseEnity;
-    this[TableName] = dbname;
-    this[GetConn]();
-  }
-  async [GetConn]() {
-    const Connection = ref.get(":pool", this[BASEENITY].prototype);
-    this[Conn] = await Connection();
-  }
-  async getList(page, size) {
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        `select * from ?? limit ?,?`,
-        [this[TableName], parseInt(page), parseInt(size)],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async getOneBy(val) {
-    const key = ref.get("key", this[BASEENITY].prototype);
-    const count = getStrCount(val, ["delete", "drop"]);
-    if (count) {
-      const Error3 = new ClientError("\u975E\u6CD5\u53C2\u6570\uFF0C\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
-      return Error3;
-    }
-    return new Promise((resolve) => {
-      this[Conn].query(
-        `select * from ?? where ?? = ?`,
-        [this[TableName], key, val],
-        function(err, res) {
-          if (err) {
-            const Error3 = new DataBaseError(
-              "\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684",
-              err
-            );
-            resolve(Error3);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async delOneBy(val) {
-    const key = ref.get("key", this[BASEENITY].prototype);
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        `DELETE FROM ?? WHERE ?? = ?`,
-        [this[TableName], key, val],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async countBy(val) {
-    let countSql = `select count(*) as total from ?? where `;
-    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        countSql + jonitSql,
-        [this[TableName]],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          const data = res[0];
-          resolve(data);
-        }
-      );
-    });
-  }
-  async getBy(val) {
-    const sql = this[Conn].escape(val).replaceAll(",", " and ");
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        "select * from ?? where " + sql,
-        [this[TableName]],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async save(val) {
-    const filterUndefined = JSON.parse(JSON.stringify(val));
-    return new Promise((resolve, reject) => {
-      this[Conn].query(`insert into ??  SET ? `, [this[TableName], filterUndefined], function(err, res) {
-        if (err) {
-          reject(err);
-        }
-        resolve(res);
-      });
-    });
-  }
-  async getMany(sql, options) {
-    return new Promise((resolve, reject) => {
-      this[Conn].query(sql, options, function(err, res) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      });
-    });
-  }
-  async query(sql, options) {
-    return new Promise((resolve, reject) => {
-      this[Conn].query(sql, options, (err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      });
-    });
-  }
-};
-
-// lib/orm/enity.ts
-var Enity = (dbname, poolConnection) => {
-  return function(target) {
-    ref.def(":pool", poolConnection, target.prototype);
-    const targetInst = new target();
-    ref.def(target.name, targetInst, target.prototype);
-    targetInst[RunConfig](target, dbname);
-  };
-};
-var Key = (target, propertyKey) => {
-  ref.def("key", propertyKey, target.constructor.prototype);
-};
-var Keyword = (target, propertyKey) => {
-  ref.def("keyword", propertyKey, target.constructor.prototype);
-};
-var AutoCreate = (target, propertyKey) => {
-  const getPrevAutoCreate = ref.get(
-    "AutoCreate" /* AutoCreate */,
-    target.constructor.prototype
-  );
-  if (!getPrevAutoCreate) {
-    ref.def(
-      "AutoCreate" /* AutoCreate */,
-      [propertyKey],
-      target.constructor.prototype
-    );
-  } else {
-    getPrevAutoCreate.push(propertyKey);
-    ref.def(
-      "AutoCreate" /* AutoCreate */,
-      getPrevAutoCreate,
-      target.constructor.prototype
-    );
-  }
-};
-var IsEmail = (target, propertyKey) => {
-  const EmailValidate = (data) => {
-    const reg = /[\w]+(\.[\w]+)*@[\w]+(\.[\w])+/;
-    return reg.test(data);
-  };
-  ref.def(propertyKey, EmailValidate, target.constructor.prototype);
-};
-var IsNumber = (target, propertyKey) => {
-  const IsNum = (num) => {
-    return !isNaN(num);
-  };
-  ref.def(propertyKey, IsNum, target.constructor.prototype);
-};
-var IsOptional = (target, propertyKey) => {
-  const RetTrue = () => true;
-  ref.def(propertyKey, RetTrue, target.constructor.prototype);
-};
-var EnityTable = /* @__PURE__ */ new Map();
-
 // lib/orm/sql.ts
 var query = class {
   sql = "";
@@ -1169,11 +971,11 @@ var query = class {
   likeor_sql = "";
   pagination_sql = "";
   column_sql = "";
-  setEnity(Enity2) {
-    if (Enity2 instanceof Array) {
-      this.Enity = Enity2.join(",");
+  setEnity(Enity) {
+    if (Enity instanceof Array) {
+      this.Enity = Enity.join(",");
     } else {
-      this.Enity = Enity2;
+      this.Enity = Enity;
     }
     return this;
   }
@@ -1261,11 +1063,11 @@ var del = class {
   Enity = "";
   andsql = "";
   orsql = "";
-  setEnity(Enity2) {
-    if (typeof Enity2 === "function") {
-      this.Enity = Enity2.name;
+  setEnity(Enity) {
+    if (typeof Enity === "function") {
+      this.Enity = Enity.name;
     } else {
-      this.Enity = Enity2;
+      this.Enity = Enity;
     }
     this.sql = "delete from " + this.Enity + " ";
     return this;
@@ -1318,11 +1120,11 @@ var update = class {
   options = {};
   orsql = "";
   andsql = "";
-  setEnity(Enity2) {
-    if (typeof Enity2 === "function") {
-      this.Enity = Enity2.name;
+  setEnity(Enity) {
+    if (typeof Enity === "function") {
+      this.Enity = Enity.name;
     } else {
-      this.Enity = Enity2;
+      this.Enity = Enity;
     }
     return this;
   }
@@ -1392,11 +1194,11 @@ var save = class {
   sql = "";
   Enity = "";
   options = {};
-  setEnity(Enity2) {
-    if (typeof Enity2 === "function") {
-      this.Enity = Enity2.name;
+  setEnity(Enity) {
+    if (typeof Enity === "function") {
+      this.Enity = Enity.name;
     } else {
-      this.Enity = Enity2;
+      this.Enity = Enity;
     }
     return this;
   }
@@ -1422,6 +1224,292 @@ var save = class {
     };
   }
 };
+
+// lib/orm/orm.ts
+var import_redis = require("redis");
+var import_lodash = require("lodash");
+var RunConfig = Symbol("RUNCONFIG");
+var BASEENITY = Symbol("BASEENITY");
+var Conn = Symbol("CONN");
+var Target = Symbol("TARGET");
+var GetConn = Symbol("GETCONN");
+var TableName = Symbol("TableName");
+var Cache = Symbol("CACHE");
+var AdoOrmBaseEnity = class {
+  [BASEENITY];
+  [Conn];
+  [Target];
+  [TableName];
+  RedisClient;
+  constructor() {
+    this[Target] = AdoOrmBaseEnity.name;
+    this.RedisClient = (0, import_redis.createClient)();
+    this.RedisClient.connect();
+  }
+  createQueryBuilder() {
+    return {
+      query: new query(),
+      save: new save(),
+      update: new update(),
+      del: new del()
+    };
+  }
+  async [RunConfig](BaseEnity, dbname) {
+    this[BASEENITY] = BaseEnity;
+    this[TableName] = dbname;
+    this[GetConn]();
+  }
+  async [GetConn]() {
+    const Connection = ref.get(":pool", this[BASEENITY].prototype);
+    this[Conn] = await Connection();
+  }
+  async [Cache](key, value, cacheOptions) {
+    if (cacheOptions) {
+      if ((0, import_lodash.isObject)(cacheOptions) && cacheOptions.cache && cacheOptions.timeout) {
+        console.log("1", key);
+        this.RedisClient.set(key, value);
+        this.RedisClient.expire(key, cacheOptions.timeout);
+      }
+      if ((0, import_lodash.isObject)(cacheOptions) && !cacheOptions.cache && cacheOptions.force && cacheOptions.timeout) {
+        console.log("2", key);
+        this.RedisClient.set(key, value);
+        this.RedisClient.expire(key, cacheOptions.timeout);
+      }
+      if ((0, import_lodash.isBoolean)(cacheOptions) && cacheOptions === true) {
+        this.RedisClient.set(key, value);
+      }
+    }
+  }
+  async getList(page, size) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `select * from ?? limit ?,?`,
+        [this[TableName], parseInt(page), parseInt(size)],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getOneBy(val, cache) {
+    {
+      let cacheKey;
+      const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+      if (isCache) {
+        cacheKey = `${this[TableName]}:getOneBy:${val}`;
+        console.log(cacheKey);
+        if ((0, import_lodash.isObject)(cache) && !cache.force) {
+          let cacheVal = await this.RedisClient.get(cacheKey);
+          if (cacheVal) {
+            return cacheVal;
+          }
+        }
+      }
+      const key = ref.get("key", this[BASEENITY].prototype);
+      const count = getStrCount(val, ["delete", "drop"]);
+      if (count) {
+        return new ClientError("\u975E\u6CD5\u53C2\u6570,\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
+      }
+      return new Promise((resolve) => {
+        let _this = this;
+        this[Conn].query(
+          `select * from ?? where ?? = ?`,
+          [this[TableName], key, val],
+          function(err, res) {
+            if (err) {
+              resolve(new DataBaseError("\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684", err));
+            }
+            resolve(res);
+            if (isCache) {
+              _this[Cache](
+                cacheKey,
+                JSON.stringify(res),
+                cache
+              );
+            }
+          }
+        );
+      });
+    }
+  }
+  async delOneBy(val) {
+    const key = ref.get("key", this[BASEENITY].prototype);
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `DELETE FROM ?? WHERE ?? = ?`,
+        [this[TableName], key, val],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async countBy(val, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      let tostr = JSON.stringify(val);
+      cacheKey = `${this[TableName]}:getOneBy:${tostr}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this.RedisClient.get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    let countSql = `select count(*) as total from ?? where `;
+    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(
+        countSql + jonitSql,
+        [this[TableName]],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          const data = res[0];
+          resolve(data);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      );
+    });
+  }
+  async getBy(val, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      cacheKey = `${this[TableName]}:getOneBy:${val}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this.RedisClient.get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    const sql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(
+        "select * from ?? where " + sql,
+        [this[TableName]],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      );
+    });
+  }
+  async save(val) {
+    const filterUndefined = JSON.parse(JSON.stringify(val));
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `insert into ??  SET ? `,
+        [this[TableName], filterUndefined],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getMany(sql, options, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      const tojson = JSON.stringify(options);
+      cacheKey = `${this[TableName]}:getMany:${tojson}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this.RedisClient.get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(sql, options, function(err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      });
+    });
+  }
+};
+
+// lib/orm/enity.ts
+var Entity = (dbname, poolConnection) => {
+  return function(target) {
+    ref.def(":pool", poolConnection, target.prototype);
+    const targetInst = new target();
+    ref.def(target.name, targetInst, target.prototype);
+    targetInst[RunConfig](target, dbname);
+  };
+};
+var Key = (target, propertyKey) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Keyword = (target, propertyKey) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
+var AutoCreate = (target, propertyKey) => {
+  const getPrevAutoCreate = ref.get(
+    "AutoCreate" /* AutoCreate */,
+    target.constructor.prototype
+  );
+  if (!getPrevAutoCreate) {
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      [propertyKey],
+      target.constructor.prototype
+    );
+  } else {
+    getPrevAutoCreate.push(propertyKey);
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      getPrevAutoCreate,
+      target.constructor.prototype
+    );
+  }
+};
+var IsEmail = (target, propertyKey) => {
+  const EmailValidate = (data) => {
+    const reg = /[\w]+(\.[\w]+)*@[\w]+(\.[\w])+/;
+    return reg.test(data);
+  };
+  ref.def(propertyKey, EmailValidate, target.constructor.prototype);
+};
+var IsNumber = (target, propertyKey) => {
+  const IsNum = (num) => {
+    return !isNaN(num);
+  };
+  ref.def(propertyKey, IsNum, target.constructor.prototype);
+};
+var IsOptional = (target, propertyKey) => {
+  const RetTrue = () => true;
+  ref.def(propertyKey, RetTrue, target.constructor.prototype);
+};
+var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/ioc/class.ts
 var express = __toESM(require("express"));
@@ -2026,8 +2114,8 @@ var class_transform = class {
   Collect,
   Controller,
   DataBaseError,
-  Enity,
   EnityTable,
+  Entity,
   Error,
   FieldError,
   GenereateRouter,

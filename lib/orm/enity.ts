@@ -1,6 +1,7 @@
 import { ref } from "../ioc/ref";
-import { AdoOrmBaseEnity, RunConfig } from "./orm";
+import { AdoOrmBaseEnity } from "./orm";
 import * as mysql from 'mysql'
+import { RunConfig } from ".";
 export enum ENITY_CONSTANT {
   Key = "keys",
   Keyword = "keyword",

@@ -1,4 +1,5 @@
 import { AdoNodeController, Controller, Get, Inject } from "../../../lib/core";
+import { R } from "../../config";
 import { SeckillService } from './seckill.service';
 
 @Controller("/seckill")
@@ -17,4 +18,9 @@ export class SeckillController extends AdoNodeController {
     return await this.SeckillService.getOne()
   }
   
+
+  @Get("/testTransaction")
+  async TestTransaction(){
+    return R.success( await this.SeckillService.testTransaction())
+  }
 }

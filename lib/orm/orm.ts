@@ -1,44 +1,39 @@
 import * as mysql from "mysql";
-// import { AdoBaseConfig } from "../config";
 import { ref } from "../core";
 import { ClientError } from "../error/client";
 import { DataBaseError } from "../error/dababase";
 import { getStrCount } from "../oper/protect";
-import { query, update, del, save } from "./sql";
 import { RedisClientType, createClient } from "redis";
 import { isBoolean, isObject } from "lodash";
-type querybuilder = {
-  query: query;
-  save: save;
-  del: del;
-  update: update;
-};
+import {  BASEENITY, Conn, Target, TableName, querybuilder, RunConfig, cacheOptions,Cache, RedisClient } from ".";
+import { query, update, del, save } from "./sql";
+import { transaction } from "./transaction";
 
-type cacheOptions = {
-  cache: boolean;
-  timeout: number;
-  force?: boolean;
-};
 
-export const RunConfig = Symbol("RUNCONFIG");
-export const BASEENITY = Symbol("BASEENITY");
-export const Conn = Symbol("CONN");
-export const Target = Symbol("TARGET");
-export const GetConn = Symbol("GETCONN");
-export const TableName = Symbol("TableName");
 
-const Cache = Symbol("CACHE");
 
 class AdoOrmBaseEnity {
+
   public [BASEENITY]!: Function;
+  
   public [Conn]!: mysql.PoolConnection;
+  
   public [Target]: any;
+  
   public [TableName]!: string;
-  public RedisClient: RedisClientType;
+  
+  public [RedisClient]: RedisClientType;
+
   constructor() {
     this[Target] = AdoOrmBaseEnity.name;
-    this.RedisClient = createClient();
-    this.RedisClient.connect();
+    this[RedisClient] = createClient();
+    this[RedisClient].connect();
+  }
+
+  createTransaction(){
+    const TranSactionInstance = new transaction();
+    TranSactionInstance.__that__ = this;
+    return TranSactionInstance;
   }
 
   public createQueryBuilder(): querybuilder {
@@ -53,9 +48,6 @@ class AdoOrmBaseEnity {
   public async [RunConfig](BaseEnity: Function, dbname: string) {
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
-    this[GetConn]();
-  }
-  public async [GetConn]() {
     const Connection = ref.get(":pool", this[BASEENITY].prototype);
     this[Conn] = await Connection();
   }
@@ -87,8 +79,8 @@ class AdoOrmBaseEnity {
       ) {
         console.log("1", key);
 
-        this.RedisClient.set(key, value);
-        this.RedisClient.expire(key, cacheOptions.timeout);
+        this[RedisClient].set(key, value);
+        this[RedisClient].expire(key, cacheOptions.timeout);
       }
       if (
         isObject(cacheOptions) &&
@@ -98,14 +90,16 @@ class AdoOrmBaseEnity {
       ) {
         console.log("2", key);
 
-        this.RedisClient.set(key, value);
-        this.RedisClient.expire(key, cacheOptions.timeout);
+        this[RedisClient].set(key, value);
+        this[RedisClient].expire(key, cacheOptions.timeout);
       }
       if (isBoolean(cacheOptions) && cacheOptions === true) {
-        this.RedisClient.set(key, value);
+        this[RedisClient].set(key, value);
       }
     }
   }
+
+
   /**
    * @method getList
    * @description 获取所有的数据
@@ -144,12 +138,12 @@ class AdoOrmBaseEnity {
       let cacheKey: string;
 
       const isCache = (isObject(cache) && cache.cache) || cache == true;
-      
+
       if (isCache) {
         cacheKey = `${this[TableName]}:getOneBy:${val}`;
         console.log(cacheKey);
         if (isObject(cache) && !cache.force) {
-          let cacheVal = await this.RedisClient.get(cacheKey);
+          let cacheVal = await this[RedisClient].get(cacheKey);
           if (cacheVal) {
             return cacheVal;
           }
@@ -233,7 +227,7 @@ class AdoOrmBaseEnity {
       let tostr = JSON.stringify(val);
       cacheKey = `${this[TableName]}:getOneBy:${tostr}`;
       if (isObject(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
+        let cacheVal = await this[RedisClient].get(cacheKey);
         if (cacheVal) {
           return cacheVal;
         }
@@ -288,7 +282,7 @@ class AdoOrmBaseEnity {
     if (isCache) {
       cacheKey = `${this[TableName]}:getOneBy:${val}`;
       if (isObject(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
+        let cacheVal = await this[RedisClient].get(cacheKey);
         if (cacheVal) {
           return cacheVal;
         }
@@ -360,7 +354,7 @@ class AdoOrmBaseEnity {
       const tojson = JSON.stringify(options);
       cacheKey = `${this[TableName]}:getMany:${tojson}`;
       if (isObject(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
+        let cacheVal = await this[RedisClient].get(cacheKey);
         if (cacheVal) {
           return cacheVal;
         }

@@ -1,13 +1,11 @@
+export class R{
+  static success(data:any) {
+    return {
+      code: 0,
+      data,
+      msg:"ok"
+    }
+  }
+}
 
-export {}
-// import { Configuration, DataBase } from "../../lib/config";
 
-// @Configuration
-// export class Config {
-
-//   @DataBase
-//   getDataBase() {
-    
-//   }
-
-// }

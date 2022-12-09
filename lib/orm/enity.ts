@@ -1,5 +1,5 @@
 import { ref } from "../ioc/ref";
-import { AdoOrmBaseEnity } from "./orm";
+import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'
 import { RunConfig } from ".";
 export enum ENITY_CONSTANT {
@@ -10,7 +10,7 @@ export enum ENITY_CONSTANT {
   IsOptional = "__isoptional__",
 }
 const Entity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
-  return function (target: typeof AdoOrmBaseEnity) {
+  return function (target: typeof AdoOrmBaseEntity) {
     ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);

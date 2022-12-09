@@ -1,10 +1,10 @@
 import { Conn } from ".";
-import { AdoOrmBaseEnity } from "./orm";
+import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'
 
 
 export class transaction {
-  __that__!: AdoOrmBaseEnity;
+  __that__!: AdoOrmBaseEntity;
 
   conn!: mysql.PoolConnection;
 

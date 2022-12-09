@@ -1,10 +1,10 @@
-import { AdoOrmBaseEnity, ref } from "../core";
+import { AdoOrmBaseEntity, ref } from "../core";
 import * as __ from "lodash";
 import { ENITY_CONSTANT } from "../orm/enity";
 
 type plain = Record<string, any>;
 class class_transform {
-  static plainToClass<T extends AdoOrmBaseEnity, V extends plain | plain[]>(
+  static plainToClass<T extends AdoOrmBaseEntity, V extends plain | plain[]>(
     toClass: new (...args: any[]) => T,
     plain: V
   ): V extends Array<any> ? T[] : T {
@@ -29,7 +29,7 @@ class class_transform {
     return plain;
   }
   // 当 options 为 true 的时候 过滤 类中需要过滤的键
-  static classToPlain<T extends AdoOrmBaseEnity[] | AdoOrmBaseEnity>(
+  static classToPlain<T extends AdoOrmBaseEntity[] | AdoOrmBaseEntity>(
     classInst: T,
     options?: {
       exclude: boolean;

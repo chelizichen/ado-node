@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.ENITY_CONSTANT = void 0;
 const ref_1 = require("../ioc/ref");
-const orm_1 = require("./orm");
+const _1 = require(".");
 var ENITY_CONSTANT;
 (function (ENITY_CONSTANT) {
     ENITY_CONSTANT["Key"] = "keys";
@@ -16,7 +16,7 @@ const Entity = (dbname, poolConnection) => {
         ref_1.ref.def(":pool", poolConnection, target.prototype);
         const targetInst = new target();
         ref_1.ref.def(target.name, targetInst, target.prototype);
-        targetInst[orm_1.RunConfig](target, dbname);
+        targetInst[_1.RunConfig](target, dbname);
     };
 };
 exports.Entity = Entity;

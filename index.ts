@@ -25,7 +25,7 @@ import {
   IsNumber,
   EnityTable,
   AutoCreate,
-  AdoOrmBaseEnity,
+  AdoOrmBaseEntity,
   del,
   UsePipe,
   query,
@@ -78,7 +78,7 @@ export {
 };
 
 // orm
-export { AdoOrmBaseEnity };
+export { AdoOrmBaseEntity };
 // sql
 export { query, del, update, save };
 

@@ -1,19 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Modules = exports.Module = void 0;
-/**
- * 暂定api
- * @Decorator @Module
- * 将很多个模块组合起来 最后组合成一个单独的模块进行服务
- * @Module()
- * export class AppModule {}
- *
- * @Module()
- * export class UserModule{}
- *
- * @Modules([AppModule,UserModule])
- * class AdoNodeModulesImpl extends AdoNodeMoudles
- */
 const core_1 = require("../core");
 const Module = (AdoNodeOptions) => {
     return function (target) {

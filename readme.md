@@ -320,22 +320,23 @@ class AppService{
 
 #### Enity ｜ ORM 对象关系映射
 
-使用@Enity 并且继承 *AdoBaseEnity* 的类，会带有各类的方法
+使用@Enity 并且继承 *AdoBaseEntity* 的类，继承AdoBaseEntity类的方法
 
 ````ts
 @Enity(tableName,connect)
-class AppEnity extends AdoBaseEnity{}
+class AppEnity extends AdoBaseEntity{
+  @Key
+  id!:string;
 
-～
+  @IsNumber
+  price!:number;
 
-const appEnity = new AppEnity()
-appEnity.getOneBy(val)
-appEnity.countBy(val)
-appEnity.getBy(val)
-appEnity.save(val)
-appEnity.getMany(val)
-appEnity.getList(val)
-appEnity.query(sql,options?)
+  @IsEmail
+  email!:string;
+
+  @AutoCreate
+  createTime!:string;
+}
 ````
 
 #### Module 模块化

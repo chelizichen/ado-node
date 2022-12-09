@@ -33,7 +33,7 @@ var ado_node_exports = {};
 __export(ado_node_exports, {
   AdoNodeController: () => AdoNodeController,
   AdoNodeServer: () => AdoNodeServer,
-  AdoOrmBaseEnity: () => AdoOrmBaseEnity,
+  AdoOrmBaseEntity: () => AdoOrmBaseEntity,
   AutoCreate: () => AutoCreate,
   Body: () => Body,
   CODE: () => CODE,
@@ -961,6 +961,70 @@ function getStrCount(aStr, aChar) {
   return count;
 }
 
+// lib/orm/index.ts
+var RunConfig = Symbol("RUNCONFIG");
+var BASEENITY = Symbol("BASEENITY");
+var Conn = Symbol("CONN");
+var Target = Symbol("TARGET");
+var GetConn = Symbol("GETCONN");
+var TableName = Symbol("TableName");
+var Cache = Symbol("CACHE");
+var RedisClient = Symbol("RedisClient");
+
+// lib/orm/enity.ts
+var Entity = (dbname, poolConnection) => {
+  return function(target) {
+    ref.def(":pool", poolConnection, target.prototype);
+    const targetInst = new target();
+    ref.def(target.name, targetInst, target.prototype);
+    targetInst[RunConfig](target, dbname);
+  };
+};
+var Key = (target, propertyKey) => {
+  ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Keyword = (target, propertyKey) => {
+  ref.def("keyword", propertyKey, target.constructor.prototype);
+};
+var AutoCreate = (target, propertyKey) => {
+  const getPrevAutoCreate = ref.get(
+    "AutoCreate" /* AutoCreate */,
+    target.constructor.prototype
+  );
+  if (!getPrevAutoCreate) {
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      [propertyKey],
+      target.constructor.prototype
+    );
+  } else {
+    getPrevAutoCreate.push(propertyKey);
+    ref.def(
+      "AutoCreate" /* AutoCreate */,
+      getPrevAutoCreate,
+      target.constructor.prototype
+    );
+  }
+};
+var IsEmail = (target, propertyKey) => {
+  const EmailValidate = (data) => {
+    const reg = /[\w]+(\.[\w]+)*@[\w]+(\.[\w])+/;
+    return reg.test(data);
+  };
+  ref.def(propertyKey, EmailValidate, target.constructor.prototype);
+};
+var IsNumber = (target, propertyKey) => {
+  const IsNum = (num) => {
+    return !isNaN(num);
+  };
+  ref.def(propertyKey, IsNum, target.constructor.prototype);
+};
+var IsOptional = (target, propertyKey) => {
+  const RetTrue = () => true;
+  ref.def(propertyKey, RetTrue, target.constructor.prototype);
+};
+var EnityTable = /* @__PURE__ */ new Map();
+
 // lib/orm/sql.ts
 var query = class {
   sql = "";
@@ -1224,292 +1288,6 @@ var save = class {
     };
   }
 };
-
-// lib/orm/orm.ts
-var import_redis = require("redis");
-var import_lodash = require("lodash");
-var RunConfig = Symbol("RUNCONFIG");
-var BASEENITY = Symbol("BASEENITY");
-var Conn = Symbol("CONN");
-var Target = Symbol("TARGET");
-var GetConn = Symbol("GETCONN");
-var TableName = Symbol("TableName");
-var Cache = Symbol("CACHE");
-var AdoOrmBaseEnity = class {
-  [BASEENITY];
-  [Conn];
-  [Target];
-  [TableName];
-  RedisClient;
-  constructor() {
-    this[Target] = AdoOrmBaseEnity.name;
-    this.RedisClient = (0, import_redis.createClient)();
-    this.RedisClient.connect();
-  }
-  createQueryBuilder() {
-    return {
-      query: new query(),
-      save: new save(),
-      update: new update(),
-      del: new del()
-    };
-  }
-  async [RunConfig](BaseEnity, dbname) {
-    this[BASEENITY] = BaseEnity;
-    this[TableName] = dbname;
-    this[GetConn]();
-  }
-  async [GetConn]() {
-    const Connection = ref.get(":pool", this[BASEENITY].prototype);
-    this[Conn] = await Connection();
-  }
-  async [Cache](key, value, cacheOptions) {
-    if (cacheOptions) {
-      if ((0, import_lodash.isObject)(cacheOptions) && cacheOptions.cache && cacheOptions.timeout) {
-        console.log("1", key);
-        this.RedisClient.set(key, value);
-        this.RedisClient.expire(key, cacheOptions.timeout);
-      }
-      if ((0, import_lodash.isObject)(cacheOptions) && !cacheOptions.cache && cacheOptions.force && cacheOptions.timeout) {
-        console.log("2", key);
-        this.RedisClient.set(key, value);
-        this.RedisClient.expire(key, cacheOptions.timeout);
-      }
-      if ((0, import_lodash.isBoolean)(cacheOptions) && cacheOptions === true) {
-        this.RedisClient.set(key, value);
-      }
-    }
-  }
-  async getList(page, size) {
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        `select * from ?? limit ?,?`,
-        [this[TableName], parseInt(page), parseInt(size)],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async getOneBy(val, cache) {
-    {
-      let cacheKey;
-      const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
-      if (isCache) {
-        cacheKey = `${this[TableName]}:getOneBy:${val}`;
-        console.log(cacheKey);
-        if ((0, import_lodash.isObject)(cache) && !cache.force) {
-          let cacheVal = await this.RedisClient.get(cacheKey);
-          if (cacheVal) {
-            return cacheVal;
-          }
-        }
-      }
-      const key = ref.get("key", this[BASEENITY].prototype);
-      const count = getStrCount(val, ["delete", "drop"]);
-      if (count) {
-        return new ClientError("\u975E\u6CD5\u53C2\u6570,\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
-      }
-      return new Promise((resolve) => {
-        let _this = this;
-        this[Conn].query(
-          `select * from ?? where ?? = ?`,
-          [this[TableName], key, val],
-          function(err, res) {
-            if (err) {
-              resolve(new DataBaseError("\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684", err));
-            }
-            resolve(res);
-            if (isCache) {
-              _this[Cache](
-                cacheKey,
-                JSON.stringify(res),
-                cache
-              );
-            }
-          }
-        );
-      });
-    }
-  }
-  async delOneBy(val) {
-    const key = ref.get("key", this[BASEENITY].prototype);
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        `DELETE FROM ?? WHERE ?? = ?`,
-        [this[TableName], key, val],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async countBy(val, cache) {
-    let cacheKey;
-    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
-    if (isCache) {
-      let tostr = JSON.stringify(val);
-      cacheKey = `${this[TableName]}:getOneBy:${tostr}`;
-      if ((0, import_lodash.isObject)(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
-      }
-    }
-    let countSql = `select count(*) as total from ?? where `;
-    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
-    return new Promise((resolve, reject) => {
-      let _this = this;
-      this[Conn].query(
-        countSql + jonitSql,
-        [this[TableName]],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          const data = res[0];
-          resolve(data);
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache);
-          }
-        }
-      );
-    });
-  }
-  async getBy(val, cache) {
-    let cacheKey;
-    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
-    if (isCache) {
-      cacheKey = `${this[TableName]}:getOneBy:${val}`;
-      if ((0, import_lodash.isObject)(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
-      }
-    }
-    const sql = this[Conn].escape(val).replaceAll(",", " and ");
-    return new Promise((resolve, reject) => {
-      let _this = this;
-      this[Conn].query(
-        "select * from ?? where " + sql,
-        [this[TableName]],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache);
-          }
-        }
-      );
-    });
-  }
-  async save(val) {
-    const filterUndefined = JSON.parse(JSON.stringify(val));
-    return new Promise((resolve, reject) => {
-      this[Conn].query(
-        `insert into ??  SET ? `,
-        [this[TableName], filterUndefined],
-        function(err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        }
-      );
-    });
-  }
-  async getMany(sql, options, cache) {
-    let cacheKey;
-    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
-    if (isCache) {
-      const tojson = JSON.stringify(options);
-      cacheKey = `${this[TableName]}:getMany:${tojson}`;
-      if ((0, import_lodash.isObject)(cache) && !cache.force) {
-        let cacheVal = await this.RedisClient.get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
-      }
-    }
-    return new Promise((resolve, reject) => {
-      let _this = this;
-      this[Conn].query(sql, options, function(err, res) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache);
-          }
-        }
-      });
-    });
-  }
-};
-
-// lib/orm/enity.ts
-var Entity = (dbname, poolConnection) => {
-  return function(target) {
-    ref.def(":pool", poolConnection, target.prototype);
-    const targetInst = new target();
-    ref.def(target.name, targetInst, target.prototype);
-    targetInst[RunConfig](target, dbname);
-  };
-};
-var Key = (target, propertyKey) => {
-  ref.def("key", propertyKey, target.constructor.prototype);
-};
-var Keyword = (target, propertyKey) => {
-  ref.def("keyword", propertyKey, target.constructor.prototype);
-};
-var AutoCreate = (target, propertyKey) => {
-  const getPrevAutoCreate = ref.get(
-    "AutoCreate" /* AutoCreate */,
-    target.constructor.prototype
-  );
-  if (!getPrevAutoCreate) {
-    ref.def(
-      "AutoCreate" /* AutoCreate */,
-      [propertyKey],
-      target.constructor.prototype
-    );
-  } else {
-    getPrevAutoCreate.push(propertyKey);
-    ref.def(
-      "AutoCreate" /* AutoCreate */,
-      getPrevAutoCreate,
-      target.constructor.prototype
-    );
-  }
-};
-var IsEmail = (target, propertyKey) => {
-  const EmailValidate = (data) => {
-    const reg = /[\w]+(\.[\w]+)*@[\w]+(\.[\w])+/;
-    return reg.test(data);
-  };
-  ref.def(propertyKey, EmailValidate, target.constructor.prototype);
-};
-var IsNumber = (target, propertyKey) => {
-  const IsNum = (num) => {
-    return !isNaN(num);
-  };
-  ref.def(propertyKey, IsNum, target.constructor.prototype);
-};
-var IsOptional = (target, propertyKey) => {
-  const RetTrue = () => true;
-  ref.def(propertyKey, RetTrue, target.constructor.prototype);
-};
-var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/ioc/class.ts
 var express = __toESM(require("express"));
@@ -1908,6 +1686,277 @@ function validate(Proto, inst) {
   return !isError;
 }
 
+// lib/orm/orm.ts
+var import_redis = require("redis");
+var import_lodash = require("lodash");
+
+// lib/orm/transaction.ts
+var transaction = class {
+  __that__;
+  conn;
+  __manager__;
+  constructor() {
+    this.__manager__ = [];
+  }
+  async connection() {
+    this.conn = await this.__that__[Conn];
+  }
+  async start() {
+    return new Promise((resolve, reject) => {
+      this.conn.beginTransaction((err) => {
+        if (err) {
+          reject(err);
+        }
+        Promise.all(this.__manager__.map(async (el) => await el())).then((res) => {
+          console.log("res", res);
+          this.conn.commit((err2) => {
+            if (err2) {
+              console.log("\u4E8B\u7269\u63D0\u4EA4\u5931\u8D25");
+              reject(err2);
+            }
+          });
+          resolve(res);
+          this.conn.release();
+        }).catch((err2) => {
+          console.log("err", err2);
+          this.conn.rollback(() => {
+            console.log("\u6570\u636E\u64CD\u4F5C\u56DE\u6EDA");
+          });
+          reject(err2);
+        });
+      });
+    });
+  }
+  push(fn) {
+    this.__manager__.push(fn);
+  }
+};
+
+// lib/orm/orm.ts
+var AdoOrmBaseEntity = class {
+  [BASEENITY];
+  [Conn];
+  [Target];
+  [TableName];
+  [RedisClient];
+  constructor() {
+    this[Target] = AdoOrmBaseEntity.name;
+    this[RedisClient] = (0, import_redis.createClient)();
+    this[RedisClient].connect();
+  }
+  createTransaction() {
+    const TranSactionInstance = new transaction();
+    TranSactionInstance.__that__ = this;
+    return TranSactionInstance;
+  }
+  createQueryBuilder() {
+    return {
+      query: new query(),
+      save: new save(),
+      update: new update(),
+      del: new del()
+    };
+  }
+  async [RunConfig](BaseEnity, dbname) {
+    this[BASEENITY] = BaseEnity;
+    this[TableName] = dbname;
+    const Connection = ref.get(":pool", this[BASEENITY].prototype);
+    this[Conn] = await Connection();
+  }
+  async [Cache](key, value, cacheOptions2) {
+    if (cacheOptions2) {
+      if ((0, import_lodash.isObject)(cacheOptions2) && cacheOptions2.cache && cacheOptions2.timeout) {
+        console.log("1", key);
+        this[RedisClient].set(key, value);
+        this[RedisClient].expire(key, cacheOptions2.timeout);
+      }
+      if ((0, import_lodash.isObject)(cacheOptions2) && !cacheOptions2.cache && cacheOptions2.force && cacheOptions2.timeout) {
+        console.log("2", key);
+        this[RedisClient].set(key, value);
+        this[RedisClient].expire(key, cacheOptions2.timeout);
+      }
+      if ((0, import_lodash.isBoolean)(cacheOptions2) && cacheOptions2 === true) {
+        this[RedisClient].set(key, value);
+      }
+    }
+  }
+  async getList(page, size) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `select * from ?? limit ?,?`,
+        [this[TableName], parseInt(page), parseInt(size)],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getOneBy(val, cache) {
+    {
+      let cacheKey;
+      const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+      if (isCache) {
+        cacheKey = `${this[TableName]}:getOneBy:${val}`;
+        console.log(cacheKey);
+        if ((0, import_lodash.isObject)(cache) && !cache.force) {
+          let cacheVal = await this[RedisClient].get(cacheKey);
+          if (cacheVal) {
+            return cacheVal;
+          }
+        }
+      }
+      const key = ref.get("key", this[BASEENITY].prototype);
+      const count = getStrCount(val, ["delete", "drop"]);
+      if (count) {
+        return new ClientError("\u975E\u6CD5\u53C2\u6570,\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
+      }
+      return new Promise((resolve) => {
+        let _this = this;
+        this[Conn].query(
+          `select * from ?? where ?? = ?`,
+          [this[TableName], key, val],
+          function(err, res) {
+            if (err) {
+              resolve(new DataBaseError("\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684", err));
+            }
+            resolve(res);
+            if (isCache) {
+              _this[Cache](
+                cacheKey,
+                JSON.stringify(res),
+                cache
+              );
+            }
+          }
+        );
+      });
+    }
+  }
+  async delOneBy(val) {
+    const key = ref.get("key", this[BASEENITY].prototype);
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `DELETE FROM ?? WHERE ?? = ?`,
+        [this[TableName], key, val],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async countBy(val, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      let tostr = JSON.stringify(val);
+      cacheKey = `${this[TableName]}:getOneBy:${tostr}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this[RedisClient].get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    let countSql = `select count(*) as total from ?? where `;
+    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(
+        countSql + jonitSql,
+        [this[TableName]],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          const data = res[0];
+          resolve(data);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      );
+    });
+  }
+  async getBy(val, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      cacheKey = `${this[TableName]}:getOneBy:${val}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this[RedisClient].get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    const sql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(
+        "select * from ?? where " + sql,
+        [this[TableName]],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      );
+    });
+  }
+  async save(val) {
+    const filterUndefined = JSON.parse(JSON.stringify(val));
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `insert into ??  SET ? `,
+        [this[TableName], filterUndefined],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getMany(sql, options, cache) {
+    let cacheKey;
+    const isCache = (0, import_lodash.isObject)(cache) && cache.cache || cache == true;
+    if (isCache) {
+      const tojson = JSON.stringify(options);
+      cacheKey = `${this[TableName]}:getMany:${tojson}`;
+      if ((0, import_lodash.isObject)(cache) && !cache.force) {
+        let cacheVal = await this[RedisClient].get(cacheKey);
+        if (cacheVal) {
+          return cacheVal;
+        }
+      }
+    }
+    return new Promise((resolve, reject) => {
+      let _this = this;
+      this[Conn].query(sql, options, function(err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+          if (isCache) {
+            _this[Cache](cacheKey, JSON.stringify(res), cache);
+          }
+        }
+      });
+    });
+  }
+};
+
 // lib/interceptor/global.ts
 var UseControllerInterceptor = (fn) => {
   return function(target) {
@@ -2105,7 +2154,7 @@ var class_transform = class {
 0 && (module.exports = {
   AdoNodeController,
   AdoNodeServer,
-  AdoOrmBaseEnity,
+  AdoOrmBaseEntity,
   AutoCreate,
   Body,
   CODE,

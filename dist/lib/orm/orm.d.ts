@@ -1,34 +1,17 @@
 import * as mysql from "mysql";
-import { query, update, del, save } from "./sql";
 import { RedisClientType } from "redis";
-declare type querybuilder = {
-    query: query;
-    save: save;
-    del: del;
-    update: update;
-};
-declare type cacheOptions = {
-    cache: boolean;
-    timeout: number;
-    force?: boolean;
-};
-export declare const RunConfig: unique symbol;
-export declare const BASEENITY: unique symbol;
-export declare const Conn: unique symbol;
-export declare const Target: unique symbol;
-export declare const GetConn: unique symbol;
-export declare const TableName: unique symbol;
-declare const Cache: unique symbol;
-declare class AdoOrmBaseEnity {
+import { BASEENITY, Conn, Target, TableName, querybuilder, RunConfig, cacheOptions, Cache, RedisClient } from ".";
+import { transaction } from "./transaction";
+declare class AdoOrmBaseEntity {
     [BASEENITY]: Function;
     [Conn]: mysql.PoolConnection;
     [Target]: any;
     [TableName]: string;
-    RedisClient: RedisClientType;
+    [RedisClient]: RedisClientType;
     constructor();
+    createTransaction(): transaction;
     createQueryBuilder(): querybuilder;
     [RunConfig](BaseEnity: Function, dbname: string): Promise<void>;
-    [GetConn](): Promise<void>;
     [Cache](key: string, value: string): Promise<void>;
     [Cache](key: string, value: string, cacheOptions: boolean): Promise<void>;
     [Cache](key: string, value: string, cacheOptions: cacheOptions): Promise<void>;
@@ -72,4 +55,4 @@ declare class AdoOrmBaseEnity {
     getMany(val: string, options: string[], cache: boolean): Promise<any>;
     getMany(val: string, options: string[], cache?: cacheOptions): Promise<any>;
 }
-export { AdoOrmBaseEnity };
+export { AdoOrmBaseEntity };

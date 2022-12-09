@@ -24,7 +24,7 @@ import { AdoNodeServer } from "./method/server";
 import { Get, Post } from "./method/method";
 import { GenereateRouter, SerivceMap } from "./ioc/service";
 import { UsePipe, validate } from "./pipe/pipe";
-import { AdoOrmBaseEnity } from "./orm/orm";
+import { AdoOrmBaseEntity } from "./orm/orm";
 
 // constant
 export { MESSAGE, CONSTANT, CODE };
@@ -65,7 +65,7 @@ export {
   AutoCreate,
 };
 // orm
-export { AdoOrmBaseEnity };
+export { AdoOrmBaseEntity };
 // async
 
 // sql

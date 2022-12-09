@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEnity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.getStrCount = exports.AdoNodeServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.AdoNodeController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
+exports.validate = exports.UsePipe = exports.del = exports.query = exports.AdoOrmBaseEntity = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.getStrCount = exports.AdoNodeServer = exports.Post = exports.Get = exports.GenereateRouter = exports.SerivceMap = exports.ref = exports.Collect = exports.Inject = exports.Controller = exports.AdoNodeController = exports.TypesError = exports.Error = exports.FieldError = exports.DataBaseError = exports.ClientError = exports.CODE = exports.CONSTANT = exports.MESSAGE = void 0;
 const constant_1 = require("./constant/constant");
 Object.defineProperty(exports, "MESSAGE", { enumerable: true, get: function () { return constant_1.MESSAGE; } });
 Object.defineProperty(exports, "CODE", { enumerable: true, get: function () { return constant_1.CODE; } });
@@ -50,5 +50,5 @@ const pipe_1 = require("./pipe/pipe");
 Object.defineProperty(exports, "UsePipe", { enumerable: true, get: function () { return pipe_1.UsePipe; } });
 Object.defineProperty(exports, "validate", { enumerable: true, get: function () { return pipe_1.validate; } });
 const orm_1 = require("./orm/orm");
-Object.defineProperty(exports, "AdoOrmBaseEnity", { enumerable: true, get: function () { return orm_1.AdoOrmBaseEnity; } });
+Object.defineProperty(exports, "AdoOrmBaseEntity", { enumerable: true, get: function () { return orm_1.AdoOrmBaseEntity; } });
 //# sourceMappingURL=core.js.map

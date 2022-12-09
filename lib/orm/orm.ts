@@ -12,7 +12,7 @@ import { transaction } from "./transaction";
 
 
 
-class AdoOrmBaseEnity {
+class AdoOrmBaseEntity {
 
   public [BASEENITY]!: Function;
   
@@ -25,7 +25,7 @@ class AdoOrmBaseEnity {
   public [RedisClient]: RedisClientType;
 
   constructor() {
-    this[Target] = AdoOrmBaseEnity.name;
+    this[Target] = AdoOrmBaseEntity.name;
     this[RedisClient] = createClient();
     this[RedisClient].connect();
   }
@@ -376,4 +376,4 @@ class AdoOrmBaseEnity {
     });
   }
 }
-export { AdoOrmBaseEnity };
+export { AdoOrmBaseEntity };

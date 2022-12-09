@@ -1,4 +1,4 @@
-import { AdoOrmBaseEnity } from "./orm";
+import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql';
 export declare enum ENITY_CONSTANT {
     Key = "keys",
@@ -7,7 +7,7 @@ export declare enum ENITY_CONSTANT {
     DefaultValue = "__default__",
     IsOptional = "__isoptional__"
 }
-declare const Entity: (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => (target: typeof AdoOrmBaseEnity) => void;
+declare const Entity: (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => (target: typeof AdoOrmBaseEntity) => void;
 declare const Key: PropertyDecorator;
 declare const Keyword: PropertyDecorator;
 declare const AutoCreate: PropertyDecorator;

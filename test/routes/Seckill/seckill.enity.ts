@@ -1,8 +1,8 @@
-import { AdoOrmBaseEnity, Entity, IsNumber, Key } from "../../../lib/core";
+import { AdoOrmBaseEntity, Entity, IsNumber, Key } from "../../../lib/core";
 import { commonClass } from "../../config/common";
 
 @Entity("seckill", commonClass.getMysqlPoolConnection)
-export class Seckill extends AdoOrmBaseEnity {
+export class Seckill extends AdoOrmBaseEntity {
   @Key
   id!: string;
 

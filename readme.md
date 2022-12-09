@@ -72,8 +72,8 @@
 
 ### 对象关系映射(ORM)层
 
-* @**<i style="color:royalblue">Interface</i>** AdoOrmBaseEnity
-* @Enity(tableName:string,connect:mysql.PoolConnection)
+* @**<i style="color:royalblue">Interface</i>** AdoOrmBaseEntity
+* @Entity(tableName:string,connect:mysql.PoolConnection)
 * @Collect() **收集 ORM 层对象**
 * @Key 对应 关系型 数据库 的 主键
 * @Keyword 用于 模糊查询
@@ -95,7 +95,7 @@
 * del
 * update
 * save
-* validate(Enity,plain)
+* validate(Entity,plain)
 
 ##### Pipe 管道验证
 
@@ -111,7 +111,7 @@
 
 ````js
 const sql = new query()
-  .setEnity(["goods", "seckill"])
+  .setEntity(["goods", "seckill"])
   .and({
     "seckill.go_id": "goods.id",
     "seckill.sk_status": "0",
@@ -120,11 +120,11 @@ const sql = new query()
   .getSql();
 
 const sql1 = new query()
-  .setEnity(["goods", "seckill"])
+  .setEntity(["goods", "seckill"])
   .getSql();
 
 const sql2 = new query()
-  .setEnity("goods")
+  .setEntity("goods")
   .like_and({ goods_name: "?" })
   .pagination(0, 10)
   .getSql();
@@ -132,7 +132,7 @@ const sql2 = new query()
 const opt2 = ["%名称2%"];
 
 const sql3 = new query()
-  .setEnity("goods")
+  .setEntity("goods")
   .and("goods_rest_num", "20")
   .or("sort_child_id", "4")
   .pagination(0, 10)
@@ -149,18 +149,18 @@ const sql3 = new query()
 
 ````js
 const sql1 = new del()
-  .setEnity(User)
+  .setEntity(User)
   .getSql();
 
 const sql = new del()
-  .setEnity(User)
+  .setEntity(User)
   .and("username", "leemlus")
   .and("phone", "13476973442")
   .getSql();
 
 
 const sql2 = new del()
-  .setEnity(User)
+  .setEntity(User)
   .and({
     username: "leemulus",
     phone: "13476973442",
@@ -168,7 +168,7 @@ const sql2 = new del()
   .getSql();
 
 const sql3 = new del()
-  .setEnity(User)
+  .setEntity(User)
   .or({
     username: "leemulus",
     phone: "13476973442",
@@ -186,13 +186,13 @@ sql3 delete from User  where username = "leemulus" or phone = "13476973442"
 
 ````js
 const sql = new update()
-  .setEnity("hotkeyword")
+  .setEntity("hotkeyword")
   .setOptions({ thekeys: "疫情新闻" })
   .and("thekeys", "疫情")
   .getSql();
 
 const sql1 = new save()
-  .setEnity("goods")
+  .setEntity("goods")
   .setOptions("g_price", "666")
   .setOptions("g_type", "222")
   .setOptions("g_name", "商品安利")
@@ -318,13 +318,13 @@ class AppService{
 }
 ````
 
-#### Enity ｜ ORM 对象关系映射
+#### Entity ｜ ORM 对象关系映射
 
-使用@Enity 并且继承 *AdoBaseEntity* 的类，继承AdoBaseEntity类的方法
+使用@Entity 并且继承 *AdoBaseEntity* 的类，继承AdoBaseEntity类的方法
 
 ````ts
-@Enity(tableName,connect)
-class AppEnity extends AdoBaseEntity{
+@Entity(tableName,connect)
+class AppEntity extends AdoBaseEntity{
   @Key
   id!:string;
 
@@ -342,7 +342,7 @@ class AppEnity extends AdoBaseEntity{
 #### ORM 事务操作
 
 ````ts
-const transaction = this.AppEnity.createTransaction()
+const transaction = this.AppEntity.createTransaction()
 
 transaction.push( async () => fn1 )
 transaction.push( async () => fn2 )

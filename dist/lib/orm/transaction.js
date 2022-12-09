@@ -40,6 +40,9 @@ class transaction {
             });
         });
     }
+    async TransactionError(msg) {
+        return Promise.reject(msg);
+    }
     push(fn) {
         this.__manager__.push(fn);
     }

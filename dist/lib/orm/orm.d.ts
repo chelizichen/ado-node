@@ -1,6 +1,6 @@
 import * as mysql from "mysql";
 import { RedisClientType } from "redis";
-import { BASEENITY, Conn, Target, TableName, querybuilder, RunConfig, cacheOptions, Cache, RedisClient } from ".";
+import { BASEENITY, Conn, Target, TableName, querybuilder, RunConfig, cacheOptions, Cache, RedisClient, BF__DESTORY, BF__INSERT, BF__UPDATE, VoidFunction } from "./index";
 import { transaction } from "./transaction";
 declare class AdoOrmBaseEntity {
     [BASEENITY]: Function;
@@ -8,6 +8,10 @@ declare class AdoOrmBaseEntity {
     [Target]: any;
     [TableName]: string;
     [RedisClient]: RedisClientType;
+    [BF__DESTORY]: Function;
+    [BF__INSERT]: Function;
+    [BF__UPDATE]: Function;
+    [VoidFunction](): void;
     constructor();
     createTransaction(): transaction;
     createQueryBuilder(): querybuilder;
@@ -51,6 +55,12 @@ declare class AdoOrmBaseEntity {
      * @paramsType <T extends Record<string, string>
      */
     save<T extends Record<string, string> | Object>(val: T): Promise<unknown>;
+    /**
+     *
+     * @param val
+     * @param options
+     */
+    update<T extends Record<string, string> | AdoOrmBaseEntity>(val: T): Promise<unknown>;
     getMany(val: string, options?: string[]): Promise<any>;
     getMany(val: string, options: string[], cache: boolean): Promise<any>;
     getMany(val: string, options: string[], cache?: cacheOptions): Promise<any>;

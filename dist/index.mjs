@@ -895,6 +895,13 @@ var GetConn = Symbol("GETCONN");
 var TableName = Symbol("TableName");
 var Cache = Symbol("CACHE");
 var RedisClient = Symbol("RedisClient");
+var BF__INSERT = Symbol("bf-insert");
+var BF__DESTORY = Symbol("bf-destory");
+var BF__UPDATE = Symbol("bf-update");
+var AF__INSERT = Symbol("af-insert");
+var AF__DESTORY = Symbol("af-destory");
+var AF__UPDATE = Symbol("af-update");
+var VoidFunction = Symbol("void-function");
 
 // lib/orm/enity.ts
 var Entity = (dbname, poolConnection) => {
@@ -1614,6 +1621,7 @@ function validate(Proto, inst) {
 // lib/orm/orm.ts
 import { createClient } from "redis";
 import { isBoolean, isObject } from "lodash";
+import * as __ from "lodash";
 
 // lib/orm/transaction.ts
 var transaction = class {
@@ -1652,18 +1660,28 @@ var transaction = class {
       });
     });
   }
+  async TransactionError(msg) {
+    return Promise.reject(msg);
+  }
   push(fn) {
     this.__manager__.push(fn);
   }
 };
 
 // lib/orm/orm.ts
+function void_fn() {
+}
 var AdoOrmBaseEntity = class {
   [BASEENITY];
   [Conn];
   [Target];
   [TableName];
   [RedisClient];
+  [BF__DESTORY];
+  [BF__INSERT];
+  [BF__UPDATE];
+  [VoidFunction]() {
+  }
   constructor() {
     this[Target] = AdoOrmBaseEntity.name;
     this[RedisClient] = createClient();
@@ -1686,17 +1704,32 @@ var AdoOrmBaseEntity = class {
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
     const Connection = ref.get(":pool", this[BASEENITY].prototype);
+    const bf_destory = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-destory"
+    );
+    this[BF__DESTORY] = bf_destory != void 0 ? bf_destory : void_fn;
+    const bf_insert = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-insert"
+    );
+    this[BF__INSERT] = bf_insert != void 0 ? bf_insert : void_fn;
+    const bf_update = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-update"
+    );
+    this[BF__UPDATE] = bf_update != void 0 ? bf_update : void_fn;
     this[Conn] = await Connection();
   }
   async [Cache](key, value, cacheOptions2) {
     if (cacheOptions2) {
       if (isObject(cacheOptions2) && cacheOptions2.cache && cacheOptions2.timeout) {
-        console.log("1", key);
-        this[RedisClient].set(key, value);
         this[RedisClient].expire(key, cacheOptions2.timeout);
       }
       if (isObject(cacheOptions2) && !cacheOptions2.cache && cacheOptions2.force && cacheOptions2.timeout) {
-        console.log("2", key);
         this[RedisClient].set(key, value);
         this[RedisClient].expire(key, cacheOptions2.timeout);
       }
@@ -1761,6 +1794,7 @@ var AdoOrmBaseEntity = class {
     }
   }
   async delOneBy(val) {
+    this[BF__DESTORY].call(val);
     const key = ref.get("key", this[BASEENITY].prototype);
     return new Promise((resolve, reject) => {
       this[Conn].query(
@@ -1840,10 +1874,29 @@ var AdoOrmBaseEntity = class {
   }
   async save(val) {
     const filterUndefined = JSON.parse(JSON.stringify(val));
+    this[BF__INSERT].call(val);
     return new Promise((resolve, reject) => {
       this[Conn].query(
         `insert into ??  SET ? `,
         [this[TableName], filterUndefined],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async update(val) {
+    this[BF__UPDATE].call(val);
+    const key = ref.get("key", this[BASEENITY].prototype);
+    const keyVal = val[key];
+    const filterVal = __.omit(val, key);
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `update  ??  SET ? where ?? = ?`,
+        [this[TableName], filterVal, key, keyVal],
         function(err, res) {
           if (err) {
             reject(err);
@@ -2013,18 +2066,18 @@ function Params() {
 }
 
 // lib/pipe/tansformer.ts
-import * as __ from "lodash";
+import * as __2 from "lodash";
 var class_transform = class {
   static plainToClass(toClass, plain) {
     if (plain instanceof Array) {
       let retPlain = plain.map((el) => {
         const inst = new toClass();
-        return __.assign(inst, el);
+        return __2.assign(inst, el);
       });
       return retPlain;
     } else {
       const inst = new toClass();
-      let retPlain = __.assign(inst, plain);
+      let retPlain = __2.assign(inst, plain);
       return retPlain;
     }
   }

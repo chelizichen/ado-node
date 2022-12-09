@@ -7,5 +7,6 @@ export declare class transaction {
     constructor();
     connection(): Promise<void>;
     start(): Promise<any>;
+    TransactionError(msg: string): Promise<never>;
     push(fn: () => Promise<any>): void;
 }

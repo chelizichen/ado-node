@@ -48,6 +48,10 @@ export class transaction {
     });
   }
 
+  async TransactionError(msg:string) {
+    return Promise.reject(msg)
+  }
+
   push(fn: () => Promise<any>): void {
     this.__manager__.push(fn);
   }

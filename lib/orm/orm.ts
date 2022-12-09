@@ -5,24 +5,37 @@ import { DataBaseError } from "../error/dababase";
 import { getStrCount } from "../oper/protect";
 import { RedisClientType, createClient } from "redis";
 import { isBoolean, isObject } from "lodash";
-import {  BASEENITY, Conn, Target, TableName, querybuilder, RunConfig, cacheOptions,Cache, RedisClient } from ".";
+import * as __ from "lodash";
+import {
+  BASEENITY,
+  Conn,
+  Target,
+  TableName,
+  querybuilder,
+  RunConfig,
+  cacheOptions,
+  Cache,
+  RedisClient,
+  BF__DESTORY,
+  BF__INSERT,
+  BF__UPDATE,
+  VoidFunction,
+} from "./index";
 import { query, update, del, save } from "./sql";
 import { transaction } from "./transaction";
 
-
-
+function void_fn() {}
 
 class AdoOrmBaseEntity {
-
   public [BASEENITY]!: Function;
-  
   public [Conn]!: mysql.PoolConnection;
-  
   public [Target]: any;
-  
   public [TableName]!: string;
-  
   public [RedisClient]: RedisClientType;
+  public [BF__DESTORY]!: Function;
+  public [BF__INSERT]!: Function;
+  public [BF__UPDATE]!: Function;
+  public [VoidFunction]() {}
 
   constructor() {
     this[Target] = AdoOrmBaseEntity.name;
@@ -30,7 +43,7 @@ class AdoOrmBaseEntity {
     this[RedisClient].connect();
   }
 
-  createTransaction(){
+  createTransaction() {
     const TranSactionInstance = new transaction();
     TranSactionInstance.__that__ = this;
     return TranSactionInstance;
@@ -49,6 +62,30 @@ class AdoOrmBaseEntity {
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
     const Connection = ref.get(":pool", this[BASEENITY].prototype);
+
+    const bf_destory = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-destory"
+    );
+
+    this[BF__DESTORY] = bf_destory != undefined ? bf_destory : void_fn;
+
+    const bf_insert = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-insert"
+    );
+
+    this[BF__INSERT] = bf_insert != undefined? bf_insert : void_fn;
+
+    const bf_update = ref.get(
+      "monitor",
+      this[BASEENITY].prototype,
+      ":before-update"
+    );
+    this[BF__UPDATE] = bf_update != undefined ? bf_update : void_fn;
+
     this[Conn] = await Connection();
   }
 
@@ -77,9 +114,6 @@ class AdoOrmBaseEntity {
         cacheOptions.cache &&
         cacheOptions.timeout
       ) {
-        console.log("1", key);
-
-        this[RedisClient].set(key, value);
         this[RedisClient].expire(key, cacheOptions.timeout);
       }
       if (
@@ -88,8 +122,6 @@ class AdoOrmBaseEntity {
         cacheOptions.force &&
         cacheOptions.timeout
       ) {
-        console.log("2", key);
-
         this[RedisClient].set(key, value);
         this[RedisClient].expire(key, cacheOptions.timeout);
       }
@@ -98,7 +130,6 @@ class AdoOrmBaseEntity {
       }
     }
   }
-
 
   /**
    * @method getList
@@ -185,7 +216,10 @@ class AdoOrmBaseEntity {
    * @description 单独根据Key 值来删除
    */
   public async delOneBy(val: string) {
+    this[BF__DESTORY].call(val);
+
     const key = ref.get("key", this[BASEENITY].prototype);
+
     return new Promise((resolve, reject) => {
       this[Conn].query(
         `DELETE FROM ?? WHERE ?? = ?`,
@@ -313,10 +347,43 @@ class AdoOrmBaseEntity {
    */
   public async save<T extends Record<string, string> | Object>(val: T) {
     const filterUndefined = JSON.parse(JSON.stringify(val));
+    this[BF__INSERT].call(val);
+
     return new Promise((resolve, reject) => {
       this[Conn].query(
         `insert into ??  SET ? `,
         [this[TableName], filterUndefined],
+        function (err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+
+  /**
+   *
+   * @param val
+   * @param options
+   */
+
+  public async update<T extends Record<string, string> | AdoOrmBaseEntity>(
+    val: T
+  ) {
+
+    this[BF__UPDATE].call(val);
+
+    const key = ref.get("key", this[BASEENITY].prototype);
+    // @ts-ignore
+    const keyVal = val[key]; // 得到索引的 Key 值
+    const filterVal = __.omit(val, key); // 得到后面的key值
+
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        `update  ??  SET ? where ?? = ?`,
+        [this[TableName], filterVal, key, keyVal],
         function (err, res) {
           if (err) {
             reject(err);

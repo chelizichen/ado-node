@@ -46,6 +46,7 @@
     "ts-node": "^10.9.1"
   }
 ````
+
 ***
 ***
 
@@ -103,9 +104,6 @@
 * AdoNodePipe
 * AdoNodeGlobalPipe
 * validate
-
-
-
 
 ##### *query*
 
@@ -206,9 +204,6 @@ opt: [ { g_price: '666', g_type: '222', g_name: '商品安利' } ],
 sql: 'insert into  goods SET ? '
 ````
 
-
-
-
 ### *Pipe* 使用管道
 
 ````js
@@ -261,11 +256,11 @@ class UserInfoPlainPipe implements AdoNodePipe {
 }
 ````
 
-*拦截器*
-implyments AdoNodeInterceptor
-UseInterceptor(new InterceptorConstructor())
+**拦截器**
 
-**可以实现 请求开始 处理请求前 响应后 三个钩子**
+* implyments AdoNodeInterceptor
+* UseInterceptor(new InterceptorConstructor())
+* 可以实现 请求开始 处理请求前 响应后 三个钩子**
 
 ````ts
 class UserLogInterceptor implements AdoNodeInterceptor {
@@ -287,7 +282,7 @@ class UserLogInterceptor implements AdoNodeInterceptor {
 }
 ````
 
-#### Controller 
+#### Controller
 
 控制层的类必须继承 *AdoNodeControlelr*，否则 将会提示错误
 在控制层里面可以使用
@@ -357,6 +352,115 @@ try{
 }
 ````
 
+## 侦听器 Monitor
+
+***
+
+在插入和更新之前可以添加钩子函数来保证是否执行对数据库的操作
+库提供了 两个钩子 分别是 @BeforeUpdate @BeforeInsert
+在数据库进行插入和更新前会执行
+
+**注**： 因为在底层 钩子的执行 是调用了： ***this.hooks.call( classInstance )*** , 所以当执行 this.xxxEntity.save 或者 update 时，必须 传入的是 **Entity** 类的实例，钩子才会生效
+
+比如
+
+````ts
+
+// -------------Entity-----------------
+@Entity("appTable",poolConnection)
+class AppEntity extends AdoOrmBaseEntity{
+  @BeforeUpdate
+  beforeupdate(){
+    console.log(this)
+  }
+}
+
+@Collect()
+class AppService{
+  @Inject(AppEntity)
+  AppEntity:AppEntity;
+
+  save(){
+    // 生效
+    const app = new AppEntity();
+    this.AppEntity.save(app)
+
+    // 不生效
+    const app1 = {}
+    this.AppEntity.save(app)
+  }
+}
+
+
+````
+
+* 一个更为详细的例子
+
+@Entity层 实体类
+
+````ts
+@Entity("seckill", commonClass.getMysqlPoolConnection)
+export class Seckill extends AdoOrmBaseEntity {
+  @Key
+  id!: string;
+
+  @IsNumber
+  go_id!: string;
+
+  @IsNumber
+  sk_price!: string;
+
+  @IsNumber
+  sk_status!: string; 
+
+  @BeforeInsert
+  TestBeforeInsert() {
+    console.log("插入前钩子");
+    console.log("价格为", this.sk_price, this.go_id);
+  }
+
+  @BeforeUpdate
+  TestBeforeUpdate() {
+    console.log("更新前钩子");
+    console.log("价格为", this.sk_price, this.go_id);
+  }
+}
+````
+
+@Service 层代码
+
+````ts
+const transaction = this.Seckill.createTransaction();
+const seckill = new Seckill();
+
+seckill.go_id = "10";
+seckill.sk_price = "99.00";
+seckill.sk_status = "1";
+
+const seckill1 = new Seckill()
+seckill1.go_id = "10";
+seckill1.sk_price = "666.00";
+seckill1.sk_status = "1";
+seckill1.id = "10";
+
+transaction.push(async () => this.Seckill.save(seckill))
+transaction.push(async () => this.Seckill.update(seckill1));
+
+try {
+  await transaction.connection();
+  const data = await transaction.start();
+  return data;
+} catch (e) {
+  return e;
+}
+// --------------------input----------------- \\
+插入前钩子
+价格为 99.00 10
+更新前钩子
+价格为 666.00 10
+````
+
+
 #### Module 模块化
 
 Provider 里 可以包含各类的 Module
@@ -372,8 +476,6 @@ Provider 里 可以包含各类的 Module
 })
 export class AppModule {}
 ````
-
-
 
 ### 启动服务
 

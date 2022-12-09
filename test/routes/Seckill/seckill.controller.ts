@@ -23,4 +23,9 @@ export class SeckillController extends AdoNodeController {
   async TestTransaction(){
     return R.success( await this.SeckillService.testTransaction())
   }
+
+  @Get("/testMoitor")
+  async TestMoitor() {
+    return R.success(await this.SeckillService.testMoitor())
+  }
 }

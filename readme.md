@@ -339,6 +339,24 @@ class AppEnity extends AdoBaseEntity{
 }
 ````
 
+#### ORM 事务操作
+
+````ts
+const transaction = this.AppEnity.createTransaction()
+
+transaction.push( async () => fn1 )
+transaction.push( async () => fn2 )
+transaction.push( async () => fn3 )
+
+try{
+  await transaction.connection()
+  const data = await transaction.start()
+  console.log(data)
+}catch(e){
+  throw new TransactionError(e)
+}
+````
+
 #### Module 模块化
 
 Provider 里 可以包含各类的 Module

@@ -35,7 +35,6 @@ export class transaction {
               }
             });
             resolve(res);
-            this.conn.release();
           })
           .catch((err) => {
             console.log("err", err);

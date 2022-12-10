@@ -28,4 +28,9 @@ export class SeckillController extends AdoNodeController {
   async TestMoitor() {
     return R.success(await this.SeckillService.testMoitor())
   }
+
+  @Get("/testdelMonitor")
+  async TestDelMonitor() {
+    return R.success(await this.SeckillService.testDelMonitor())
+  }
 }

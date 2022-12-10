@@ -16,7 +16,7 @@ import {
   cacheOptions,
   Cache,
   RedisClient,
-  BF__DESTORY,
+  BF__DELETE,
   BF__INSERT,
   BF__UPDATE,
   VoidFunction,
@@ -32,7 +32,7 @@ class AdoOrmBaseEntity {
   public [Target]: any;
   public [TableName]!: string;
   public [RedisClient]: RedisClientType;
-  public [BF__DESTORY]!: Function;
+  public [BF__DELETE]!: Function;
   public [BF__INSERT]!: Function;
   public [BF__UPDATE]!: Function;
   public [VoidFunction]() {}
@@ -43,7 +43,7 @@ class AdoOrmBaseEntity {
     this[RedisClient].connect();
   }
 
-  createTransaction() {
+  public createTransaction() {
     const TranSactionInstance = new transaction();
     TranSactionInstance.__that__ = this;
     return TranSactionInstance;
@@ -66,10 +66,10 @@ class AdoOrmBaseEntity {
     const bf_destory = ref.get(
       "monitor",
       this[BASEENITY].prototype,
-      ":before-destory"
+      ":before-delete"
     );
 
-    this[BF__DESTORY] = bf_destory != undefined ? bf_destory : void_fn;
+    this[BF__DELETE] = bf_destory != undefined ? bf_destory : void_fn;
 
     const bf_insert = ref.get(
       "monitor",
@@ -77,7 +77,7 @@ class AdoOrmBaseEntity {
       ":before-insert"
     );
 
-    this[BF__INSERT] = bf_insert != undefined? bf_insert : void_fn;
+    this[BF__INSERT] = bf_insert != undefined ? bf_insert : void_fn;
 
     const bf_update = ref.get(
       "monitor",
@@ -216,7 +216,11 @@ class AdoOrmBaseEntity {
    * @description 单独根据Key 值来删除
    */
   public async delOneBy(val: string) {
-    this[BF__DESTORY].call(val);
+    // 中断操作
+    const isbreak = await this[BF__DELETE](val);
+    if (isbreak) {
+      return isbreak;
+    }
 
     const key = ref.get("key", this[BASEENITY].prototype);
 
@@ -346,13 +350,17 @@ class AdoOrmBaseEntity {
    * @paramsType <T extends Record<string, string>
    */
   public async save<T extends Record<string, string> | Object>(val: T) {
-    const filterUndefined = JSON.parse(JSON.stringify(val));
-    this[BF__INSERT].call(val);
+    const fval = JSON.parse(JSON.stringify(val)); // 过滤掉undefined 值
+
+    const isbreak = await this[BF__INSERT].call(val);
+    if (isbreak) {
+      return isbreak;
+    }
 
     return new Promise((resolve, reject) => {
       this[Conn].query(
         `insert into ??  SET ? `,
-        [this[TableName], filterUndefined],
+        [this[TableName], fval],
         function (err, res) {
           if (err) {
             reject(err);
@@ -372,7 +380,6 @@ class AdoOrmBaseEntity {
   public async update<T extends Record<string, string> | AdoOrmBaseEntity>(
     val: T
   ) {
-
     this[BF__UPDATE].call(val);
 
     const key = ref.get("key", this[BASEENITY].prototype);

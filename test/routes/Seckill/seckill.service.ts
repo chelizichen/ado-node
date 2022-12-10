@@ -92,4 +92,9 @@ export class SeckillService {
       return e;
     }
   }
+
+  async testDelMonitor() {
+    const data = await this.Seckill.delOneBy("9")
+    return data
+  }
 }

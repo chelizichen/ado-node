@@ -18,7 +18,8 @@ export class SeckillService {
   async getOne() {
     const data1 = await this.Seckill.getOneBy("1", {
       cache: true,
-      timeout: 10,
+      timeout: 1000,
+      key:"getone:seckill:1"
     });
     const data2 = await this.Seckill.countBy(
       {
@@ -26,7 +27,8 @@ export class SeckillService {
       },
       {
         cache: true,
-        timeout: 10,
+        timeout: 1000,
+        key:"count:seckill:10"
       }
     );
     return {

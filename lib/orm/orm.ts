@@ -4,7 +4,7 @@ import { ClientError } from "../error/client";
 import { DataBaseError } from "../error/dababase";
 import { getStrCount } from "../oper/protect";
 import { RedisClientType, createClient } from "redis";
-import { isBoolean, isObject } from "lodash";
+import {  isObject } from "lodash";
 import * as __ from "lodash";
 import {
   BASEENITY,
@@ -20,11 +20,12 @@ import {
   BF__INSERT,
   BF__UPDATE,
   VoidFunction,
+  GetCache
 } from "./index";
 import { query, update, del, save } from "./sql";
 import { transaction } from "./transaction";
 
-function void_fn() {}
+function void_fn() { }
 
 class AdoOrmBaseEntity {
   public [BASEENITY]!: Function;
@@ -35,13 +36,14 @@ class AdoOrmBaseEntity {
   public [BF__DELETE]!: Function;
   public [BF__INSERT]!: Function;
   public [BF__UPDATE]!: Function;
-  public [VoidFunction]() {}
+  public [VoidFunction]() { }
 
   constructor() {
     this[Target] = AdoOrmBaseEntity.name;
     this[RedisClient] = createClient();
     this[RedisClient].connect();
   }
+
 
   public createTransaction() {
     const TranSactionInstance = new transaction();
@@ -57,6 +59,22 @@ class AdoOrmBaseEntity {
       del: new del(),
     };
   }
+
+  public cache() {
+    return this[Cache]
+  }
+
+  public async [GetCache](cacheOptions: cacheOptions) {
+    const isCache = (isObject(cacheOptions) && cacheOptions.cache);
+    if (isCache) {
+      let cacheVal = await this[RedisClient].get(cacheOptions.key);
+      if (cacheVal) {
+        return cacheVal;
+      }
+    }
+    return
+  }
+
 
   public async [RunConfig](BaseEnity: Function, dbname: string) {
     this[BASEENITY] = BaseEnity;
@@ -89,44 +107,18 @@ class AdoOrmBaseEntity {
     this[Conn] = await Connection();
   }
 
-  public async [Cache](key: string, value: string): Promise<void>;
 
   public async [Cache](
-    key: string,
-    value: string,
-    cacheOptions: boolean
-  ): Promise<void>;
-
-  public async [Cache](
-    key: string,
-    value: string,
-    cacheOptions: cacheOptions
-  ): Promise<void>;
-
-  public async [Cache](
-    key: string,
-    value: string,
-    cacheOptions?: boolean | cacheOptions
+    cacheOptions: cacheOptions, value: any
   ): Promise<void> {
-    if (cacheOptions) {
-      if (
-        isObject(cacheOptions) &&
-        cacheOptions.cache &&
-        cacheOptions.timeout
-      ) {
-        this[RedisClient].expire(key, cacheOptions.timeout);
-      }
-      if (
-        isObject(cacheOptions) &&
-        !cacheOptions.cache &&
-        cacheOptions.force &&
-        cacheOptions.timeout
-      ) {
-        this[RedisClient].set(key, value);
-        this[RedisClient].expire(key, cacheOptions.timeout);
-      }
-      if (isBoolean(cacheOptions) && cacheOptions === true) {
-        this[RedisClient].set(key, value);
+    const tocacheVal = JSON.stringify(value)
+    const { key, timeout, cache } = cacheOptions
+    if (cache) {
+      if (timeout) {
+        this[RedisClient].set(key, tocacheVal)
+        this[RedisClient].expire(key, timeout)
+      } else {
+        this[RedisClient].set(key, value)
       }
     }
   }
@@ -157,27 +149,18 @@ class AdoOrmBaseEntity {
 
   public async getOneBy(val: string): Promise<any>;
 
-  public async getOneBy(val: string, cache: boolean): Promise<any>;
-
-  public async getOneBy(val: string, cache?: cacheOptions): Promise<any>;
+  public async getOneBy(val: string, cache: cacheOptions): Promise<any>;
 
   public async getOneBy(
     val: string,
-    cache?: cacheOptions | boolean
+    cache?: cacheOptions
   ): Promise<any> {
     {
-      let cacheKey: string;
 
-      const isCache = (isObject(cache) && cache.cache) || cache == true;
-
-      if (isCache) {
-        cacheKey = `${this[TableName]}:getOneBy:${val}`;
-        console.log(cacheKey);
-        if (isObject(cache) && !cache.force) {
-          let cacheVal = await this[RedisClient].get(cacheKey);
-          if (cacheVal) {
-            return cacheVal;
-          }
+      if (cache) {
+        const data = await this[GetCache](cache)
+        if (data) {
+          return data;
         }
       }
 
@@ -189,7 +172,7 @@ class AdoOrmBaseEntity {
       }
 
       return new Promise((resolve) => {
-        let _this = this;
+        let that = this;
         this[Conn].query(
           `select * from ?? where ?? = ?`,
           [this[TableName], key, val],
@@ -199,12 +182,8 @@ class AdoOrmBaseEntity {
             }
             resolve(res);
 
-            if (isCache) {
-              _this[Cache](
-                cacheKey,
-                JSON.stringify(res),
-                cache as cacheOptions
-              );
+            if (cache) {
+              that[Cache](cache, res)
             }
           }
         );
@@ -245,37 +224,25 @@ class AdoOrmBaseEntity {
 
   public async countBy(
     val: Record<string, string>,
-    cache?: boolean
+    cache: cacheOptions
   ): Promise<any>;
 
   public async countBy(
     val: Record<string, string>,
     cache?: cacheOptions
-  ): Promise<any>;
-
-  public async countBy(
-    val: Record<string, string>,
-    cache?: cacheOptions | boolean
   ) {
-    let cacheKey: string;
 
-    const isCache = (isObject(cache) && cache.cache) || cache == true;
-
-    if (isCache) {
-      let tostr = JSON.stringify(val);
-      cacheKey = `${this[TableName]}:getOneBy:${tostr}`;
-      if (isObject(cache) && !cache.force) {
-        let cacheVal = await this[RedisClient].get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
+    if (cache) {
+      const data = await this[GetCache](cache)
+      if (data) {
+        return data;
       }
     }
 
     let countSql = `select count(*) as total from ?? where `;
     const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
     return new Promise((resolve, reject) => {
-      let _this = this;
+      let that = this;
       this[Conn].query(
         countSql + jonitSql,
         [this[TableName]],
@@ -286,9 +253,10 @@ class AdoOrmBaseEntity {
           const data = res[0];
           resolve(data);
 
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache as cacheOptions);
+          if (cache) {
+            that[Cache](cache, res)
           }
+
         }
       );
     });
@@ -298,38 +266,24 @@ class AdoOrmBaseEntity {
    * @param {} Record<string, string>
    */
   public async getBy(val: Record<string, string>): Promise<any>;
-
   public async getBy(
     val: Record<string, string>,
-    cache?: boolean
+    cache: cacheOptions
   ): Promise<any>;
-
   public async getBy(
     val: Record<string, string>,
     cache?: cacheOptions
-  ): Promise<any>;
-
-  public async getBy(
-    val: Record<string, string>,
-    cache?: cacheOptions | boolean
   ) {
-    let cacheKey: string;
-
-    const isCache = (isObject(cache) && cache.cache) || cache == true;
-
-    if (isCache) {
-      cacheKey = `${this[TableName]}:getOneBy:${val}`;
-      if (isObject(cache) && !cache.force) {
-        let cacheVal = await this[RedisClient].get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
+    if (cache) {
+      const data = await this[GetCache](cache)
+      if (data) {
+        return data;
       }
     }
 
     const sql = this[Conn].escape(val).replaceAll(",", " and ");
     return new Promise((resolve, reject) => {
-      let _this = this;
+      let that = this;
       this[Conn].query(
         "select * from ?? where " + sql,
         [this[TableName]],
@@ -338,9 +292,11 @@ class AdoOrmBaseEntity {
             reject(err);
           }
           resolve(res);
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache as cacheOptions);
+
+          if (cache) {
+            that[Cache](cache, res)
           }
+
         }
       );
     });
@@ -350,7 +306,7 @@ class AdoOrmBaseEntity {
    * @paramsType <T extends Record<string, string>
    */
   public async save<T extends Record<string, string> | Object>(val: T) {
-    const fval = JSON.parse(JSON.stringify(val)); // 过滤掉undefined 值
+    const fval = JSON.parse(JSON.stringify(val)); // filter undefined value
 
     const isbreak = await this[BF__INSERT].call(val);
     if (isbreak) {
@@ -406,44 +362,32 @@ class AdoOrmBaseEntity {
   public async getMany(
     val: string,
     options: string[],
-    cache: boolean
   ): Promise<any>;
 
-  public async getMany(
-    val: string,
-    options: string[],
-    cache?: cacheOptions
-  ): Promise<any>;
+  public async getMany(val:string,options:string[],cache:cacheOptions):Promise<any>;
 
   public async getMany(
     sql: string,
     options?: string[],
-    cache?: cacheOptions | boolean
+    cache?: cacheOptions
   ) {
-    let cacheKey: string;
-
-    const isCache = (isObject(cache) && cache.cache) || cache == true;
-
-    if (isCache) {
-      const tojson = JSON.stringify(options);
-      cacheKey = `${this[TableName]}:getMany:${tojson}`;
-      if (isObject(cache) && !cache.force) {
-        let cacheVal = await this[RedisClient].get(cacheKey);
-        if (cacheVal) {
-          return cacheVal;
-        }
+    if (cache) {
+      const data = await this[GetCache](cache)
+      if (data) {
+        return data;
       }
     }
 
     return new Promise((resolve, reject) => {
-      let _this = this;
+      let that = this;
       this[Conn].query(sql, options, function (err, res) {
         if (err) {
           reject(err);
         } else {
           resolve(res);
-          if (isCache) {
-            _this[Cache](cacheKey, JSON.stringify(res), cache as cacheOptions);
+
+          if (cache) {
+            that[Cache](cache, res)
           }
         }
       });

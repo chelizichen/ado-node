@@ -9,11 +9,11 @@ export type querybuilder = {
 
 export type cacheOptions = {
   cache: boolean;
-  timeout: number;
-  force?: boolean;
+  timeout?: number;
+  key: string;
 };
 
-
+export const GetCache = Symbol("GetCache")
 export const RunConfig = Symbol("RUNCONFIG");
 export const BASEENITY = Symbol("BASEENITY");
 export const Conn = Symbol("CONN");
@@ -26,5 +26,4 @@ export const RedisClient = Symbol("RedisClient")
 export const BF__INSERT = Symbol("bf-insert");
 export const BF__DELETE = Symbol("bf-delete");
 export const BF__UPDATE = Symbol("bf-update");
-
 export const VoidFunction = Symbol("void-function")

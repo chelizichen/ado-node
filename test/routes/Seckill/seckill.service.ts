@@ -16,10 +16,14 @@ export class SeckillService {
   }
 
   async getOne() {
+    const key = "getone:seckill:1"
+    
+    // ADD FORCE UPDATE CACHE OPTIONS 
+
     const data1 = await this.Seckill.getOneBy("1", {
       cache: true,
       timeout: 1000,
-      key:"getone:seckill:1"
+      key
     });
     const data2 = await this.Seckill.countBy(
       {
@@ -31,6 +35,7 @@ export class SeckillService {
         key:"count:seckill:10"
       }
     );
+
     return {
       data1,
       data2,

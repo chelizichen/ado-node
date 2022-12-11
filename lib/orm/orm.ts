@@ -60,8 +60,8 @@ class AdoOrmBaseEntity {
     };
   }
 
-  public cache() {
-    return this[Cache]
+  public cache(cacheOptions:cacheOptions,VAL:any) {
+    return this[Cache](cacheOptions,VAL)
   }
 
   public async [GetCache](cacheOptions: cacheOptions) {
@@ -111,14 +111,24 @@ class AdoOrmBaseEntity {
   public async [Cache](
     cacheOptions: cacheOptions, value: any
   ): Promise<void> {
-    const tocacheVal = JSON.stringify(value)
     const { key, timeout, cache } = cacheOptions
-    if (cache) {
+    let tocacheVal = "" as string;
+    if(typeof value == "string"){
+      tocacheVal = value
+    }
+
+    if(typeof value == "number"){
+      tocacheVal = String(value)
+    }
+
+    if(isObject(value)){
+      tocacheVal = JSON.stringify(value)
+    }
+
+    if(cache){
+      this[RedisClient].set(key, tocacheVal)
       if (timeout) {
-        this[RedisClient].set(key, tocacheVal)
         this[RedisClient].expire(key, timeout)
-      } else {
-        this[RedisClient].set(key, value)
       }
     }
   }

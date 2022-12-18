@@ -1,8 +1,8 @@
 import { IRouter, Request } from "express";
-import { AdoNodeController } from "./lib/core";
+import { AdoNodeController } from ".";
 import { AdoNodeControllerInterceptor } from "./lib/interceptor/global";
 import { AdoNodeInterceptor } from "./lib/interceptor/interceptor";
-import {  AdoNodePipe, AdoNodeGlobalPipe } from "./lib/types";
+import { AdoNodePipe, AdoNodeGlobalPipe } from "./lib/pipe";
 
 export type Query<T> = Request<any, any, any, T, any>;
 export type Body<T> = Request<any, any, T, any, any>;

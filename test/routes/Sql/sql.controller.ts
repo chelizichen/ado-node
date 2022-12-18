@@ -1,4 +1,4 @@
-import { AdoNodeController, Controller, Get, query } from "../../../lib/core";
+import { AdoNodeController, Controller, Get, query } from "../../../index";
 
 @Controller("/sql")
 export class SqlController extends AdoNodeController{

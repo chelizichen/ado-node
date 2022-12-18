@@ -1,18 +1,16 @@
-/**
- * @Author chelizichen
- * @methods GenereateRouter 
- * @description 生成 Express 路由
- * @param AdoNodeControllerType -- extends AdoNodeController
- */
-
-import { AdoNodeControllerType } from "../types";
 import { IRouter } from "express";
+import { AdoNodeController } from "./class";
 import { ref } from "./ref";
 
 // 创建SerivceMap
 const SerivceMap = new Map<string, any>();
 
-function GenereateRouter(Controller: AdoNodeControllerType): IRouter {
+/**
+ * @methods GenereateRouter
+ * @param Controller
+ * @returns
+ */
+function GenereateRouter(Controller: typeof AdoNodeController): IRouter {
   const URL = ref.get("BaseUrl", Controller.prototype);
   const GetService = new Controller(URL, SerivceMap);
   return GetService.Boost(Controller);

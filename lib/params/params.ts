@@ -1,4 +1,4 @@
-import { ref } from "../core";
+import { ref } from "../ioc";
 function Query(): ParameterDecorator {
   return function (
     target: Object,

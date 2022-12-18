@@ -1,5 +1,5 @@
-import { AdoNodeServer, ref } from "../core";
-import { AdoModuleOptions, AdoModulesOptions } from "../types";
+import { AdoNodeServer, ref } from "../../index";
+import { AdoModuleOptions, AdoModulesOptions } from "../../index.d";
 
 const Module = (AdoNodeOptions: AdoModuleOptions): ClassDecorator => {
   return function (target: Function) {

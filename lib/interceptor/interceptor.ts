@@ -1,4 +1,5 @@
-import { ref } from "../core";
+import { ref } from "../ioc";
+
 import { Request } from "express";
 // 整个路由匹配拦截
 // 拦截器会在守卫之后执行

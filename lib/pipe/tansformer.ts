@@ -1,7 +1,7 @@
-import { AdoOrmBaseEntity, ref } from "../core";
+import {  ref } from "../ioc";
 import * as __ from "lodash";
+import { AdoOrmBaseEntity } from "../orm/orm";
 import { ENTITY_CONSTANT as ENTITY } from "../orm";
-
 type plain = Record<string, any>;
 class class_transform {
   static plainToClass<T extends AdoOrmBaseEntity, V extends plain | plain[]>(

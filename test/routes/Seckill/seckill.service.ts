@@ -1,4 +1,4 @@
-import { Collect, Inject } from "../../../lib/core";
+import { Collect, Inject } from "../../../index";
 import { Seckill } from "./seckill.enity";
 
 @Collect()
@@ -16,9 +16,14 @@ export class SeckillService {
   }
 
   async getOne() {
+    const key = "getone:seckill:1"
+    
+    // ADD FORCE UPDATE CACHE OPTIONS 
+
     const data1 = await this.Seckill.getOneBy("1", {
       cache: true,
-      timeout: 10,
+      timeout: 1000,
+      key
     });
     const data2 = await this.Seckill.countBy(
       {
@@ -26,9 +31,11 @@ export class SeckillService {
       },
       {
         cache: true,
-        timeout: 10,
+        timeout: 1000,
+        key:"count:seckill:10"
       }
     );
+
     return {
       data1,
       data2,

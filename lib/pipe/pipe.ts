@@ -7,7 +7,7 @@
  */
 
 import { NextFunction, Response, Request } from "express";
-import { ref } from "../core";
+import { ref } from "../ioc";
 import { FieldError } from "../error/field";
 import { ENTITY_CONSTANT as ENTITY } from "../orm";
 

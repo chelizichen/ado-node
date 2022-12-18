@@ -1,16 +1,15 @@
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'
-import { ENTITY_CONSTANT, RunConfig } from "./index";
+import { ENTITY_CONSTANT, RUNCONFIG } from ".";
 
-
-
-const Entity = (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => {
+const Entity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
   return function (target: typeof AdoOrmBaseEntity) {
     ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
-    targetInst[RunConfig](target, dbname);
+
+    targetInst[RUNCONFIG](target, dbname);
   };
 };
 const Key: PropertyDecorator = (

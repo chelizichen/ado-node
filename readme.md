@@ -286,16 +286,29 @@ class UserLogInterceptor implements AdoNodeInterceptor {
 
 控制层的类必须继承 *AdoNodeControlelr*，否则 将会提示错误
 在控制层里面可以使用
-@UsePipe
-@UseInterceptor
-@Get
-@Post
-@Inject *依赖注入*
+
+* @UsePipe
+* @UseInterceptor
+* @Get
+* @Post
+* @Inject *依赖注入*
+
+
 等装饰器
 
 ````ts
 @Controller("/app")
-class AppController extends AdoNodeControlelr{}
+class AppController extends AdoNodeControlelr{
+
+  @Inject(AppService)
+  AppService:AppService
+
+
+  @Get("/list")
+  public async getList(){
+    return this.AppService.getList()
+  }
+}
 ````
 
 #### Service
@@ -458,6 +471,41 @@ try {
 价格为 99.00 10
 更新前钩子
 价格为 666.00 10
+````
+
+* ORM 缓存请求
+
+
+````ts
+
+this.seckill.getOne(key,cacheOptions:{
+    cache:true, // 表示这个请求的结果将会被缓存
+    timeout:1000  // 表示这个请求的超时结果为 1000 秒
+    force ?(isOptional):true // 强制更新缓存 
+})
+
+````
+
+使用场景：
+* 缓存某个不常更改的数据 比如用户信息等
+* 当用户提交更改信息时，强制刷新缓存
+* 返回缓存后的值
+
+````TS
+
+this.user.save( 
+  ORMInstance : extends AdoOrmBaseEntity, CacheOptions:cacheOptions // 缓存选项
+)
+
+IF(UPDATE){
+  // 强制更新                                                                                                
+  this.cache(
+    CacheOptions:cacheOptions,
+    UpdateInstance:extends AdoOrmBaseEntity
+  )
+}
+
+
 ````
 
 

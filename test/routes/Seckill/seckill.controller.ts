@@ -1,8 +1,4 @@
-
-// @ts-nocheck
-
-import { AdoNodeController, Controller, Get, Inject, UsePipe,Post } from "../../../lib/core";
-import { Body } from "../../../lib/params/params";
+import { AdoNodeController, Body, Controller, Get, Inject, Post, UsePipe } from "../../../index";
 import { R } from "../../config";
 import { SeckillService } from './seckill.service';
 import { Seckill } from './seckill.enity';
@@ -45,5 +41,5 @@ export class SeckillController extends AdoNodeController {
     return R.success(body);
   }
 
-  
+
 }

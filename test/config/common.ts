@@ -4,10 +4,11 @@ import * as mysql from "mysql";
 const config = {
     host: "localhost",
     user: "root",
-    password: "leemulus21",
+    password: "123456",
     database: "zrq_shop", //所用数据库
     port: 3306,
   };
+
 class commonClass {
   static pool: mysql.Pool
   

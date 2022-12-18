@@ -1,4 +1,5 @@
-import { CODE, MESSAGE } from "../core";
+import { CODE,MESSAGE } from "../constant/constant";
+
 
 class FieldError extends Error {
   public name = "FieldError";

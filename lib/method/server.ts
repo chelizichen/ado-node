@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import { ref } from "../ioc/ref";
-import { AdoNodeOptions } from "../types";
+import { AdoNodeOptions } from "../../index.d";
 import { cpus } from "os";
 import cluster from "cluster";
 import multer from "multer";
@@ -55,6 +55,15 @@ class AdoNodeServer {
     const Controller = [...new Set(this.Controllers)];
     return Controller;
   }
+
+  // static readConfig(){
+  //   const config = "/test/ado.config.js"
+    
+  //   import(config).then(res=>{
+  //     console.log(res);
+  //   })
+
+  // }
 
   static run() {
     // 开启多进程

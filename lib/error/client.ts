@@ -1,4 +1,4 @@
-import { CODE, MESSAGE } from "../core";
+import { CODE, MESSAGE } from "../constant/constant";
 
 // 客户端错误
 class ClientError extends Error {

@@ -1,5 +1,5 @@
 import { NextFunction, Response, Request } from "express";
-import { ref } from "../core";
+import { ref } from "../ioc";
 import { FieldError } from "../error/field";
 import { ENITY_CONSTANT } from "../orm/enity";
 

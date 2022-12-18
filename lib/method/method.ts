@@ -1,6 +1,6 @@
 import { SerivceMap } from "../ioc/service";
 import { Request } from "express";
-import { ref } from "../core";
+import { ref } from "../ioc";
 import { AdoNodePipe } from "../pipe/pipe";
 import { AdoNodeInterceptor } from "../interceptor/interceptor";
 

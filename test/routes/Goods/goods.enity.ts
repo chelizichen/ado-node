@@ -1,4 +1,4 @@
-import { AdoOrmBaseEntity, Entity, IsNumber, Key } from "../../../lib/core";
+import { AdoOrmBaseEntity, Entity, IsNumber, Key } from "../../../index";
 import { commonClass } from "../../config/common";
 
 

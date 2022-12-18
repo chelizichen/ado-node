@@ -1,4 +1,4 @@
-import { Collect, Inject, query } from "../../../lib/core";
+import { Collect,Inject,query } from "../../..";
 import { Goods } from "./goods.enity";
 
 @Collect()

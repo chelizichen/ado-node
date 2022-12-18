@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
 import { ParsedQs } from "qs";
-import { FieldError } from "../../lib/core";
+import { FieldError } from "../../index";
 import { AdoNodeInterceptor } from "../../lib/interceptor/interceptor";
 
 export class Pagination implements AdoNodeInterceptor {

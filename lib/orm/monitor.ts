@@ -4,7 +4,7 @@
  * @Date 2022.12.9
  */
 
-import { ref } from "../core";
+import { ref } from "../ioc";
 
 
 

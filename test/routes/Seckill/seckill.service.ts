@@ -1,4 +1,4 @@
-import { Collect, Inject } from "../../../lib/core";
+import { Collect, Inject } from "../../../index";
 import { Seckill } from "./seckill.enity";
 
 @Collect()

@@ -1,6 +1,7 @@
-import { AdoOrmBaseEntity, ref } from "../core";
+import {  ref } from "../ioc";
 import * as __ from "lodash";
 import { ENITY_CONSTANT } from "../orm/enity";
+import { AdoOrmBaseEntity } from "../orm";
 
 type plain = Record<string, any>;
 class class_transform {

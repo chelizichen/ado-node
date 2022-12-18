@@ -1,4 +1,4 @@
-import { AdoNodeController, Controller, Get, Inject } from "../../../lib/core";
+import { AdoNodeController, Controller, Get, Inject } from "../../../index";
 import { R } from "../../config";
 import { SeckillService } from './seckill.service';
 

@@ -1,4 +1,4 @@
-import { CODE } from "../core";
+import { CODE } from "../constant/constant";
 
 // 数据库错误
 class DataBaseError extends Error {

@@ -1,10 +1,10 @@
 import express from "express";
 import path from "path";
-import { AdoNodeServer } from "../lib/core";
 import { Modules } from "../lib/module/module";
 import { AppModule } from "./routes";
 import { TestGlobalPipe } from "./pipe";
-// @AdoNodeConfig(commonClass)
+import { AdoNodeServer } from "../index";
+
 @Modules({
   Modules: [AppModule],
   Base: "/api",

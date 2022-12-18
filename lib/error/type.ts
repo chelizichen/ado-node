@@ -1,4 +1,5 @@
-import { CODE, MESSAGE } from "../core";
+import { CODE,MESSAGE } from "../constant/constant";
+
 class TypesError extends Error {
   public name = "TypeError";
   public code = CODE.TYPEERROR;

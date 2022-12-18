@@ -1,5 +1,5 @@
 import * as mysql from "mysql";
-import { ref } from "../core";
+import { ref } from "../ioc";
 import { ClientError } from "../error/client";
 import { DataBaseError } from "../error/dababase";
 import { getStrCount } from "../oper/protect";

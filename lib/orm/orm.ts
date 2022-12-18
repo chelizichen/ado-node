@@ -12,7 +12,6 @@ import {
   Target,
   TableName,
   querybuilder,
-  RunConfig,
   cacheOptions,
   Cache,
   RedisClient,
@@ -76,7 +75,7 @@ class AdoOrmBaseEntity {
   }
 
 
-  public async [RunConfig](BaseEnity: Function, dbname: string) {
+  public async __RUNCONFIG__(BaseEnity: Function, dbname: string) {
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
     const Connection = ref.get(":pool", this[BASEENITY].prototype);

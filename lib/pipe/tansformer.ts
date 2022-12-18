@@ -1,6 +1,6 @@
 import { AdoOrmBaseEntity, ref } from "../core";
 import * as __ from "lodash";
-import { ENITY_CONSTANT } from "../orm/enity";
+import { ENTITY_CONSTANT as ENTITY } from "../orm";
 
 type plain = Record<string, any>;
 class class_transform {
@@ -40,7 +40,7 @@ class class_transform {
       if (classInst instanceof Array) {
         let plain = classInst.map((inst) => {
           const filt = ref.get(
-            ENITY_CONSTANT.AutoCreate,
+            ENTITY.AutoCreate,
             inst.constructor.prototype
           ) as string[];
           const keys = Object.getOwnPropertyNames(inst);
@@ -54,7 +54,7 @@ class class_transform {
         return plain;
       } else {
         const filt = ref.get(
-          ENITY_CONSTANT.AutoCreate,
+          ENTITY.AutoCreate,
           classInst.constructor.prototype
         ) as string[];
         const keys = Object.getOwnPropertyNames(classInst);

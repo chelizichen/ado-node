@@ -1,6 +1,5 @@
 import {
   MESSAGE,
-  CONSTANT,
   CODE,
   ClientError,
   DataBaseError,
@@ -41,7 +40,7 @@ import { Query, Body, Headers, Req, Res, Params } from "./lib/params/params";
 import { class_transform } from "./lib/pipe/tansformer";
 
 // constant
-export { MESSAGE, CONSTANT, CODE };
+export { MESSAGE, CODE };
 
 // error
 export { ClientError };

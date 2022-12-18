@@ -16,4 +16,5 @@ class TypesError extends Error {
     };
   }
 }
+
 export { TypesError };

@@ -1,4 +1,4 @@
-import { MESSAGE, CODE, CONSTANT } from "./constant/constant";
+import { MESSAGE, CODE } from "./constant/constant";
 import { ClientError } from "./error/client";
 import { Error } from "./error/error";
 import { DataBaseError } from "./error/dababase";
@@ -27,7 +27,7 @@ import { UsePipe, validate } from "./pipe/pipe";
 import { AdoOrmBaseEntity } from "./orm/orm";
 
 // constant
-export { MESSAGE, CONSTANT, CODE };
+export { MESSAGE, CODE };
 
 // error
 export { ClientError };

@@ -1,21 +1,16 @@
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'
-import { RunConfig } from ".";
-export enum ENITY_CONSTANT {
-  Key = "keys",
-  Keyword = "keyword",
-  AutoCreate = "AutoCreate",
-  DefaultValue = "__default__",
-  IsOptional = "__isoptional__",
-}
-const Entity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
+import { ENTITY_CONSTANT, RunConfig } from "./index";
+
+
+
+const Entity = (dbname: string, poolConnection: () => Promise<mysql.PoolConnection>) => {
   return function (target: typeof AdoOrmBaseEntity) {
     ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
     targetInst[RunConfig](target, dbname);
-
   };
 };
 const Key: PropertyDecorator = (
@@ -35,19 +30,19 @@ const AutoCreate: PropertyDecorator = (
   propertyKey: string | symbol
 ) => {
   const getPrevAutoCreate = ref.get(
-    ENITY_CONSTANT.AutoCreate,
+    ENTITY_CONSTANT.AutoCreate,
     target.constructor.prototype
   ) as string[];
   if (!getPrevAutoCreate) {
     ref.def(
-      ENITY_CONSTANT.AutoCreate,
+      ENTITY_CONSTANT.AutoCreate,
       [propertyKey],
       target.constructor.prototype
     );
   } else {
     getPrevAutoCreate.push(propertyKey as string);
     ref.def(
-      ENITY_CONSTANT.AutoCreate,
+      ENTITY_CONSTANT.AutoCreate,
       getPrevAutoCreate,
       target.constructor.prototype
     );

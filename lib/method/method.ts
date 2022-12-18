@@ -163,4 +163,5 @@ const createMethod = (method: string) => {
 const Get = createMethod("Get");
 const Post = createMethod("Post");
 const All = createMethod("All");
+
 export { Get, Post, All };

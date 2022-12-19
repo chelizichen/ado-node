@@ -5,8 +5,11 @@ import { AdoNodeInterceptor } from "./lib/interceptor/interceptor";
 import { AdoNodePipe, AdoNodeGlobalPipe } from "./lib/pipe";
 
 export type Query<T> = Request<any, any, any, T, any>;
+
 export type Body<T> = Request<any, any, T, any, any>;
+
 export type BaseController = typeof AdoNodeController;
+
 export type ServerOptions = {
   controller: Array<IRouter>;
   base: string;

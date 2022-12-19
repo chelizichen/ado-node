@@ -1,6 +1,6 @@
 class query {
   public sql: string = "";
-  public Enity: string = "";
+  public Entity: string = "";
   public and_sql = "";
   public or_sql = "";
   public likeand_sql = "";
@@ -8,11 +8,11 @@ class query {
   public pagination_sql = "";
   public column_sql = ""
   // 设置 实体类
-  setEnity(Enity: string[] | string) {
-    if (Enity instanceof Array) {
-      this.Enity = Enity.join(",");
+  setEntity(Entity: string[] | string) {
+    if (Entity instanceof Array) {
+      this.Entity = Entity.join(",");
     } else {
-      this.Enity = Enity;
+      this.Entity = Entity;
     }
     return this;
   }
@@ -119,7 +119,7 @@ class query {
 
     this.sql = "select" +
       this.column_sql +
-      this.Enity +
+      this.Entity +
       andor +
       like_andor +
       this.pagination_sql;
@@ -131,17 +131,17 @@ class query {
 // `DELETE FROM ?? WHERE ?? = ?`
 class del {
   public sql: string = "select";
-  private Enity: string = "";
+  private Entity: string = "";
   private andsql = "";
   private orsql = "";
 
-  setEnity(Enity: Function | string) {
-    if (typeof Enity === "function") {
-      this.Enity = Enity.name;
+  setEntity(Entity: Function | string) {
+    if (typeof Entity === "function") {
+      this.Entity = Entity.name;
     } else {
-      this.Enity = Enity;
+      this.Entity = Entity;
     }
-    this.sql = "delete from " + this.Enity + " ";
+    this.sql = "delete from " + this.Entity + " ";
     return this;
   }
   // 只允许用连续的 and(key,value) 或者一次 and(options:Record<string,any>)
@@ -197,17 +197,17 @@ class del {
 }
 
 class update {
-  // sql = `Update ${Enity.name} Set ${sqlVal} WHERE ${keySqlVal}`;
-  public Enity!: string;
+  // sql = `Update ${Entity.name} Set ${sqlVal} WHERE ${keySqlVal}`;
+  public Entity!: string;
   public sql: string = "";
   public options: Record<string, string> = {};
   public orsql: string = "";
   public andsql: string = "";
-  setEnity(Enity: Function | string) {
-    if (typeof Enity === "function") {
-      this.Enity = Enity.name;
+  setEntity(Entity: Function | string) {
+    if (typeof Entity === "function") {
+      this.Entity = Entity.name;
     } else {
-      this.Enity = Enity;
+      this.Entity = Entity;
     }
     return this;
   }
@@ -280,7 +280,7 @@ class update {
   getSql() {
     const opt = [this.options];
     console.log("this.sql", this.sql);
-    const sql = "update  " + this.Enity + " Set ? " + this.sql;
+    const sql = "update  " + this.Entity + " Set ? " + this.sql;
     return {
       opt,
       sql,
@@ -290,13 +290,13 @@ class update {
 // insert into ??  SET ?
 class save {
   public sql = "";
-  public Enity = "";
+  public Entity = "";
   public options: Record<string, string> = {};
-  public setEnity<T extends string | Function>(Enity: T) {
-    if (typeof Enity === "function") {
-      this.Enity = Enity.name;
+  public setEntity<T extends string | Function>(Entity: T) {
+    if (typeof Entity === "function") {
+      this.Entity = Entity.name;
     } else {
-      this.Enity = Enity;
+      this.Entity = Entity;
     }
     return this;
   }
@@ -325,7 +325,7 @@ class save {
   getSql() {
     const opt = [this.options];
     console.log("this.sql", this.sql);
-    const sql = "insert into  " + this.Enity + " SET ? ";
+    const sql = "insert into  " + this.Entity + " SET ? ";
     return {
       opt,
       sql,

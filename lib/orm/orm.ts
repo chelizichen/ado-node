@@ -6,23 +6,25 @@ import { getStrCount } from "../oper/protect";
 import { RedisClientType, createClient } from "redis";
 import {  isObject } from "lodash";
 import * as __ from "lodash";
+import { query, update, del, save } from "./sql";
+import { transaction } from "./transaction";
+import { Connection } from "./conn";
 import {
   BASEENITY,
-  Conn,
   Target,
   TableName,
-  querybuilder,
-  cacheOptions,
-  Cache,
   RedisClient,
   BF__DELETE,
   BF__INSERT,
   BF__UPDATE,
   VoidFunction,
-  GetCache
-} from "./index";
-import { query, update, del, save } from "./sql";
-import { transaction } from "./transaction";
+  querybuilder,
+  GetCache,
+  cacheOptions,
+  Cache,
+  Conn,
+  RunConfig
+} from "./symbol";
 
 function void_fn() { }
 
@@ -35,6 +37,7 @@ class AdoOrmBaseEntity {
   public [BF__DELETE]!: Function;
   public [BF__INSERT]!: Function;
   public [BF__UPDATE]!: Function;
+
   public [VoidFunction]() { }
 
   constructor() {
@@ -75,10 +78,15 @@ class AdoOrmBaseEntity {
   }
 
 
-  public async __RUNCONFIG__(BaseEnity: Function, dbname: string) {
+  public async [RunConfig](BaseEnity: Function, dbname: string) {
+    try {
+      this[Conn] = await Connection.getConnection();
+    } catch (e) {
+      throw e
+    }
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
-    const Connection = ref.get(":pool", this[BASEENITY].prototype);
+
 
     const bf_destory = ref.get(
       "monitor",
@@ -103,7 +111,7 @@ class AdoOrmBaseEntity {
     );
     this[BF__UPDATE] = bf_update != undefined ? bf_update : void_fn;
 
-    this[Conn] = await Connection();
+    
   }
 
 
@@ -139,7 +147,7 @@ class AdoOrmBaseEntity {
   public async getList(page: string, size: string) {
     return new Promise((resolve, reject) => {
       this[Conn].query(
-        `select * from ?? limit ?,?`,
+        " select * from ?? limit ?,? ",
         [this[TableName], parseInt(page), parseInt(size)],
         function (err, res) {
           if (err) {
@@ -182,6 +190,8 @@ class AdoOrmBaseEntity {
 
       return new Promise((resolve) => {
         let that = this;
+        console.log("this[Conn]", this[Conn]);
+        
         this[Conn].query(
           `select * from ?? where ?? = ?`,
           [this[TableName], key, val],

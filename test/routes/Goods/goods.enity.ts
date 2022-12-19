@@ -1,8 +1,7 @@
 import { AdoOrmBaseEntity, Entity, IsNumber, Key } from "../../../index";
-import { commonClass } from "../../config/common";
 
 
-@Entity("goods", commonClass.getMysqlPoolConnection)
+@Entity("goods")
 export class Goods extends AdoOrmBaseEntity {
   @Key
   id!: string;

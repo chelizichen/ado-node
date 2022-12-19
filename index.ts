@@ -4,7 +4,7 @@ import { UseControllerInterceptor, UseInterceptor } from "./lib/interceptor";
 import { AdoNodeController, Controller, Inject, Collect, ref, SerivceMap, GenereateRouter } from "./lib/ioc";
 import { AdoNodeServer, All, defineAdoNodeOptions, Get, Post } from "./lib/method";
 import { Module, Modules } from "./lib/module";
-import { BeforeInsert, BeforeDelete, BeforeUpdate, AdoOrmBaseEntity, AutoCreate, del, EnityTable, Entity, IsEmail, IsNumber, IsOptional, Key, Keyword, query, save, update } from "./lib/orm";
+import { BeforeInsert, BeforeDelete, BeforeUpdate, AdoOrmBaseEntity, AutoCreate, del, EnityTable, Entity, IsEmail, IsNumber, IsOptional, Key, Keyword, query, save, update, gerRedis, getConnection, defineAdoNodeConfig } from "./lib/orm";
 import { Req, Res, Params,Headers,Query,Body } from "./lib/params";
 import { class_transform, UsePipe, validate } from "./lib/pipe";
 
@@ -55,7 +55,9 @@ export { query, del, update, save };
 
 export { Query, Body, Headers, Req, Res, Params };
 
-
-
 export { UsePipe, validate };
 export { class_transform };
+
+
+export { getConnection, gerRedis, defineAdoNodeConfig };
+

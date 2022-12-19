@@ -23,7 +23,7 @@ export class GoodsService {
 
   async sql() {
     const sql = new query()
-      .setEnity(["goods", "seckill"])
+      .setEntity(["goods", "seckill"])
       .and({
         "seckill.go_id": "goods.id",
         "seckill.sk_status": "0",
@@ -32,11 +32,11 @@ export class GoodsService {
       .getSql();
 
     const sql1 = new query()
-      .setEnity(["goods", "seckill"])
+      .setEntity(["goods", "seckill"])
       .getSql();
 
     const sql2 = new query()
-      .setEnity("goods")
+      .setEntity("goods")
       .like_and({ goods_name: "?" })
       .pagination(0, 10)
       .getSql();
@@ -44,7 +44,7 @@ export class GoodsService {
     const opt2 = ["%名称2%"];
 
     const sql3 = new query()
-      .setEnity("goods")
+      .setEntity("goods")
       .and("goods_rest_num", "20")
       .or("sort_child_id", "4")
       .pagination(0, 10)

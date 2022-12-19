@@ -56,15 +56,6 @@ class AdoNodeServer {
     return Controller;
   }
 
-  // static readConfig(){
-  //   const config = "/test/ado.config.js"
-    
-  //   import(config).then(res=>{
-  //     console.log(res);
-  //   })
-
-  // }
-
   static run() {
     // 开启多进程
     const isCluster = ref.get(
@@ -103,6 +94,9 @@ class AdoNodeServer {
   }
 
   static runServer() {
+
+    // this.readConfig();
+
     const app: Express = express();
     const globalPipes = ref.get(
       AdoNodeServer.name,
@@ -141,7 +135,8 @@ class AdoNodeServer {
     });
   }
 
-  static runSSRServer(callBack: (app: Express) => void) {
+  static async runSSRServer(callBack: (app: Express) => void) {
+    
     const app: Express = express();
 
     const globalPipes = ref.get(

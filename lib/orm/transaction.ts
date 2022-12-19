@@ -1,4 +1,4 @@
-import { Conn } from ".";
+import { Conn } from "./symbol";
 import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'
 

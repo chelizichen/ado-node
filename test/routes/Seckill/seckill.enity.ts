@@ -1,8 +1,7 @@
 import { AdoOrmBaseEntity, Entity, IsNumber, Key } from "../../../index";
 import { BeforeDelete, BeforeInsert, BeforeUpdate } from "../../../lib/orm/monitor";
-import { commonClass } from "../../config/common";
 
-@Entity("seckill", commonClass.getMysqlPoolConnection)
+@Entity("seckill")
 export class Seckill extends AdoOrmBaseEntity {
   @Key
   id!: string;

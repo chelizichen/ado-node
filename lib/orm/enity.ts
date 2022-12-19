@@ -1,7 +1,7 @@
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
-import * as mysql from 'mysql'
-// import { RunConfig } from ".";
+import {RunConfig} from "./symbol";
+
 export enum ENITY_CONSTANT {
   Key = "keys",
   Keyword = "keyword",
@@ -9,13 +9,11 @@ export enum ENITY_CONSTANT {
   DefaultValue = "__default__",
   IsOptional = "__isoptional__",
 }
-const Entity = (dbname: string,poolConnection:()=>Promise<mysql.PoolConnection>) => {
+const Entity = (dbname: string) => {
   return function (target: typeof AdoOrmBaseEntity) {
-    ref.def(":pool", poolConnection, target.prototype);
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
-
-    targetInst.__RUNCONFIG__(target, dbname);
+    targetInst[RunConfig](target, dbname);
 
   };
 };

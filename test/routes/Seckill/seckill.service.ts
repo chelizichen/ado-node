@@ -6,14 +6,19 @@ export class SeckillService {
   @Inject(Seckill)
   Seckill!: Seckill;
 
-  getList() {
+  async getList() {
     const data = this.Seckill.createQueryBuilder()
-      .del.setEnity(Seckill.name)
+      .del.setEntity(Seckill.name)
       .and("id", "1")
       .getSql();
 
-    return data;
+    const data1 = await this.Seckill.getList('0', '10')
+    
+    
+    return {data,data1};
   }
+
+
 
   async getOne() {
     const key = "getone:seckill:1"

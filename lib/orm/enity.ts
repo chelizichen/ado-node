@@ -1,8 +1,8 @@
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
-import {RunConfig} from "./symbol";
+import { RunConfig } from "./symbol";
 
-export enum ENITY_CONSTANT {
+export enum ENTITY_CONSTANT {
   Key = "keys",
   Keyword = "keyword",
   AutoCreate = "AutoCreate",
@@ -13,6 +13,7 @@ const Entity = (dbname: string) => {
   return function (target: typeof AdoOrmBaseEntity) {
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
+
     targetInst[RunConfig](target, dbname);
 
   };
@@ -34,19 +35,19 @@ const AutoCreate: PropertyDecorator = (
   propertyKey: string | symbol
 ) => {
   const getPrevAutoCreate = ref.get(
-    ENITY_CONSTANT.AutoCreate,
+    ENTITY_CONSTANT.AutoCreate,
     target.constructor.prototype
   ) as string[];
   if (!getPrevAutoCreate) {
     ref.def(
-      ENITY_CONSTANT.AutoCreate,
+      ENTITY_CONSTANT.AutoCreate,
       [propertyKey],
       target.constructor.prototype
     );
   } else {
     getPrevAutoCreate.push(propertyKey as string);
     ref.def(
-      ENITY_CONSTANT.AutoCreate,
+      ENTITY_CONSTANT.AutoCreate,
       getPrevAutoCreate,
       target.constructor.prototype
     );

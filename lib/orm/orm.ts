@@ -13,17 +13,17 @@ import {
   BASEENITY,
   Target,
   TableName,
+  querybuilder,
+  RunConfig,
+  cacheOptions,
+  Cache,
   RedisClient,
   BF__DELETE,
   BF__INSERT,
   BF__UPDATE,
   VoidFunction,
-  querybuilder,
   GetCache,
-  cacheOptions,
-  Cache,
-  Conn,
-  RunConfig
+  Conn
 } from "./symbol";
 
 function void_fn() { }
@@ -37,7 +37,6 @@ class AdoOrmBaseEntity {
   public [BF__DELETE]!: Function;
   public [BF__INSERT]!: Function;
   public [BF__UPDATE]!: Function;
-
   public [VoidFunction]() { }
 
   constructor() {
@@ -45,7 +44,6 @@ class AdoOrmBaseEntity {
     this[RedisClient] = createClient();
     this[RedisClient].connect();
   }
-
 
   public createTransaction() {
     const TranSactionInstance = new transaction();
@@ -62,19 +60,19 @@ class AdoOrmBaseEntity {
     };
   }
 
-  public cache(cacheOptions:cacheOptions,VAL:any) {
-    return this[Cache](cacheOptions,VAL)
+  public cache(cacheOptions: cacheOptions, VAL: any) {
+    return this[Cache](cacheOptions, VAL);
   }
 
   public async [GetCache](cacheOptions: cacheOptions) {
-    const isCache = (isObject(cacheOptions) && cacheOptions.cache);
+    const isCache = isObject(cacheOptions) && cacheOptions.cache;
     if (isCache) {
       let cacheVal = await this[RedisClient].get(cacheOptions.key);
       if (cacheVal) {
         return cacheVal;
       }
     }
-    return
+    return;
   }
 
 
@@ -114,28 +112,25 @@ class AdoOrmBaseEntity {
     
   }
 
-
-  public async [Cache](
-    cacheOptions: cacheOptions, value: any
-  ): Promise<void> {
-    const { key, timeout, cache } = cacheOptions
+  public async [Cache](cacheOptions: cacheOptions, value: any): Promise<void> {
+    const { key, timeout, cache } = cacheOptions;
     let tocacheVal = "" as string;
-    if(typeof value == "string"){
-      tocacheVal = value
+    if (typeof value == "string") {
+      tocacheVal = value;
     }
 
-    if(typeof value == "number"){
-      tocacheVal = String(value)
+    if (typeof value == "number") {
+      tocacheVal = String(value);
     }
 
-    if(isObject(value)){
-      tocacheVal = JSON.stringify(value)
+    if (isObject(value)) {
+      tocacheVal = JSON.stringify(value);
     }
 
-    if(cache){
-      this[RedisClient].set(key, tocacheVal)
+    if (cache) {
+      this[RedisClient].set(key, tocacheVal);
       if (timeout) {
-        this[RedisClient].expire(key, timeout)
+        this[RedisClient].expire(key, timeout);
       }
     }
   }
@@ -168,14 +163,10 @@ class AdoOrmBaseEntity {
 
   public async getOneBy(val: string, cache: cacheOptions): Promise<any>;
 
-  public async getOneBy(
-    val: string,
-    cache?: cacheOptions
-  ): Promise<any> {
+  public async getOneBy(val: string, cache?: cacheOptions): Promise<any> {
     {
-
       if (cache) {
-        const data = await this[GetCache](cache)
+        const data = await this[GetCache](cache);
         if (data) {
           return data;
         }
@@ -202,7 +193,7 @@ class AdoOrmBaseEntity {
             resolve(res);
 
             if (cache) {
-              that[Cache](cache, res)
+              that[Cache](cache, res);
             }
           }
         );
@@ -246,13 +237,9 @@ class AdoOrmBaseEntity {
     cache: cacheOptions
   ): Promise<any>;
 
-  public async countBy(
-    val: Record<string, string>,
-    cache?: cacheOptions
-  ) {
-
+  public async countBy(val: Record<string, string>, cache?: cacheOptions) {
     if (cache) {
-      const data = await this[GetCache](cache)
+      const data = await this[GetCache](cache);
       if (data) {
         return data;
       }
@@ -273,9 +260,8 @@ class AdoOrmBaseEntity {
           resolve(data);
 
           if (cache) {
-            that[Cache](cache, res)
+            that[Cache](cache, res);
           }
-
         }
       );
     });
@@ -289,12 +275,9 @@ class AdoOrmBaseEntity {
     val: Record<string, string>,
     cache: cacheOptions
   ): Promise<any>;
-  public async getBy(
-    val: Record<string, string>,
-    cache?: cacheOptions
-  ) {
+  public async getBy(val: Record<string, string>, cache?: cacheOptions) {
     if (cache) {
-      const data = await this[GetCache](cache)
+      const data = await this[GetCache](cache);
       if (data) {
         return data;
       }
@@ -313,9 +296,8 @@ class AdoOrmBaseEntity {
           resolve(res);
 
           if (cache) {
-            that[Cache](cache, res)
+            that[Cache](cache, res);
           }
-
         }
       );
     });
@@ -378,20 +360,17 @@ class AdoOrmBaseEntity {
 
   public async getMany(val: string, options?: string[]): Promise<any>;
 
+  public async getMany(val: string, options: string[]): Promise<any>;
+
   public async getMany(
     val: string,
     options: string[],
+    cache: cacheOptions
   ): Promise<any>;
 
-  public async getMany(val:string,options:string[],cache:cacheOptions):Promise<any>;
-
-  public async getMany(
-    sql: string,
-    options?: string[],
-    cache?: cacheOptions
-  ) {
+  public async getMany(sql: string, options?: string[], cache?: cacheOptions) {
     if (cache) {
-      const data = await this[GetCache](cache)
+      const data = await this[GetCache](cache);
       if (data) {
         return data;
       }
@@ -406,7 +385,7 @@ class AdoOrmBaseEntity {
           resolve(res);
 
           if (cache) {
-            that[Cache](cache, res)
+            that[Cache](cache, res);
           }
         }
       });

@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 提供事物操作
+ */
 import { Conn } from "./symbol";
 import { AdoOrmBaseEntity } from "./orm";
 import * as mysql from 'mysql'

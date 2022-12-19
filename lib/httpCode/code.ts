@@ -1,4 +1,4 @@
-import { ref } from "../core";
+import { ref } from "../../index";
 
 const Code = (status: number): MethodDecorator => {
   return function (target: Object, propertyKey: string | symbol) {

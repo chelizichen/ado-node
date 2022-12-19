@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 增删改查 提供 链式API
+ */
 class query {
   public sql: string = "";
   public Entity: string = "";
@@ -7,6 +11,7 @@ class query {
   public likeor_sql = "";
   public pagination_sql = "";
   public column_sql = ""
+
   // 设置 实体类
   setEntity(Entity: string[] | string) {
     if (Entity instanceof Array) {

@@ -1,3 +1,9 @@
+/**
+ * @author chelizichen
+ * @description ORM 父类
+ * @LastUpdate 2022.12.19
+ * 
+ */
 import * as mysql from "mysql";
 import { ref } from "../ioc";
 import { ClientError } from "../error/client";

@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 利用Symbol 提供私有属性
+ */
 import { query, save, del, update } from "./sql";
 
 export type querybuilder = {
@@ -7,7 +11,7 @@ export type querybuilder = {
   update: update;
 };
 
-export type cacheOptions = { 
+export type cacheOptions = {
   cache: boolean;
   timeout?: number;
   key: string;

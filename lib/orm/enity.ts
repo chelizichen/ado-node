@@ -1,3 +1,8 @@
+/**
+ * @author chelizichen
+ * @description 暴露实体类所需要的装饰器
+ */
+
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
 import { RunConfig } from "./symbol";
@@ -9,6 +14,7 @@ export enum ENTITY_CONSTANT {
   DefaultValue = "__default__",
   IsOptional = "__isoptional__",
 }
+
 const Entity = (dbname: string) => {
   return function (target: typeof AdoOrmBaseEntity) {
     const targetInst = new target();

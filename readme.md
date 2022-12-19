@@ -74,7 +74,7 @@
 ### 对象关系映射(ORM)层
 
 * @**<i style="color:royalblue">Interface</i>** AdoOrmBaseEntity
-* @Entity(tableName:string,connect:mysql.PoolConnection)
+* @Entity(tableName:string)
 * @Collect() **收集 ORM 层对象**
 * @Key 对应 关系型 数据库 的 主键
 * @Keyword 用于 模糊查询
@@ -97,6 +97,12 @@
 * update
 * save
 * validate(Entity,plain)
+* getConnection // 需要成功连接上数据库
+* getRedis // 需要 Redis 环境
+* class_transform // 序列化方法
+* BeforeInsert // 在插入数据之前调用
+* BeforeDelete // 在删除数据之前调用
+* BeforeUpdate // 在更新数据之前调用
 
 ##### Pipe 管道验证
 
@@ -104,6 +110,12 @@
 * AdoNodePipe
 * AdoNodeGlobalPipe
 * validate
+
+##### (ado.config.ts)所需要的配置文件
+
+框架对于数据库的操作需要使用配置文件。
+**一般来说,配置文件需要放置在 package.json 同级的目录下。**
+配置信息需要使用默认导出,框架提供了 defineAdoNodeConfig 方法来完善所需要的各项信息。
 
 ##### *query*
 
@@ -331,7 +343,7 @@ class AppService{
 使用@Entity 并且继承 *AdoBaseEntity* 的类，继承AdoBaseEntity类的方法
 
 ````ts
-@Entity(tableName,connect)
+@Entity(tableName)
 class AppEntity extends AdoBaseEntity{
   @Key
   id!:string;
@@ -380,7 +392,7 @@ try{
 ````ts
 
 // -------------Entity-----------------
-@Entity("appTable",poolConnection)
+@Entity("appTable")
 class AppEntity extends AdoOrmBaseEntity{
   @BeforeUpdate
   beforeupdate(){
@@ -412,7 +424,7 @@ class AppService{
 @Entity层 实体类
 
 ````ts
-@Entity("seckill", commonClass.getMysqlPoolConnection)
+@Entity("seckill")
 export class Seckill extends AdoOrmBaseEntity {
   @Key
   id!: string;

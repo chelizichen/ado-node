@@ -27,9 +27,8 @@ class Connection {
   static connectionPool: mysql.Pool;
 
   static async readConfig() {
-    const config1 = process.cwd() + "/test/ado.config.ts";
-    const config2 = process.cwd() + "/ado.config.ts";
-    const data = await import(config1 ? config1 : config2);
+    const config = process.cwd() + "/ado.config.ts";
+    const data = await import(config);
     await Connection.createConnection(data);
   }
 

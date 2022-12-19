@@ -1,4 +1,4 @@
-import { defineAdoNodeConfig } from "../lib/orm/conn"
+import { defineAdoNodeConfig } from "./lib/orm/conn"
 
 export default defineAdoNodeConfig({
   database: {

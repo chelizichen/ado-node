@@ -117,6 +117,20 @@
 **一般来说,配置文件需要放置在 package.json 同级的目录下。**
 配置信息需要使用默认导出,框架提供了 defineAdoNodeConfig 方法来完善所需要的各项信息。
 
+````ts
+export default defineAdoNodeConfig({
+  database: {
+    type: "mysql",
+    host: "localhost",
+    username: "root",
+    password: "123456",
+    database: "test",
+    port: 3306,
+    connectionLimit: 10,
+  },
+});
+````
+
 ##### *query*
 
 ````js

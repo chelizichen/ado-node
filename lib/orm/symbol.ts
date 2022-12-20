@@ -30,3 +30,12 @@ export const BF__INSERT = Symbol("bf-insert");
 export const BF__DELETE = Symbol("bf-delete");
 export const BF__UPDATE = Symbol("bf-update");
 export const VoidFunction = Symbol("void-function");
+
+
+export enum ENTITY_CONSTANT {
+  Key = "keys",
+  Keyword = "keyword",
+  AutoCreate = "AutoCreate",
+  DefaultValue = "__default__",
+  IsOptional = "__isoptional__",
+}

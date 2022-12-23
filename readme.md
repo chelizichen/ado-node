@@ -1,6 +1,6 @@
 # - *AdoNode*
 
-#### <i style="color:royalblue"> typescript express ioc decorate aop </i>
+## typescript express ioc decorate aop
 
 ## 以极简的代码构建高效的 Node.js 服务
 
@@ -48,11 +48,39 @@
 ````
 
 ***
-***
+
+## @Ado/CLI 命令行工具
+
+框架提供了一些常用的命令使得开发变得更加简便
+
+* ado -g <router\>
+* ado create <app\>
+
+ado -g <router\> 将会在当前目录生成四个文件 分别是,便于开发者进行路由文件开发
+
+````ts
+  router 
+    ｜ router.controller.ts
+    ｜ router.service.ts
+    ｜ router.module.ts
+    ｜ router.entity.ts
+````
+
+ado create <app\> 将会给用户提供模版选项
+
+````ts
+ado-node % ado create app
+? 请选择项目模版 (Use arrow keys)
+❯ ado-node 
+  ado-node-vue-ssr(vite) 
+  ado-node-react-ssr(vite)
+````
+
+随后将会下载远程模版使用
 
 ### 控制层所需要的装饰器
 
-* @Extends Class <i style="color:royalblue">HandleController</i> 每一个Controller 类必须基于此父类
+* @Extends Class HandleController 每一个Controller 类必须基于此父类
 * @Controller(url:string)  **定义控制层路由**
 * @Inject(Service) **注入 Service 层服务**
 * @UsePipe(Pipe:implyments AdoNodePipe)
@@ -319,7 +347,6 @@ class UserLogInterceptor implements AdoNodeInterceptor {
 * @Post
 * @Inject *依赖注入*
 
-
 等装饰器
 
 ````ts
@@ -501,7 +528,6 @@ try {
 
 * ORM 缓存请求
 
-
 ````ts
 
 this.seckill.getOne(key,cacheOptions:{
@@ -513,6 +539,7 @@ this.seckill.getOne(key,cacheOptions:{
 ````
 
 使用场景：
+
 * 缓存某个不常更改的数据 比如用户信息等
 * 当用户提交更改信息时，强制刷新缓存
 * 返回缓存后的值
@@ -533,7 +560,6 @@ IF(UPDATE){
 
 
 ````
-
 
 #### Module 模块化
 

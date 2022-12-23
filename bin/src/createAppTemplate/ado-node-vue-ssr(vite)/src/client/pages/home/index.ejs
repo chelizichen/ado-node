@@ -1,0 +1,19 @@
+<template>
+  <div>
+    医疗管理系统
+  </div>
+</template>
+
+<script setup lang="ts">
+import { hello } from '@/api/user.ejs';
+import { onMounted } from 'vue';
+
+onMounted(async () => {
+  const data = await hello()
+  console.log(data);
+})
+</script>
+
+<style scoped>
+
+</style>

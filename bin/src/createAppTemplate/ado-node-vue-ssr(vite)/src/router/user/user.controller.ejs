@@ -1,0 +1,14 @@
+import { AdoNodeController, Controller, Get, Inject } from "ado-node";
+import { UserService } from "./user.service";
+import { ret } from "../../config/ret.ejs";
+
+@Controller("/user")
+export class UserController extends AdoNodeController {
+  @Inject(UserService)
+  UserService!: UserService;
+
+  @Get("/test")
+  hello() {
+    return ret.success("hello world");
+  }
+}

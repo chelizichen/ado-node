@@ -5,3 +5,9 @@ node_modules
 public/server
 
 doc
+
+bin/src/createAppTemplate/ado-node/node_modules
+
+bin/src/createAppTemplate/ado-node-vue-ssr(vite)/node_modules
+
+ado.config.ts

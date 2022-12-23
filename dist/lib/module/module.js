@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Modules = exports.Module = void 0;
 const index_1 = require("../../index");
+// @Module({
+// 	Controller:[],
+// 	Provider:[CPUModule,DisplayModule,CacheModule,DiskModule]
+// })
+// class ComputerModule{}
 const Module = (AdoNodeOptions) => {
     return function (target) {
         index_1.ref.def(target.name, AdoNodeOptions.Controller, target.prototype, ":controller");

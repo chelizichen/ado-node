@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 对外暴露方法和装饰器
+ */
 import { defineAdoNodeConfig, gerRedis, getConnection } from "./conn";
 import { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate } from "./enity";
 import { BeforeInsert, BeforeDelete, BeforeUpdate } from "./monitor";

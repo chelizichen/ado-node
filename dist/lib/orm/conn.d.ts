@@ -1,3 +1,8 @@
+/**
+ * @author chelizichen
+ * @date 2022.12.19
+ * @description ORM  根据配置文件进行数据库连接管理
+ */
 import * as mysql from "mysql";
 declare type AdoNodeConfig = {
     database: {

@@ -3,6 +3,18 @@
  * @description  DI 的 实现
  */
 
+// @Controller("/user")
+// class UserController extends AdoNodeController{
+//   @Inject(UserService)
+//   UserService!: UserService;
+
+// }
+
+// @Collect()
+// class UserService{
+
+// }
+
 import "reflect-metadata";
 import { ref } from "./ref";
 const Inject = (InjectTarget: Function): PropertyDecorator => {

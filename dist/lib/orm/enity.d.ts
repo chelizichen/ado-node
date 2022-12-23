@@ -1,11 +1,8 @@
+/**
+ * @author chelizichen
+ * @description 暴露实体类所需要的装饰器
+ */
 import { AdoOrmBaseEntity } from "./orm";
-export declare enum ENTITY_CONSTANT {
-    Key = "keys",
-    Keyword = "keyword",
-    AutoCreate = "AutoCreate",
-    DefaultValue = "__default__",
-    IsOptional = "__isoptional__"
-}
 declare const Entity: (dbname: string) => (target: typeof AdoOrmBaseEntity) => void;
 declare const Key: PropertyDecorator;
 declare const Keyword: PropertyDecorator;

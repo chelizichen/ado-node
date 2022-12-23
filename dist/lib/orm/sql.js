@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.save = exports.update = exports.del = exports.query = void 0;
+/**
+ * @author chelizichen
+ * @description 增删改查 提供 链式API
+ */
 class query {
     sql = "";
     Entity = "";

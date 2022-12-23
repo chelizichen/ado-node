@@ -50,6 +50,7 @@ export class SeckillService {
   async testTransaction() {
     const transaction = this.Seckill.createTransaction();
 
+
     const seckill = new Seckill();
 
     seckill.go_id = "10";
@@ -69,7 +70,7 @@ export class SeckillService {
 
     transaction.push(async () => this.Seckill.getList("0", "10"));
 
-    // transaction.push(async ()=>Promise.reject("测试错误"));
+    transaction.push(async ()=>Promise.reject("测试错误"));
 
     try {
       await transaction.connection();
@@ -95,6 +96,8 @@ export class SeckillService {
 
     transaction.push(async () => this.Seckill.save(seckill))
     transaction.push(async () => this.Seckill.update(seckill1));
+
+    // this.Seckill.
 
     try {
       await transaction.connection();

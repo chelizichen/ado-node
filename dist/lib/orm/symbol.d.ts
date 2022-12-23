@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 利用Symbol 提供私有属性
+ */
 import { query, save, del, update } from "./sql";
 export declare type querybuilder = {
     query: query;
@@ -23,3 +27,10 @@ export declare const BF__INSERT: unique symbol;
 export declare const BF__DELETE: unique symbol;
 export declare const BF__UPDATE: unique symbol;
 export declare const VoidFunction: unique symbol;
+export declare enum ENTITY_CONSTANT {
+    Key = "keys",
+    Keyword = "keyword",
+    AutoCreate = "AutoCreate",
+    DefaultValue = "__default__",
+    IsOptional = "__isoptional__"
+}

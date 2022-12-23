@@ -1,6 +1,13 @@
 import { AdoNodeServer, ref } from "../../index";
 import { AdoModuleOptions, AdoModulesOptions } from "../../index.d";
 
+// @Module({
+// 	Controller:[],
+// 	Provider:[CPUModule,DisplayModule,CacheModule,DiskModule]
+// })
+// class ComputerModule{}
+
+
 const Module = (AdoNodeOptions: AdoModuleOptions): ClassDecorator => {
   return function (target: Function) {
     ref.def(

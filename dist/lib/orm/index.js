@@ -1,4 +1,8 @@
 "use strict";
+/**
+ * @author chelizichen
+ * @description 对外暴露方法和装饰器
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineAdoNodeConfig = exports.gerRedis = exports.getConnection = exports.save = exports.update = exports.del = exports.query = exports.AdoOrmBaseEntity = exports.BeforeUpdate = exports.BeforeDelete = exports.BeforeInsert = exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.VoidFunction = exports.BF__UPDATE = exports.BF__DELETE = exports.BF__INSERT = exports.RedisClient = exports.Cache = exports.TableName = exports.GetConn = exports.Target = exports.Conn = exports.BASEENITY = exports.RunConfig = exports.GetCache = exports.ENTITY_CONSTANT = void 0;
 const conn_1 = require("./conn");

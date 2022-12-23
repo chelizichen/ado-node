@@ -1,4 +1,9 @@
 "use strict";
+/**
+ * @author chelizichen
+ * @date 2022.12.19
+ * @description ORM  根据配置文件进行数据库连接管理
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -33,9 +38,8 @@ exports.defineAdoNodeConfig = defineAdoNodeConfig;
 class Connection {
     static connectionPool;
     static async readConfig() {
-        const config1 = process.cwd() + "/test/ado.config.ts";
-        const config2 = process.cwd() + "/ado.config.ts";
-        const data = await Promise.resolve().then(() => __importStar(require(config1 ? config1 : config2)));
+        const config = process.cwd() + "/ado.config.ts";
+        const data = await Promise.resolve().then(() => __importStar(require(config)));
         await Connection.createConnection(data);
     }
     static async createConnection(configInfo) {

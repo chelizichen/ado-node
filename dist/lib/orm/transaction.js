@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transaction = void 0;
+/**
+ * @author chelizichen
+ * @description 提供事物操作
+ */
 const symbol_1 = require("./symbol");
 class transaction {
     __that__;

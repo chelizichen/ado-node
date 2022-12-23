@@ -13,9 +13,7 @@ const Entity = (dbname: string) => {
   return function (target: typeof AdoOrmBaseEntity) {
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
-
     targetInst[RunConfig](target, dbname);
-
   };
 };
 

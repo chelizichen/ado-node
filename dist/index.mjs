@@ -543,9 +543,8 @@ function defineAdoNodeConfig(config) {
 }
 var _Connection = class {
   static async readConfig() {
-    const config1 = process.cwd() + "/test/ado.config.ts";
-    const config2 = process.cwd() + "/ado.config.ts";
-    const data = await (config1 ? import(config1) : import(config2));
+    const config = process.cwd() + "/ado.config.ts";
+    const data = await import(config);
     await _Connection.createConnection(data);
   }
   static async createConnection(configInfo) {

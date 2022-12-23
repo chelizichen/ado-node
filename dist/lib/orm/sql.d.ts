@@ -1,3 +1,7 @@
+/**
+ * @author chelizichen
+ * @description 增删改查 提供 链式API
+ */
 declare class query {
     sql: string;
     Entity: string;

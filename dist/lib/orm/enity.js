@@ -1,16 +1,12 @@
 "use strict";
+/**
+ * @author chelizichen
+ * @description 暴露实体类所需要的装饰器
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = exports.ENTITY_CONSTANT = void 0;
+exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = void 0;
 const ref_1 = require("../ioc/ref");
 const symbol_1 = require("./symbol");
-var ENTITY_CONSTANT;
-(function (ENTITY_CONSTANT) {
-    ENTITY_CONSTANT["Key"] = "keys";
-    ENTITY_CONSTANT["Keyword"] = "keyword";
-    ENTITY_CONSTANT["AutoCreate"] = "AutoCreate";
-    ENTITY_CONSTANT["DefaultValue"] = "__default__";
-    ENTITY_CONSTANT["IsOptional"] = "__isoptional__";
-})(ENTITY_CONSTANT = exports.ENTITY_CONSTANT || (exports.ENTITY_CONSTANT = {}));
 const Entity = (dbname) => {
     return function (target) {
         const targetInst = new target();
@@ -28,13 +24,13 @@ const Keyword = (target, propertyKey) => {
 };
 exports.Keyword = Keyword;
 const AutoCreate = (target, propertyKey) => {
-    const getPrevAutoCreate = ref_1.ref.get(ENTITY_CONSTANT.AutoCreate, target.constructor.prototype);
+    const getPrevAutoCreate = ref_1.ref.get(symbol_1.ENTITY_CONSTANT.AutoCreate, target.constructor.prototype);
     if (!getPrevAutoCreate) {
-        ref_1.ref.def(ENTITY_CONSTANT.AutoCreate, [propertyKey], target.constructor.prototype);
+        ref_1.ref.def(symbol_1.ENTITY_CONSTANT.AutoCreate, [propertyKey], target.constructor.prototype);
     }
     else {
         getPrevAutoCreate.push(propertyKey);
-        ref_1.ref.def(ENTITY_CONSTANT.AutoCreate, getPrevAutoCreate, target.constructor.prototype);
+        ref_1.ref.def(symbol_1.ENTITY_CONSTANT.AutoCreate, getPrevAutoCreate, target.constructor.prototype);
     }
 };
 exports.AutoCreate = AutoCreate;

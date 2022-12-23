@@ -4,6 +4,21 @@
  * @LastUpdate 2022.12.19
  * 
  */
+
+// @Entity("tableName")
+// class UserEntity extends AdoOrmBaseEntity{
+//   @Key
+//   id: string;
+
+//   username: string;
+
+//   password: string;
+
+//   @AutoCreate
+//   createTime!: string;
+
+// }
+
 import * as mysql from "mysql";
 import { ref } from "../ioc";
 import { ClientError } from "../error/client";
@@ -33,6 +48,8 @@ import {
 } from "./symbol";
 
 function void_fn() { }
+
+
 
 class AdoOrmBaseEntity {
   public [BASEENITY]!: Function;

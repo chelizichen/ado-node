@@ -3,6 +3,7 @@
  * @Monitor
  * @Autohr chelizichen
  * @Date 2022.12.9
+ * @description ORM 事件侦听器
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BeforeUpdate = exports.BeforeDelete = exports.BeforeInsert = void 0;

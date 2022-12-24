@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run dev:server & npm run dev:client",
+    "dev": "ado-cli run-ssr vite",
     "dev:server": "ts-node-dev --project tsconfig.server.json src/index.ts",
     "dev:client": "vite",
     "build": "npm run build:client & npm run build:server",

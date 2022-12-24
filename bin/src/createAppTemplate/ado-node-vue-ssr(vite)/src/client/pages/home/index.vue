@@ -1,11 +1,11 @@
 <template>
   <div>
-    医疗管理系统
+    @Ado/Node - VueSSR
   </div>
 </template>
 
 <script setup lang="ts">
-import { hello } from '@/api/user.ejs';
+import { hello } from '@/api/user';
 import { onMounted } from 'vue';
 
 onMounted(async () => {

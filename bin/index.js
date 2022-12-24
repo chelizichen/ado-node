@@ -14,6 +14,11 @@ program.version('1.0.0')
   .option("-g, --GenerateTemplateName <template-name>")
   .description("create a ado-node router template")
   .action(function (appName) {
+    
+    if (!appName || appName == undefined || Object.keys(appName).length == 0) {
+      console.log('异常：未输入目录名称');
+      return;
+    }
 
     if (typeof appName == "string") {
       generateTemplate(appName,generatePath)
@@ -27,21 +32,15 @@ program.version('1.0.0')
   .command("create <app-name>")
   .description("create a ado-node app")
   .action(function (appName) {
+    if (!appName || appName == undefined || Object.keys(appName).length == 0) {
+      console.log('异常：未输入目录名称');
+      return;
+    }
     createAdoNodeApp(appName,generatePath)
   })
 
 
-program.version('1.0.0')
-  .command("run-ssr <args>")
-  .description("run ado-node-ssr app")
-  .action(function (appName) {
-  })
 
-program.version('1.0.0')
-  .command("run-node <args>")
-  .description("run ado-node app")
-  .action(function (appName) {
-  })
 
 
 

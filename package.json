@@ -1,9 +1,10 @@
 {
   "name": "ado-node",
-  "version": "2.4.1",
+  "version": "2.4.4",
   "description": "ts-decorator for express server",
   "bin": {
-    "ado": "bin/index.js"
+    "ado": "bin/index.js",
+    "ado-cli":"bin/dev.js"
   },
   "exports": {
     ".": {

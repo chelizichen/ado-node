@@ -8,7 +8,7 @@ function runViteApp() {
   currProcess.stdout.on("data", function (chunk) { 
     console.log('vite 客户端',new Date(),chunk.toString());
   })
-    currProcess.stdout.on("error", function (chunk) {
+    currProcess.stderr.on("data", function (chunk) {
     console.log('错误！！！： vite 客户端运行输出',new Date(),chunk.toString());
   })
 }
@@ -24,7 +24,7 @@ function runNodeApp() {
     console.log('node 服务端',new Date(),chunk.toString());
   })
 
-  currProcess.stdout.on("error", function (chunk) {
+  currProcess.stderr.on("data", function (chunk) {
     console.log('错误！！！： node 服务端运行输出',new Date(),chunk.toString());
   })
 }
@@ -38,7 +38,7 @@ function buildViteApp() {
   currProcess.stdout.on("data", function (chunk) { 
     console.log('vite 客户端打包输出',new Date(),chunk.toString());
   })
-  currProcess.stdout.on("error", function (chunk) {
+  currProcess.stderr.on("data", function (chunk) {
     console.log('错误！！！： vite 客户端打包输出',new Date(),chunk.toString());
   })
   
@@ -55,7 +55,7 @@ function buildNodeApp() {
     console.log('node 服务端打包输出',new Date(),chunk.toString());
   })
 
-  currProcess.stdout.on("error", function (chunk) {
+  currProcess.stderr.on("data", function (chunk) {
     console.log('错误！！！： node 服务端打包输出',new Date(),chunk.toString());
   })
 }

@@ -4,8 +4,8 @@
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",
-    "ado-cli":"bin/dev.js",
-    "hasaky":"bin/hasaky.js"
+    "ado-cli": "bin/dev.js",
+    "hasaky": "bin/hasaky.js"
   },
   "exports": {
     ".": {
@@ -20,7 +20,8 @@
   },
   "scripts": {
     "test": "ts-node-dev --project tsconfig.server.json test/server",
-    "build": "tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test/ && npm publish"
+    "build": "tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test/ && npm publish",
+    "commit": "hasaky commit"
   },
   "keywords": [
     "express",

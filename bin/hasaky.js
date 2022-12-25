@@ -32,7 +32,6 @@ program
         process.exit(add_HOOKS_result.status);
       }else{
         console.log('git add 打印输出',process.stdout.write(add_HOOKS_result.stdout));
-        console.log("git add 错误输出",  process.stderr.write(add_HOOKS_result.stderr));
       }
 
       const commit_HOOKS_result = spawnSync(`git commit -m "${commit_message}"`,{
@@ -45,23 +44,21 @@ program
         process.stderr.write(commit_HOOKS_result.stderr);
         process.exit(commit_HOOKS_result.status);
       }else{
-        console.log('git commit 打印输出',process.stdout.write(commit_HOOKS_result.stdout));
-        console.log("git commit 错误输出",  process.stderr.write(commit_HOOKS_result.stderr));
+        console.log('git commit 打印输出',process.stdout.write(commit_HOOKS_result.stdout.toString("utf-8")));
       }
 
-      const push_HOOKS_result = spawnSync("git push",{
-        stdio: "pipe",
-        shell: true,
-        env: process.env,
-      })
+      // const push_HOOKS_result = spawnSync("git push",{
+      //   stdio: "pipe",
+      //   shell: true,
+      //   env: process.env,
+      // })
 
-      if(push_HOOKS_result.status !== 0){
-        process.stderr.write(push_HOOKS_result.stderr);
-        process.exit(push_HOOKS_result.status);
-      }else{
-        console.log('git push 打印输出',process.stdout.write(push_HOOKS_result.stdout));
-        console.log("git push 错误输出",  process.stderr.write(push_HOOKS_result.stderr));
-      }
+      // if(push_HOOKS_result.status !== 0){
+      //   process.stderr.write(push_HOOKS_result.stderr);
+      //   process.exit(push_HOOKS_result.status);
+      // }else{
+      //   console.log('git push 打印输出',process.stdout.write(push_HOOKS_result.stdout));
+      // }
 
     }
 

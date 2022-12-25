@@ -6,7 +6,7 @@
     "dev": "ado-cli run-ssr vite",
     "dev:server": "ts-node-dev --project tsconfig.server.json src/index.ts",
     "dev:client": "vite",
-    "build": "npm run build:client & npm run build:server",
+    "build": "build-ssr",
     "build:client": "vite build",
     "build:server": "tsc --project tsconfig.server.json",
     "preview": "vite preview & node dist/index.js"

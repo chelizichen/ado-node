@@ -8,7 +8,7 @@ function runViteApp() {
   currProcess.stdout.on("data", function (chunk) { 
     console.log('vite 客户端',new Date(),chunk.toString());
   })
-    currProcess.stderr.on("data", function (chunk) {
+  currProcess.stderr.on("data", function (chunk) {
     console.log('错误！！！： vite 客户端运行输出',new Date(),chunk.toString());
   })
 }

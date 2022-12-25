@@ -1,9 +1,9 @@
 import { Module } from "ado-node";
 import { appController } from "./app.controller";
-import { UserController } from "../user/user.controller";
+import { UserModule } from "../user/user.module";
 
 @Module({
   Controller: [appController],
-  Provider: [UserController],
+  Provider: [UserModule],
 })
 export class appModule {}

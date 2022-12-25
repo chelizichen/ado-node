@@ -2,7 +2,7 @@ import { AdoNodeServer, Modules } from "ado-node";
 import express, { Express } from "express";
 import path from "path";
 import cors from "cors";
-import { appModule } from "../../ado-node/src/router/app/app.module";
+import { appModule } from "./router/app/app.module";
 
 @Modules({
   Modules: [appModule],

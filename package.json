@@ -4,7 +4,8 @@
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",
-    "ado-cli":"bin/dev.js"
+    "ado-cli":"bin/dev.js",
+    "hasaky":"bin/hasaky.js"
   },
   "exports": {
     ".": {

@@ -53,8 +53,12 @@
 
 框架提供了一些常用的命令使得开发变得更加简便
 
-* ado -g <router\>
-* ado create <app\>
+* ado -g <router\> // 创建路由模版
+* ado create <app\> // 创建@Ado/Node 或 SSR 项目
+* ado-cli run-ssr <args\> // 运行@Ado/SSR 项目
+* ado-cli run-node // 运行@Ado/Node 项目
+* ado-cli build-ssr <args\> // 打包@Ado/SSR 项目
+* ado-cli build-node // 打包@Ado/Node项目
 
 ado -g <router\> 将会在当前目录生成四个文件 分别是,便于开发者进行路由文件开发
 

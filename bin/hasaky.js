@@ -1,58 +1,62 @@
 #!/usr/bin/env node
 
+/**
+ * 快速发布命令并且更新迭代版本
+ */
 const { spawn, spawnSync } = require("child_process");
 const program = require("commander");
 const { nextTick } = require("process");
+const inquirer = require('inquirer')
 
 
 program
   .version("1.0.0")
-  .command("commit <description>")
-  .description("描述git 提交的信息")
-  .action(function (description) {
-    const add = spawn("git add .", {
-      stdio: "pipe",
-      shell: true,
-      env: process.env,
-    })
+  .command("commit")
+  .description("描述git 提交的信息 与 NPM 版本是否上传")
+  .action(async function () {
+    const {commit_message,is_update_version} = await inquirer.prompt(getQuestions());
 
-    add.stdout.on("data",function (chunk) {
-      console.log("hasaky 执行命令(git add . )", chunk.toString());
-    })
-    add.stderr.on("data",function (chunk) {
-      console.log("hasaky 执行命令(git add . )时出错", chunk.toString());
-    })
+    if(is_update_version){
 
-    nextTick(() => {
-      const commit = spawn(`git commit -m "${description}"`, {
+    }else{
+      spawnSync("git add .",{
         stdio: "pipe",
         shell: true,
         env: process.env,
       })
-
-      commit.stdout.on("data",function (chunk) {
-        console.log("hasaky 执行命令(git commit -m )", chunk.toString());
-      })
-      commit.stderr.on("data",function (chunk) {
-        console.log("hasaky 执行命令(git commit -m )时出错", chunk.toString());
-      })
-    })
-
-    setTimeout(() => {
-      const push = spawn(`git push`, {
+      spawnSync(`git commit -m "${commit_message}"`,{
         stdio: "pipe",
         shell: true,
         env: process.env,
       })
-      push.stdout.on("data",function (chunk) {
-        console.log("hasaky 执行命令(git push)", chunk.toString());
+      spawnSync("git push",{
+        stdio: "pipe",
+        shell: true,
+        env: process.env,
       })
-      push.stderr.on("data",function (chunk) {
-        console.log("hasaky 执行命令(git push)时出错", chunk.toString());
-      })
-    },0)
+    }
 
+
+    // console.log('questions',questions);
   });
+
+
+function getQuestions(){
+  return [{
+    type: 'input',
+    name: 'commit_message',
+    message: 'commit message',
+  },{
+    type: 'list',
+    name: 'is_update_version',
+    message: 'is update version?',
+    default: false,
+    choices: [
+      { name: 'yes', value: true },
+      { name: 'no', value: false },
+    ]        
+  }] 
+}
 
 
 program.parse(process.argv);

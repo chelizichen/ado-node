@@ -21,7 +21,7 @@ const cwd = process.cwd();
 program
   .version("1.0.0")
   .command("commit")
-  .description("描述git 提交的信息 与 NPM 版本是否上传")
+  .description("描述git 提交的信息 与 NPM 版本是否更新")
   .action(async function () {
     const { commit_message, is_update_version } = await inquirer.prompt(
       getQuestions()

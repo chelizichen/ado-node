@@ -60,16 +60,11 @@ async function runGitHooks(commit_message) {
     process.exit(commit_HOOKS_result.status);
   }
 
-  const push_HOOKS_result = spawn("git push", {
+  const push_HOOKS_result = spawnSync("git push", {
     stdio: "inherit",
     shell: true,
     env: process.env,
   });
-
-  if (push_HOOKS_result.status !== 0) {
-    process.stderr.write(push_HOOKS_result.stderr);
-    process.exit(push_HOOKS_result.status);
-  }
 }
 
 function getQuestions() {
@@ -111,6 +106,8 @@ function getNpmQuestions() {
 }
 
 function updatePackageJson(update_version) {
+  let dirNum = 2;
+  let currDirNum = 0;
   return new Promise((resolve, reject) => {
     let currVersion = require(packageJsonPath);
     currVersion.version = update_version;
@@ -120,21 +117,46 @@ function updatePackageJson(update_version) {
       shell: true,
       env: process.env,
     });
-    const sourPath = cwd + "/bin";
-    const targetPath = cwd + "/dist/bin";
-    fs.mkdirSync(targetPath);
-    fs_ext.copy(sourPath, targetPath, function (err) {
+
+    const sourPath1 = cwd + "/bin/src/createAppTemplate";
+    const targetPath1 = cwd + "/dist/bin/src/createAppTemplate";
+    const sourPath2 = cwd + "/bin/src/template";
+    const targetPath2 = cwd + "/dist/bin/src/template";
+    fs.mkdirSync(targetPath1);
+    fs.mkdirSync(targetPath2);
+
+    fs_ext.copy(sourPath1, targetPath1, function (err) {
       if (err) {
         console.log("An error occured while copying the folder.");
         return console.error(err);
       }
       console.log("Copy completed!");
-      spawnSync("npm publish", {
-        stdio: "inherit",
-        shell: true,
-        env: process.env,
-      });
-      resolve(true)
+      currDirNum++;
+      if (currDirNum == dirNum) {
+        spawnSync("npm publish", {
+          stdio: "inherit",
+          shell: true,
+          env: process.env,
+        });
+        resolve(true);
+      }
+    });
+
+    fs_ext.copy(sourPath2, targetPath2, function (err) {
+      if (err) {
+        console.log("An error occured while copying the folder.");
+        return console.error(err);
+      }
+      console.log("Copy completed!");
+      currDirNum++;
+      if (currDirNum == dirNum) {
+        spawnSync("npm publish", {
+          stdio: "inherit",
+          shell: true,
+          env: process.env,
+        });
+        resolve(true);
+      }
     });
   });
 }

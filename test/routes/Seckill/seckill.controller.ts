@@ -42,4 +42,10 @@ export class SeckillController extends AdoNodeController {
   }
 
 
+  @Get("/testConn")
+  async testConn(){
+    const data = await this.SeckillService.testConn()
+    return R.success(data)
+  }
+
 }

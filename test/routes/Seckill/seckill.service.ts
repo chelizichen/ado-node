@@ -1,4 +1,4 @@
-import { Collect, Inject } from "../../../index";
+import { Collect, getConnection, Inject } from "../../../index";
 import { Seckill } from "./seckill.enity";
 
 @Collect()
@@ -111,5 +111,17 @@ export class SeckillService {
   async testDelMonitor() {
     const data = await this.Seckill.delOneBy("9")
     return data
+  }
+
+  async testConn(){
+    const conn = await getConnection()
+    return new Promise((resolve,reject)=>{
+      conn.query("select * from seckill",function(err,res){
+        if(err){
+          reject(err)
+        }
+        resolve(res)
+      })
+    })
   }
 }

@@ -4,6 +4,7 @@ import { Modules } from "../lib/module/module";
 import { AppModule } from "./routes";
 import { TestGlobalPipe } from "./pipe";
 import { AdoNodeServer } from "../index";
+import { Test } from "./views/test";
 
 @Modules({
   Modules: [AppModule],
@@ -15,4 +16,6 @@ class AdoNodeServerImpl extends AdoNodeServer { }
 
 AdoNodeServerImpl.runSSRServer((app) => {
   app.use("/AdoServer", express.static(path.join(__dirname, "../public")));
+  console.log(Test);
+  
 });

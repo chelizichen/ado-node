@@ -35,6 +35,8 @@ program
         env: process.env,
       })
       console.log(chalk.green(build.stdout.toString("utf-8")))
+      
+      runGitHooks(commit_message);
 
     } else {
       runGitHooks(commit_message);

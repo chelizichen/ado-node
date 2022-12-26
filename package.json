@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",

@@ -30,13 +30,17 @@ this.cache({})
 错误描述:
 
 ````cmd
-
+在此系统上禁止运行脚本没有相应的权限
 ````
 
 解决方法:
 
 ````cmd
+1.win+X键，使用管理员身份运行power shell
 
+2.输入命令：set-executionpolicy remotesigned
+
+默认是N，输入A
 ````
 
 ## 3. hasaky 命令 git push 时报错的问题

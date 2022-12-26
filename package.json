@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",
@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "ts-node-dev --project tsconfig.server.json test/server",
-    "build": "rm -r dist && mkdir dist && tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test/ && npm publish",
+    "build": "rm -r dist && mkdir dist && tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test",
     "commit": "hasaky commit"
   },
   "keywords": [

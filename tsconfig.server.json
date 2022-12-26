@@ -7,5 +7,6 @@
   },
   "exclude":[
     "./ado.config.ts",
+    "bin"
   ]
 }

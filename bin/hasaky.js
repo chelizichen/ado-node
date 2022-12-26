@@ -8,12 +8,15 @@ const { spawn, spawnSync } = require("child_process");
 const program = require("commander");
 const { nextTick } = require("process");
 const inquirer = require("inquirer");
-const path = require('path')
+const path = require("path");
 const chalk = require("chalk");
-const { writeFileSync } = require("fs");
+const { writeFileSync, copyFile } = require("fs");
+const fs = require("fs");
+const fs_ext = require("fs-extra");
+const packageJsonPath = path.join(process.cwd() + "/package.json");
+const testPath = path.join(process.cwd() + "/test.json");
 
-const packageJsonPath = path.join(process.cwd() + "/package.json")
-const testPath = path.join(process.cwd() + "/test.json")
+const cwd = process.cwd();
 
 program
   .version("1.0.0")
@@ -23,7 +26,6 @@ program
     const { commit_message, is_update_version } = await inquirer.prompt(
       getQuestions()
     );
-    
     if (is_update_version) {
       const { update_version } = await inquirer.prompt(getNpmQuestions())
       updatePackageJson(update_version)
@@ -32,7 +34,6 @@ program
     } else {
       runGitHooks(commit_message);
     }
-
   });
 
 async function runGitHooks(commit_message) {
@@ -58,7 +59,7 @@ async function runGitHooks(commit_message) {
     process.exit(commit_HOOKS_result.status);
   }
 
-  const push_HOOKS_result = spawnSync("git push", {
+  const push_HOOKS_result = spawn("git push", {
     stdio: "inherit",
     shell: true,
     env: process.env,
@@ -90,13 +91,13 @@ function getQuestions() {
   ];
 }
 
-
 function getNpmQuestions() {
+  let currVersion = require(packageJsonPath);
+  let after_add_version = addVersion(currVersion.version);
 
-  let currVersion = require(packageJsonPath)
-  let after_add_version = addVersion(currVersion.version)
-
-  console.log(chalk.green("curr package version is ->>> ", currVersion.version));
+  console.log(
+    chalk.green("curr package version is ->>> ", currVersion.version)
+  );
   console.log(chalk.green("please input new version ->>>"));
   return [
     {
@@ -109,48 +110,62 @@ function getNpmQuestions() {
 }
 
 function updatePackageJson(update_version) {
-  let currVersion = require(packageJsonPath)
-  currVersion.version = update_version
-  writeFileSync(packageJsonPath, JSON.stringify(currVersion, null, 2))
-  spawn("npm run build", {
+  let currVersion = require(packageJsonPath);
+  currVersion.version = update_version;
+  writeFileSync(packageJsonPath, JSON.stringify(currVersion, null, 2));
+  spawnSync("npm run build", {
     stdio: "inherit",
     shell: true,
     env: process.env,
-  })
+  });
+  const sourPath = cwd + "/bin";
+  const targetPath = cwd + "/dist/bin";
+
+  fs_ext.copy(sourPath, targetPath, function (err) {
+    if (err) {
+      console.log("An error occured while copying the folder.");
+      return console.error(err);
+    }
+    console.log("Copy completed!");
+    spawn("npm publish", {
+      stdio: "inherit",
+      shell: true,
+      env: process.env,
+    });
+  });
 }
 
-/** 
+/**
  * npm 版本号迭代测试 日期 2022 12.26
  * 测试 2.4.9 预期 2.5.0 成功
  * 测试 0.0.9 预期 0.1.0 成功
  * 测试 0.0.1 预期 0.0.2 成功
  * 测试 0.9.9 预期 1.0.0 成功
-*/
+ */
 
 function addVersion(currVersion) {
   // 得到默认增加后的版本号
-  let _currVersion = Number(currVersion.replaceAll(".", "")) + 1
-  _currVersion = String(_currVersion)
+  let _currVersion = Number(currVersion.replaceAll(".", "")) + 1;
+  _currVersion = String(_currVersion);
 
   // 判断是否为0 开头
 
   if (_currVersion.length == 1) {
-    _currVersion = "00" + _currVersion
+    _currVersion = "00" + _currVersion;
   }
 
   if (_currVersion.length == 2) {
-    _currVersion = "0" + _currVersion
+    _currVersion = "0" + _currVersion;
   }
 
-  _currVersion = _currVersion.split("").join(".")
+  _currVersion = _currVersion.split("").join(".");
 
-  return _currVersion
+  return _currVersion;
 
   // // 判断大版本号是否 >= 10
   // if (_currVersion.length >= 4) {
 
   // }
-
 }
 
 program.parse(process.argv);

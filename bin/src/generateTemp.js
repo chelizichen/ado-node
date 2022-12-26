@@ -42,19 +42,7 @@ async function generateTemplate(templateName, generatePath) {
     fs.writeFileSync(createFilePath,renderFileStr)
   })
 
-  
-  
 
-
-
-
-  // const str = ejs.render(fs.readFileSync(templateFilePath, 'utf-8'), config);
-  // if (fse.pathExists(fPath)) {
-  //   fse.removeSync(fPath);
-  // }
-  // fse.ensureFileSync(fPath);
-  // fs.writeFileSync(fPath, str);
-  // log.info(`生成位置：${fPath}`);
 
 }
 

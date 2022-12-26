@@ -23,31 +23,21 @@ program
     const { commit_message, is_update_version } = await inquirer.prompt(
       getQuestions()
     );
-
+    
     if (is_update_version) {
       const { update_version } = await inquirer.prompt(getNpmQuestions())
       updatePackageJson(update_version)
 
-
-      const build = spawnSync("npm run build", {
-        stdio: "pipe",
-        shell: true,
-        env: process.env,
-      })
-      console.log(chalk.green(build.stdout.toString("utf-8")))
-      
       runGitHooks(commit_message);
-
     } else {
       runGitHooks(commit_message);
     }
 
-    // console.log('questions',questions);
   });
 
 async function runGitHooks(commit_message) {
   const add_HOOKS_result = spawnSync("git add .", {
-    stdio: "pipe",
+    stdio: "inherit",
     shell: true,
     env: process.env,
   });
@@ -55,12 +45,10 @@ async function runGitHooks(commit_message) {
   if (add_HOOKS_result.status !== 0) {
     process.stderr.write(add_HOOKS_result.stderr);
     process.exit(add_HOOKS_result.status);
-  } else {
-    console.log("git add 打印输出", add_HOOKS_result.stdout.toString("utf-8"));
   }
 
   const commit_HOOKS_result = spawnSync(`git commit -m "${commit_message}"`, {
-    stdio: "pipe",
+    stdio: "inherit",
     shell: true,
     env: process.env,
   });
@@ -68,15 +56,10 @@ async function runGitHooks(commit_message) {
   if (commit_HOOKS_result.status !== 0) {
     process.stderr.write(commit_HOOKS_result.stderr);
     process.exit(commit_HOOKS_result.status);
-  } else {
-    console.log(
-      "git commit 打印输出",
-      commit_HOOKS_result.stdout.toString("utf-8")
-    );
   }
 
   const push_HOOKS_result = spawnSync("git push", {
-    stdio: "pipe",
+    stdio: "inherit",
     shell: true,
     env: process.env,
   });
@@ -84,11 +67,6 @@ async function runGitHooks(commit_message) {
   if (push_HOOKS_result.status !== 0) {
     process.stderr.write(push_HOOKS_result.stderr);
     process.exit(push_HOOKS_result.status);
-  } else {
-    console.log(
-      "git push 打印输出",
-      push_HOOKS_result.stdout.toString("utf-8")
-    );
   }
 }
 
@@ -134,6 +112,11 @@ function updatePackageJson(update_version) {
   let currVersion = require(packageJsonPath)
   currVersion.version = update_version
   writeFileSync(packageJsonPath, JSON.stringify(currVersion, null, 2))
+  spawn("npm run build", {
+    stdio: "inherit",
+    shell: true,
+    env: process.env,
+  })
 }
 
 /** 

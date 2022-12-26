@@ -18,20 +18,27 @@ program
     .description("描述git 提交的信息 与 NPM 版本是否上传")
     .action(async function () {
     const { commit_message, is_update_version } = await inquirer.prompt(getQuestions());
-    if (is_update_version) {
-        const { update_version } = await inquirer.prompt(getNpmQuestions());
-        updatePackageJson(update_version);
-        const build = spawnSync("npm run build", {
-            stdio: "pipe",
-            shell: true,
-            env: process.env,
-        });
-        console.log(chalk.green(build.stdout.toString("utf-8")));
-        runGitHooks(commit_message);
-    }
-    else {
-        runGitHooks(commit_message);
-    }
+    const publish = spawn("npm run build", {
+        stdio: "inherit",
+        shell: true,
+        env: process.env,
+    });
+    // publish.stdout.on("data", function (chunk) {
+    //   console.log(chunk.toString());
+    // })
+    // if (is_update_version) {
+    //   const { update_version } = await inquirer.prompt(getNpmQuestions())
+    //   updatePackageJson(update_version)
+    //   const build = spawnSync("npm run build", {
+    //     stdio: "pipe",
+    //     shell: true,
+    //     env: process.env,
+    //   })
+    //   console.log(chalk.green(build.stdout.toString("utf-8")))
+    //   runGitHooks(commit_message);
+    // } else {
+    //   runGitHooks(commit_message);
+    // }
     // console.log('questions',questions);
 });
 async function runGitHooks(commit_message) {

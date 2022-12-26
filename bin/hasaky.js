@@ -122,8 +122,7 @@ function getNpmQuestions() {
 function updatePackageJson(update_version) {
   let currVersion = require(packageJsonPath)
   currVersion.version = update_version
-  writeFileSync(testPath, JSON.stringify(currVersion))
-  
+  writeFileSync(packageJsonPath, JSON.stringify(currVersion,null,2))
 }
 
 /** 

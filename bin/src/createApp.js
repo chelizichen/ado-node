@@ -98,5 +98,5 @@ async function copyByDir(filesDir, templatePath, appPath) {
 }
 
 module.exports = {
-    
+    createAdoNodeApp
 }

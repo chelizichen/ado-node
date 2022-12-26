@@ -1,0 +1,7 @@
+import { Module } from "ado-node";
+import { UserController } from './user.controller.ejs'
+@Module({
+  Controller:[UserController],
+  Provider:[]
+})
+export class UserModule{}

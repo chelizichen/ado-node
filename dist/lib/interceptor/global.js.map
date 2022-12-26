@@ -1,1 +1,0 @@
-{"version":3,"file":"global.js","sourceRoot":"","sources":["../../../lib/interceptor/global.ts"],"names":[],"mappings":";;;AAAA,WAAW;AACX,cAAc;AACd,SAAS;AACT,gCAA6B;AAM7B,MAAM,wBAAwB,GAAG,CAC/B,EAAgC,EAChB,EAAE;IAClB,OAAO,UAAU,MAAgB;QAC/B,SAAG,CAAC,GAAG,CAAC,MAAM,CAAC,IAAI,EAAE,EAAE,EAAE,MAAM,CAAC,SAAS,EAAE,wBAAwB,CAAC,CAAC;IACvE,CAAC,CAAC;AACJ,CAAC,CAAC;AAEO,4DAAwB"}

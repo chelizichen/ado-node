@@ -12,8 +12,8 @@ const path = require('path')
 const chalk = require("chalk");
 const { writeFileSync } = require("fs");
 
-const packageJsonPath = path.join(process.cwd()+"/package.json")
-const testPath = path.join(process.cwd()+"/test.json")
+const packageJsonPath = path.join(process.cwd() + "/package.json")
+const testPath = path.join(process.cwd() + "/test.json")
 
 program
   .version("1.0.0")
@@ -27,6 +27,23 @@ program
     if (is_update_version) {
       const { update_version } = await inquirer.prompt(getNpmQuestions())
       updatePackageJson(update_version)
+
+
+      const build = spawnSync("npm run build", {
+        stdio: "pipe",
+        shell: true,
+        env: process.env,
+      })
+
+      const publish = spawnSync("npm publish", {
+        stdio: "pipe",
+        shell: true,
+        env: process.env,
+      })
+      console.log(chalk.green(build.stdout.toString("utf-8")))
+      console.log(publish.blue(build.stdout.toString("utf-8")))
+
+
     } else {
       runGitHooks(commit_message);
     }
@@ -122,7 +139,7 @@ function getNpmQuestions() {
 function updatePackageJson(update_version) {
   let currVersion = require(packageJsonPath)
   currVersion.version = update_version
-  writeFileSync(packageJsonPath, JSON.stringify(currVersion,null,2))
+  writeFileSync(packageJsonPath, JSON.stringify(currVersion, null, 2))
 }
 
 /** 
@@ -154,7 +171,7 @@ function addVersion(currVersion) {
 
   // // 判断大版本号是否 >= 10
   // if (_currVersion.length >= 4) {
-    
+
   // }
 
 }

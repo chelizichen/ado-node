@@ -1,4 +1,6 @@
 const { spawn } = require("child_process");
+const chalk = require("chalk")
+
 function runViteApp() {
   const currProcess = spawn("vite", {
     stdio: "pipe",
@@ -6,10 +8,10 @@ function runViteApp() {
     env: process.env,
   });
   currProcess.stdout.on("data", function (chunk) { 
-    console.log('vite 客户端',new Date(),chunk.toString());
+    console.log(chalk.green('vite 客户端',new Date(),chunk.toString()));
   })
   currProcess.stderr.on("data", function (chunk) {
-    console.log('错误！！！： vite 客户端运行输出',new Date(),chunk.toString());
+    console.log(chalk.red('错误！！！： vite 客户端运行输出',new Date(),chunk.toString()));
   })
 }
 
@@ -21,11 +23,11 @@ function runNodeApp() {
   })
 
   currProcess.stdout.on("data", function (chunk) { 
-    console.log('node 服务端',new Date(),chunk.toString());
+    console.log(chalk.blue('node 服务端',new Date(),chunk.toString()));
   })
 
   currProcess.stderr.on("data", function (chunk) {
-    console.log('错误！！！： node 服务端运行输出',new Date(),chunk.toString());
+    console.log(chalk.red('错误！！！： node 服务端运行输出',new Date(),chunk.toString()));
   })
 }
 
@@ -36,10 +38,10 @@ function buildViteApp() {
     env: process.env,
   });
   currProcess.stdout.on("data", function (chunk) { 
-    console.log('vite 客户端打包输出',new Date(),chunk.toString());
+    console.log(chalk.green('vite 客户端打包输出',new Date(),chunk.toString()));
   })
   currProcess.stderr.on("data", function (chunk) {
-    console.log('错误！！！： vite 客户端打包输出',new Date(),chunk.toString());
+    console.log(chalk.red('错误！！！： vite 客户端打包输出',new Date(),chunk.toString()));
   })
   
 }
@@ -52,11 +54,11 @@ function buildNodeApp() {
   })
 
   currProcess.stdout.on("data", function (chunk) { 
-    console.log('node 服务端打包输出',new Date(),chunk.toString());
+    console.log(chalk.green('node 服务端打包输出',new Date(),chunk.toString()));
   })
 
   currProcess.stderr.on("data", function (chunk) {
-    console.log('错误！！！： node 服务端打包输出',new Date(),chunk.toString());
+    console.log(chalk.red('错误！！！： node 服务端打包输出',new Date(),chunk.toString()));
   })
 }
 

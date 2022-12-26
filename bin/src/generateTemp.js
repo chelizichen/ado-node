@@ -6,6 +6,7 @@ const path = require('path');
 const assert = require('assert');
 const ejs = require('ejs');
 const exec = require('child_process').exec;
+const chalk = require("chalk")
 
 /**
  * 
@@ -25,11 +26,11 @@ async function generateTemplate(templateName, generatePath) {
   let newGeneratePath = generatePath + "/" + templateName
   let isPathExist = await fse.pathExists(newGeneratePath)
   if (isPathExist) {
-    console.log("相关目录已存在")
+    console.log(chalk.yellow("相关目录已存在"))
     return
   } else {
     fs.mkdirSync(newGeneratePath)
-    console.log('生成目录',newGeneratePath);
+    console.log(chalk.green('生成目录',newGeneratePath));
   }
   templateArray.forEach(el => {
     let tempPath = templateFilePath + "/" +"index." + el + ".ejs" // 模版路径

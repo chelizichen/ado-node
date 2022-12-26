@@ -5,6 +5,7 @@ const assert = require('assert');
 const ejs = require('ejs');
 const exec = require('child_process').exec;
 const inquirer = require('inquirer')
+const chalk = require("chalk")
 
 function exists(path){
      return fs.existsSync(path) || path.existsSync(path);
@@ -33,7 +34,7 @@ async function createAdoNodeApp(appName, appPath) {
   let isPathExist = await fse.pathExists(createAppPath)
 
   if (isPathExist) {
-    console.log('目录已存在');
+    console.log(chalk.red('目录已存在'));
     return
   }
 
@@ -51,6 +52,11 @@ async function createAdoNodeApp(appName, appPath) {
 
   await copyByDir(FilesDir, AppTemplatePath, createAppPath)
   
+
+  console.log(chalk.green("下一步"));
+  console.log("---------------------");
+  console.log(chalk.greenBright(`cd ${appName}`));
+  console.log(chalk.greenBright("npm install"));
 }
 
 function createQuestions() {
@@ -71,7 +77,8 @@ function createQuestions() {
 
 }
   
-async function copyByDir(filesDir,templatePath,appPath) {
+async function copyByDir(filesDir, templatePath, appPath) {
+  console.log(chalk.green("生成文件中 ----------------------🚀"));
   filesDir.forEach(async el => {
     let _path = templatePath + "/" + el;
     let _isDir = isDir(_path);
@@ -81,10 +88,13 @@ async function copyByDir(filesDir,templatePath,appPath) {
       const FilesDir = fs.readdirSync(_path)
       await copyByDir(FilesDir,_path,_appPath)
     } else {
-      _appPath = _appPath.replace(".ejs",".ts")
+      _appPath = _appPath.replace(".ejs", ".ts")
+      console.log(chalk.greenBright("生成文件中 ----------------------🚀",_appPath));
       await fs.copyFileSync(_path,_appPath)
     }
   })
+  console.log(chalk.green("生成应用成功 ---------------------"));
+
 }
 
 module.exports = {

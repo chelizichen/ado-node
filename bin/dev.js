@@ -9,6 +9,7 @@ const {
   buildNodeApp,
   buildViteApp,
 } = require("./src/runApp.js");
+const chalk = require("chalk")
 
 // 得到当前命令执行目录
 const generatePath = process.cwd();

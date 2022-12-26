@@ -3,12 +3,14 @@
 const program = require("commander")
 const fs = require('fs');
 const fse = require('fs-extra');
+const chalk = require("chalk")
 
 // 得到当前命令执行目录
 const generatePath = process.cwd()
 
 const generateTemplate = require("./src/generateTemp").generateTemplate
 const createAdoNodeApp = require("./src/createApp").createAdoNodeApp
+
 // 创建模版
 program.version('1.0.0')
   .option("-g, --GenerateTemplateName <template-name>")
@@ -16,10 +18,9 @@ program.version('1.0.0')
   .action(function (appName) {
     
     if (!appName || appName == undefined || Object.keys(appName).length == 0) {
-      console.log('异常：未输入目录名称');
+      console.log(chalk.red('异常：可能未输入目录名称'));
       return;
     }
-
     if (typeof appName == "string") {
       generateTemplate(appName,generatePath)
     } else {
@@ -33,7 +34,7 @@ program.version('1.0.0')
   .description("create a ado-node app")
   .action(function (appName) {
     if (!appName || appName == undefined || Object.keys(appName).length == 0) {
-      console.log('异常：未输入目录名称');
+      console.log(chalk.red('异常：可能未输入目录名称'));
       return;
     }
     createAdoNodeApp(appName,generatePath)

@@ -41,7 +41,7 @@ program
         env: process.env,
       })
       console.log(chalk.green(build.stdout.toString("utf-8")))
-      console.log(publish.blue(build.stdout.toString("utf-8")))
+      console.log(publish.green(build.stdout.toString("utf-8")))
 
 
     } else {

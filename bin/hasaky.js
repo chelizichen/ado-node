@@ -34,15 +34,7 @@ program
         shell: true,
         env: process.env,
       })
-
-      const publish = spawnSync("npm publish", {
-        stdio: "pipe",
-        shell: true,
-        env: process.env,
-      })
       console.log(chalk.green(build.stdout.toString("utf-8")))
-      console.log(publish.green(build.stdout.toString("utf-8")))
-
 
     } else {
       runGitHooks(commit_message);

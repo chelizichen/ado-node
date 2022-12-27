@@ -571,7 +571,7 @@ IF(UPDATE){
 ### 使用 *@View* 和 AdoOrmBaseView 创建视图
 
 框架提供了 CreateView 方法利用链式操作来 **创建->执行** sql语句以创建视图。
-
+**框架设置了 migration?:boolean 来判断视图是否需要迁移 或者 修改**
 使用@View 装饰的类仍然支持 IOC 的模式，[使用](https://github.com/chelizichen/ado-node/blob/master/lib/ioc/ioc.ts)
 
 由于视图的创建不依赖成员变量，且视图大多数情况下不进行任何增删改的操作，所以我们只对 基类 **AdoOrmBaseView** 提供了查询｜缓存查询的方法。
@@ -587,6 +587,7 @@ IF(UPDATE){
     .omit(["yyy.id","xxx.~","yyy.~"] : Array<string>) // omit fields
     .addOptions(options_sql: string ) // like "xxx.id = yyy.xxx_id"
     .create(), // create sql
+  migration?:boolean 
 })
 class [ViewName] extends AdoOrmBaseView{
   @Index

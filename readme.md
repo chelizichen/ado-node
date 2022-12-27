@@ -566,6 +566,40 @@ IF(UPDATE){
 
 ````
 
+## View
+
+### 使用 *@View* 和 AdoOrmBaseView 创建视图
+
+框架提供了 CreateView 方法利用链式操作来 **创建->执行** sql语句以创建视图。
+
+使用@View 装饰的类仍然支持 IOC 的模式，[使用](https://github.com/chelizichen/ado-node/blob/master/lib/ioc/ioc.ts)
+
+由于视图的创建不依赖成员变量，且视图大多数情况下不进行任何增删改的操作，所以我们只对 基类 **AdoOrmBaseView** 提供了查询｜缓存查询的方法。
+
+关于成员变量-> **由于视图没有主键，所以只能使用 @Index 装饰器来对应视图的唯一索引，且 视图类要求必须使用@Index，否则无法执行 基类的 getOneBy 等方法** , 成员变量可以使用 @Inject(AdoOrmBaseEntity) 的方式注入其他实体类 , 一方面代表着 **这个视图是由哪几个表创建的** , 另一方面可以很方便的使用 **[IOC]((https://github.com/chelizichen/ado-node/blob/master/lib/ioc/ioc.ts))** 带来的好处
+
+***
+
+````ts
+@View({
+  engine: CreateView(viewName : string) // set View name
+    .addEntity([xxx,yyy] : Array<AdoOrmBaseEntity>) // add Entity
+    .omit(["yyy.id","xxx.~","yyy.~"] : Array<string>) // omit fields
+    .addOptions(options_sql: string ) // like "xxx.id = yyy.xxx_id"
+    .create(), // create sql
+})
+class [ViewName] extends AdoOrmBaseView{
+  @Index
+  id!:string;
+
+  @Inject(xxxEntity)
+  xxx:xxxEntity;
+
+  @Inject(yyyEntity)
+  yyy:yyyEntity;
+}
+````
+
 #### Module 模块化
 
 Provider 里 可以包含各类的 Module
@@ -581,6 +615,7 @@ Provider 里 可以包含各类的 Module
 })
 export class AppModule {}
 ````
+
 
 ### 启动服务
 

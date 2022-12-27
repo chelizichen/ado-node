@@ -21,7 +21,8 @@ export type ViewOptions = {
   engine: {
     engine_sql: sql;
     view_name: string;
-    filter_fields:string[]
+    filter_fields:string[],
+    type:"Create" | "Alter"
   };
   migration?: boolean;
 };

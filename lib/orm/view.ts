@@ -39,6 +39,9 @@ import { Connection } from "./conn";
 import { AdoOrmBaseView } from "./orm";
 import { FilterFields, IsEqual, RunConfig, ViewOptions, sql } from "./symbol";
 import * as _ from 'lodash'
+import { isArrayEqual } from "../oper/isArrayEqual";
+import  chalk from 'chalk'
+
 function GetViewFields(str: string) {
     // let reg = /AS\s\`(\w+)\`\,/
     let m;
@@ -63,7 +66,6 @@ function GetViewFields(str: string) {
 
 const View = (options: ViewOptions) => {
     const { engine } = options;
-    console.log("engine", engine);
 
     return function (target: typeof AdoOrmBaseView) {
         const targetInst = new target();
@@ -73,38 +75,44 @@ const View = (options: ViewOptions) => {
 
         (async function () {
             const conn = await Connection.getConnection();
+            // 查询是否有 视图
             conn.query("show create view " + engine.view_name, function (err, res) {
                 if (err) {
-                    conn.query(engine.engine_sql, function (err) {
+                    // 没有则执行创建语句
+                    conn.query(engine.type + engine.engine_sql, function (err) {
                         if (err) {
                             console.log(err);
                         }
                     });
-                }
-                // 判断是否需要进行迁移
-                if (options.migration) {
-                    const create_view_sql = res[0]["Create View"] as string;
-                    let str = create_view_sql
-                        .split("AS select ")[1]
-                        .split(" from ")[0];
-                    let fields = GetViewFields(str)
-                    // console.log('视图中的字段',fields);
+                } else {
+                    // 判断是否需要进行迁移
+                    if (options.migration) {
+                        const create_view_sql = res[0]["Create View"] as string;
+                        let str = create_view_sql
+                            .split("AS select ")[1]
+                            .split(" from ")[0];
+                        let fields = GetViewFields(str).map(el => el.toLowerCase())
+                        let views_fields = engine.filter_fields.map(el => {
+                            return el.split(".")[1]
+                        }).map(el => el.toLowerCase())
 
-                    let views_fields = engine.filter_fields.map(el => {
-                        return el.split(".")[1]
-                    })
-                    const isequal1 = _.differenceWith(fields, views_fields);
-                    const isequal2 = _.differenceWith(views_fields, fields);
+                        let isEqual = isArrayEqual(fields, views_fields)
 
-                    if (isequal1.length == isequal2.length) {
-                        console.log(true);
-                    } else {
-                        console.log(false);
+                        // 是否字段相等
+                        if (isEqual) {
+                            console.log(chalk.green("the view " + chalk.red(engine.view_name) + " does not need to migration"));
+                        } else {
+                            console.log(chalk.blue("the view " + chalk.red(engine.view_name) + "  need to migration"));
+                            const migration_sql = "Alter" + engine.engine_sql;
+                            // 修改视图
+                            conn.query(migration_sql,function(err){
+                                if(err){
+                                    throw err
+                                }
+                                console.log("the view "+ chalk.red(engine.view_name) + " migration success")
+                            })
+                        }
                     }
-
-                    
-                    
-                    console.log('类中定义的字段',views_fields);
                 }
 
             });
@@ -123,7 +131,7 @@ class createView {
 
     Entitys: string[];
 
-    FilterFields:string[]
+    FilterFields: string[]
 
     constructor(ViewName: string) {
         this.ViewName = ViewName;
@@ -179,12 +187,13 @@ class createView {
     create(): ViewOptions["engine"] {
         const get_fields = this[FilterFields]();
         const get_entitys = this.Entitys.join(",");
-        let engine_sql = `Create View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
+        let engine_sql = ` View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
 
         return {
             engine_sql,
             view_name: this.ViewName,
-            filter_fields:this.FilterFields
+            filter_fields: this.FilterFields,
+            type: "Create"
         };
     }
 

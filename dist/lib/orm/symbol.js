@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ENTITY_CONSTANT = exports.VoidFunction = exports.BF__UPDATE = exports.BF__DELETE = exports.BF__INSERT = exports.RedisClient = exports.Cache = exports.TableName = exports.GetConn = exports.Target = exports.Conn = exports.BASEENITY = exports.RunConfig = exports.GetCache = void 0;
+exports.ENTITY_CONSTANT = exports.VoidFunction = exports.BF__UPDATE = exports.BF__DELETE = exports.BF__INSERT = exports.RedisClient = exports.Cache = exports.TableName = exports.GetConn = exports.Target = exports.Conn = exports.BASEENITY = exports.RunConfig = exports.GetCache = exports.IsEqual = exports.FilterFields = void 0;
+exports.FilterFields = Symbol("FilterFields");
+exports.IsEqual = Symbol("IsEqual");
 exports.GetCache = Symbol("GetCache");
 exports.RunConfig = Symbol("RUNCONFIG");
 exports.BASEENITY = Symbol("BASEENITY");

@@ -1,4 +1,5 @@
-import { Key } from "../../lib/orm";
+import { Inject } from "../../lib/ioc";
+import { Index } from "../../lib/orm/enity";
 import { AdoOrmBaseView } from "../../lib/orm/orm";
 import { CreateView, View } from "../../lib/orm/view";
 import { Goods } from "../routes/Goods/goods.enity";
@@ -12,12 +13,13 @@ import { Seckill } from "../routes/Seckill/seckill.enity";
         .create(),
 })
 export class AdoViewTest extends AdoOrmBaseView {
-    @Key
+    @Index
     id!: string;
-    goods_name!: string;
-    goods_price!: string;
-    goods_rest_num!: string;
-    seller_id!: string;
-    sort_child_id!: string;
-    sk_price!: string;
+
+    @Inject(Goods)
+    Goods!: Goods
+    
+    @Inject(Seckill)
+    Seckill!: Seckill
 }
+

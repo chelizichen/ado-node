@@ -7,6 +7,11 @@ export class viewTestService {
   AdoViewTest!: AdoViewTest;
   
   async get_ViewTest() {
-    return await this.AdoViewTest.getList("0","10") 
+    const data1 = await this.AdoViewTest.getList("0", "10"); 
+    const data2 = await this.AdoViewTest.getOneBy("1")
+    return {
+      data1,
+      data2
+    }
   }
 }

@@ -502,7 +502,7 @@ class AdoOrmBaseView {
         }
       }
 
-      const key = ref.get("key", this[BASEENITY].prototype);
+      const index = ref.get("index", this[BASEENITY].prototype);
       const count = getStrCount(val, ["delete", "drop"]);
 
       if (count) {
@@ -511,11 +511,9 @@ class AdoOrmBaseView {
 
       return new Promise((resolve) => {
         let that = this;
-        console.log("this[Conn]", this[Conn]);
-
         this[Conn].query(
           `select * from ?? where ?? = ?`,
-          [this.ViewName, key, val],
+          [this.ViewName, index, val],
           function (err, res) {
             if (err) {
               resolve(new DataBaseError("数据库错误,也许配置项是非法的", err));

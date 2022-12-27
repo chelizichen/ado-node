@@ -2,6 +2,7 @@
  * @author chelizichen
  * @description ORM 父类
  * @LastUpdate 2022.12.19
+ * @Update 2022.12.27 add base class AdoOrmBaseView
  *
  */
 import * as mysql from "mysql";
@@ -68,4 +69,29 @@ declare class AdoOrmBaseEntity {
     getMany(val: string, options: string[]): Promise<any>;
     getMany(val: string, options: string[], cache: cacheOptions): Promise<any>;
 }
-export { AdoOrmBaseEntity };
+declare class AdoOrmBaseView {
+    ViewFields: string[];
+    ViewName: string;
+    [RedisClient]: RedisClientType;
+    [BASEENITY]: Function;
+    [Conn]: mysql.PoolConnection;
+    constructor();
+    [RunConfig](Entity: typeof AdoOrmBaseView): Promise<void>;
+    [Cache](cacheOptions: cacheOptions, value: any): Promise<void>;
+    [GetCache](cacheOptions: cacheOptions): Promise<string | undefined>;
+    getList(page: string, size: string): Promise<unknown>;
+    getOneBy(val: string): Promise<any>;
+    getOneBy(val: string, cache: cacheOptions): Promise<any>;
+    countBy(val: Record<string, string>): Promise<any>;
+    countBy(val: Record<string, string>, cache: cacheOptions): Promise<any>;
+    /**
+     * @method getBy
+     * @param {} Record<string, string>
+     */
+    getBy(val: Record<string, string>): Promise<any>;
+    getBy(val: Record<string, string>, cache: cacheOptions): Promise<any>;
+    getMany(val: string, options?: string[]): Promise<any>;
+    getMany(val: string, options: string[]): Promise<any>;
+    getMany(val: string, options: string[], cache: cacheOptions): Promise<any>;
+}
+export { AdoOrmBaseEntity, AdoOrmBaseView };

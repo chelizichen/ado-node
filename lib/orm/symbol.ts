@@ -17,6 +17,19 @@ export type cacheOptions = {
   key: string;
 };
 
+export type ViewOptions = {
+  engine: {
+    engine_sql: sql;
+    view_name: string;
+  };
+};
+
+export type sql = string;
+
+export const FilterFields = Symbol("FilterFields");
+export const IsEqual = Symbol("IsEqual");
+
+
 export const GetCache = Symbol("GetCache");
 export const RunConfig = Symbol("RUNCONFIG");
 export const BASEENITY = Symbol("BASEENITY");

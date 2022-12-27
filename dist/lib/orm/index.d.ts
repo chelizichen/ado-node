@@ -3,10 +3,11 @@
  * @description 对外暴露方法和装饰器
  */
 import { defineAdoNodeConfig, gerRedis, getConnection } from "./conn";
-import { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate } from "./enity";
+import { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, AutoCreate, Index } from "./enity";
 import { BeforeInsert, BeforeDelete, BeforeUpdate } from "./monitor";
-import { AdoOrmBaseEntity } from "./orm";
+import { AdoOrmBaseEntity, AdoOrmBaseView } from "./orm";
 import { query, update, del, save } from "./sql";
+import { View, CreateView } from "./view";
 export declare enum ENTITY_CONSTANT {
     Key = "keys",
     Keyword = "keyword",
@@ -25,21 +26,9 @@ export declare type cacheOptions = {
     timeout?: number;
     key: string;
 };
-export declare const GetCache: unique symbol;
-export declare const RunConfig: unique symbol;
-export declare const BASEENITY: unique symbol;
-export declare const Conn: unique symbol;
-export declare const Target: unique symbol;
-export declare const GetConn: unique symbol;
-export declare const TableName: unique symbol;
-export declare const Cache: unique symbol;
-export declare const RedisClient: unique symbol;
-export declare const BF__INSERT: unique symbol;
-export declare const BF__DELETE: unique symbol;
-export declare const BF__UPDATE: unique symbol;
-export declare const VoidFunction: unique symbol;
-export { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, EnityTable, AutoCreate, };
+export { Entity, Key, Keyword, IsEmail, IsOptional, IsNumber, AutoCreate, Index };
 export { BeforeInsert, BeforeDelete, BeforeUpdate };
-export { AdoOrmBaseEntity };
+export { AdoOrmBaseEntity, AdoOrmBaseView };
 export { query, del, update, save };
 export { getConnection, gerRedis, defineAdoNodeConfig };
+export { View, CreateView };

@@ -3,6 +3,7 @@
  * @author chelizichen
  * @description ORM 父类
  * @LastUpdate 2022.12.19
+ * @Update 2022.12.27 add base class AdoOrmBaseView
  *
  */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -29,7 +30,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdoOrmBaseEntity = void 0;
+exports.AdoOrmBaseView = exports.AdoOrmBaseEntity = void 0;
 const ioc_1 = require("../ioc");
 const client_1 = require("../error/client");
 const dababase_1 = require("../error/dababase");
@@ -287,4 +288,162 @@ class AdoOrmBaseEntity {
     }
 }
 exports.AdoOrmBaseEntity = AdoOrmBaseEntity;
+class AdoOrmBaseView {
+    ViewFields;
+    ViewName;
+    [symbol_1.RedisClient];
+    [symbol_1.BASEENITY];
+    [symbol_1.Conn];
+    constructor() {
+        this.ViewFields = [];
+        this.ViewName = "";
+        this[symbol_1.RedisClient] = (0, redis_1.createClient)();
+        this[symbol_1.RedisClient].connect();
+    }
+    async [symbol_1.RunConfig](Entity) {
+        const inst = ioc_1.ref.get(Entity.name, Entity.prototype);
+        this.ViewName = ioc_1.ref.get(":view_name", Entity.prototype);
+        this.ViewFields = Object.keys(inst);
+        this[symbol_1.BASEENITY] = Entity;
+        try {
+            this[symbol_1.Conn] = await conn_1.Connection.getConnection();
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+    async [symbol_1.Cache](cacheOptions, value) {
+        const { key, timeout, cache } = cacheOptions;
+        let tocacheVal = "";
+        if (typeof value == "string") {
+            tocacheVal = value;
+        }
+        if (typeof value == "number") {
+            tocacheVal = String(value);
+        }
+        if ((0, lodash_1.isObject)(value)) {
+            tocacheVal = JSON.stringify(value);
+        }
+        if (cache) {
+            this[symbol_1.RedisClient].set(key, tocacheVal);
+            if (timeout) {
+                this[symbol_1.RedisClient].expire(key, timeout);
+            }
+        }
+    }
+    async [symbol_1.GetCache](cacheOptions) {
+        const isCache = (0, lodash_1.isObject)(cacheOptions) && cacheOptions.cache;
+        if (isCache) {
+            let cacheVal = await this[symbol_1.RedisClient].get(cacheOptions.key);
+            if (cacheVal) {
+                return cacheVal;
+            }
+        }
+        return;
+    }
+    async getList(page, size) {
+        return new Promise((resolve, reject) => {
+            this[symbol_1.Conn].query(" select * from ?? limit ?,? ", [this.ViewName, parseInt(page), parseInt(size)], function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+    async getOneBy(val, cache) {
+        {
+            if (cache) {
+                const data = await this[symbol_1.GetCache](cache);
+                if (data) {
+                    return data;
+                }
+            }
+            const index = ioc_1.ref.get("index", this[symbol_1.BASEENITY].prototype);
+            const count = (0, protect_1.getStrCount)(val, ["delete", "drop"]);
+            if (count) {
+                return new client_1.ClientError("非法参数,可能为恶意sql注入");
+            }
+            return new Promise((resolve) => {
+                let that = this;
+                this[symbol_1.Conn].query(`select * from ?? where ?? = ?`, [this.ViewName, index, val], function (err, res) {
+                    if (err) {
+                        resolve(new dababase_1.DataBaseError("数据库错误,也许配置项是非法的", err));
+                    }
+                    resolve(res);
+                    if (cache) {
+                        that[symbol_1.Cache](cache, res);
+                    }
+                });
+            });
+        }
+    }
+    async countBy(val, cache) {
+        if (cache) {
+            const data = await this[symbol_1.GetCache](cache);
+            if (data) {
+                return data;
+            }
+        }
+        let countSql = `select count(*) as total from ?? where `;
+        const jonitSql = this[symbol_1.Conn].escape(val).replaceAll(",", " and ");
+        return new Promise((resolve, reject) => {
+            let that = this;
+            this[symbol_1.Conn].query(countSql + jonitSql, [this.ViewName], function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                const data = res[0];
+                resolve(data);
+                if (cache) {
+                    that[symbol_1.Cache](cache, res);
+                }
+            });
+        });
+    }
+    async getBy(val, cache) {
+        if (cache) {
+            const data = await this[symbol_1.GetCache](cache);
+            if (data) {
+                return data;
+            }
+        }
+        const sql = this[symbol_1.Conn].escape(val).replaceAll(",", " and ");
+        return new Promise((resolve, reject) => {
+            let that = this;
+            this[symbol_1.Conn].query("select * from ?? where " + sql, [this.ViewName], function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+                if (cache) {
+                    that[symbol_1.Cache](cache, res);
+                }
+            });
+        });
+    }
+    async getMany(sql, options, cache) {
+        if (cache) {
+            const data = await this[symbol_1.GetCache](cache);
+            if (data) {
+                return data;
+            }
+        }
+        return new Promise((resolve, reject) => {
+            let that = this;
+            this[symbol_1.Conn].query(sql, options, function (err, res) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(res);
+                    if (cache) {
+                        that[symbol_1.Cache](cache, res);
+                    }
+                }
+            });
+        });
+    }
+}
+exports.AdoOrmBaseView = AdoOrmBaseView;
 //# sourceMappingURL=orm.js.map

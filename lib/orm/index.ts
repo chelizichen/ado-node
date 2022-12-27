@@ -11,12 +11,13 @@ import {
   IsEmail,
   IsOptional,
   IsNumber,
-  EnityTable,
   AutoCreate,
+  Index,
 } from "./enity";
 import { BeforeInsert, BeforeDelete, BeforeUpdate } from "./monitor";
-import { AdoOrmBaseEntity } from "./orm";
+import { AdoOrmBaseEntity, AdoOrmBaseView } from "./orm";
 import { query, update, del, save } from "./sql";
+import { View, CreateView } from "./view";
 
 export enum ENTITY_CONSTANT {
   Key = "keys",
@@ -39,20 +40,6 @@ export type cacheOptions = {
   key: string;
 };
 
-export const GetCache = Symbol("GetCache");
-export const RunConfig = Symbol("RUNCONFIG");
-export const BASEENITY = Symbol("BASEENITY");
-export const Conn = Symbol("CONN");
-export const Target = Symbol("TARGET");
-export const GetConn = Symbol("GETCONN");
-export const TableName = Symbol("TableName");
-export const Cache = Symbol("CACHE");
-export const RedisClient = Symbol("RedisClient");
-
-export const BF__INSERT = Symbol("bf-insert");
-export const BF__DELETE = Symbol("bf-delete");
-export const BF__UPDATE = Symbol("bf-update");
-export const VoidFunction = Symbol("void-function");
 
 export {
   Entity,
@@ -61,14 +48,16 @@ export {
   IsEmail,
   IsOptional,
   IsNumber,
-  EnityTable,
   AutoCreate,
+  Index
 };
 
 export { BeforeInsert, BeforeDelete, BeforeUpdate };
 
-export { AdoOrmBaseEntity };
+export { AdoOrmBaseEntity, AdoOrmBaseView };
 
 export { query, del, update, save };
 
 export { getConnection, gerRedis, defineAdoNodeConfig };
+
+export { View, CreateView };

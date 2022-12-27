@@ -1,3 +1,4 @@
+"use strict";
 // @View({
 //     engine:CreateView( ViewName:string )
 //              .addEntity([User,Info])
@@ -15,7 +16,8 @@
 //     user_location:string;
 //     user_phone:string;
 // }
-
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateView = exports.View = void 0;
 // @Entity( tableName:string )
 // class User{
 //     id :string;
@@ -23,7 +25,6 @@
 //     password:string;
 //     permission:string;
 // }
-
 // @Entity( tableName:string )
 // class Info{
 //     id：string;
@@ -32,26 +33,19 @@
 //     user_location:string;
 //     user_phone:string;
 // }
-
-import { ref } from "../ioc";
-import { Connection } from "./conn";
-import { AdoOrmBaseView } from "./orm";
-import { FilterFields, IsEqual, RunConfig, ViewOptions, sql } from './symbol';
-
-
-
-const View = (options: ViewOptions) => {
+const ioc_1 = require("../ioc");
+const conn_1 = require("./conn");
+const symbol_1 = require("./symbol");
+const View = (options) => {
     const { engine } = options;
     console.log("engine", engine);
-
-    return function (target: typeof AdoOrmBaseView) {
+    return function (target) {
         const targetInst = new target();
-        ref.def(target.name, targetInst, target.prototype);
-        ref.def(":view_name",engine.view_name,target.prototype)
-        targetInst[RunConfig](target);
-
+        ioc_1.ref.def(target.name, targetInst, target.prototype);
+        ioc_1.ref.def(":view_name", engine.view_name, target.prototype);
+        targetInst[symbol_1.RunConfig](target);
         (async function () {
-            const conn = await Connection.getConnection();
+            const conn = await conn_1.Connection.getConnection();
             conn.query("show create view " + engine.view_name, function (err) {
                 if (err) {
                     conn.query(engine.engine_sql, function (err) {
@@ -64,54 +58,43 @@ const View = (options: ViewOptions) => {
         })();
     };
 };
-
+exports.View = View;
 class createView {
-    ViewName: string;
-
-    selectOptions: string;
-
-    ViewFields: string[];
-
-    OmitFields: string[];
-
-    Entitys: string[];
-
-    constructor(ViewName: string) {
+    ViewName;
+    selectOptions;
+    ViewFields;
+    OmitFields;
+    Entitys;
+    constructor(ViewName) {
         this.ViewName = ViewName;
         this.selectOptions = "";
         this.ViewFields = [];
         this.OmitFields = [];
         this.Entitys = [];
     }
-
-    [FilterFields]() {
+    [symbol_1.FilterFields]() {
         let filterFields = this.ViewFields.filter((view_field) => {
-            let isOmit = this.OmitFields.some(
-                (omit_field) => omit_field.toLowerCase() == view_field.toLowerCase()
-            );
-
+            let isOmit = this.OmitFields.some((omit_field) => omit_field.toLowerCase() == view_field.toLowerCase());
             return !isOmit;
         });
-
         return filterFields.join(",");
     }
-
     /**
      * @description 不区分大小写判断是否相等
      */
-    [IsEqual](name1: string, name2: string) {
+    [symbol_1.IsEqual](name1, name2) {
         if (typeof name1 == "string" && typeof name2 == "string") {
             if (name1.toLowerCase() == name2.toLocaleLowerCase()) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
         throw new Error("args must be string");
     }
-
     // 排除一些不需要的键 或者有冲突的键
-    omit<T extends string | string[]>(options: T) {
+    omit(options) {
         if (typeof options == "string") {
             this.OmitFields.push(options);
             return this;
@@ -120,27 +103,23 @@ class createView {
             this.OmitFields.push(...options);
             return this;
         }
-
         throw new Error("options must be typeof Array<string> or string");
     }
-
     // 返回sql
-    create(): ViewOptions["engine"] {
-        const get_fields = this[FilterFields]();
+    create() {
+        const get_fields = this[symbol_1.FilterFields]();
         const get_entitys = this.Entitys.join(",");
         let engine_sql = `Create View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
-
         return {
             engine_sql,
             view_name: this.ViewName,
         };
     }
-
-    addEntity(Entitys: Array<new (...args: any[]) => void>) {
+    addEntity(Entitys) {
         if (Entitys instanceof Array) {
             Entitys.forEach((AdoBaseEntity) => {
                 let getFields = Object.getOwnPropertyNames(new AdoBaseEntity());
-                let tablename = ref.get(":tablename", AdoBaseEntity.prototype);
+                let tablename = ioc_1.ref.get(":tablename", AdoBaseEntity.prototype);
                 this.Entitys.push(tablename);
                 getFields.forEach((field) => {
                     let concrete_field = tablename + "." + field;
@@ -151,8 +130,7 @@ class createView {
         }
         throw new Error("Entitys must be Array<AdoOrmBaseEntity>");
     }
-
-    addOptions(options: sql) {
+    addOptions(options) {
         if (typeof options == "string") {
             this.selectOptions = options;
             return this;
@@ -160,10 +138,9 @@ class createView {
         throw new Error("options must be string");
     }
 }
-
-function CreateView(ViewName: string) {
+function CreateView(ViewName) {
     const newView = new createView(ViewName);
     return newView;
 }
-
-export { View, CreateView };
+exports.CreateView = CreateView;
+//# sourceMappingURL=view.js.map

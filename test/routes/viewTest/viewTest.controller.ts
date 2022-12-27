@@ -8,11 +8,12 @@ export class viewTestController extends AdoNodeController{
   
 
   @Get("/test")
-  hello() {
+  async hello() {
+    const data = await this.viewTestService.get_ViewTest()
     return {
       msg:"ok",
       code:0,
-      data:"hello world"
+      data
     }
   }
 

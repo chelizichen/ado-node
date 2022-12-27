@@ -34,6 +34,7 @@ __export(ado_node_exports, {
   AdoNodeController: () => AdoNodeController,
   AdoNodeServer: () => AdoNodeServer,
   AdoOrmBaseEntity: () => AdoOrmBaseEntity,
+  AdoOrmBaseView: () => AdoOrmBaseView,
   All: () => All,
   AutoCreate: () => AutoCreate,
   BeforeDelete: () => BeforeDelete,
@@ -43,13 +44,14 @@ __export(ado_node_exports, {
   ClientError: () => ClientError,
   Collect: () => Collect,
   Controller: () => Controller,
+  CreateView: () => CreateView,
   DataBaseError: () => DataBaseError,
-  EnityTable: () => EnityTable,
   Entity: () => Entity,
   FieldError: () => FieldError,
   GenereateRouter: () => GenereateRouter,
   Get: () => Get,
   Headers: () => Headers,
+  Index: () => Index,
   Inject: () => Inject,
   IsEmail: () => IsEmail,
   IsNumber: () => IsNumber,
@@ -68,6 +70,7 @@ __export(ado_node_exports, {
   UseControllerInterceptor: () => UseControllerInterceptor,
   UseInterceptor: () => UseInterceptor,
   UsePipe: () => UsePipe,
+  View: () => View,
   class_transform: () => class_transform,
   defineAdoNodeConfig: () => defineAdoNodeConfig,
   defineAdoNodeOptions: () => defineAdoNodeOptions,
@@ -660,6 +663,8 @@ async function gerRedis() {
 }
 
 // lib/orm/symbol.ts
+var FilterFields = Symbol("FilterFields");
+var IsEqual = Symbol("IsEqual");
 var GetCache = Symbol("GetCache");
 var RunConfig = Symbol("RUNCONFIG");
 var BASEENITY = Symbol("BASEENITY");
@@ -679,11 +684,15 @@ var Entity = (dbname) => {
   return function(target) {
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
+    ref.def(":tablename", dbname, target.prototype);
     targetInst[RunConfig](target, dbname);
   };
 };
 var Key = (target, propertyKey) => {
   ref.def("key", propertyKey, target.constructor.prototype);
+};
+var Index = (target, propertyKey) => {
+  ref.def("index", propertyKey, target.constructor.prototype);
 };
 var Keyword = (target, propertyKey) => {
   ref.def("keyword", propertyKey, target.constructor.prototype);
@@ -725,7 +734,6 @@ var IsOptional = (target, propertyKey) => {
   const RetTrue = () => true;
   ref.def(propertyKey, RetTrue, target.constructor.prototype);
 };
-var EnityTable = /* @__PURE__ */ new Map();
 
 // lib/orm/monitor.ts
 var BeforeInsert = (target, _propertyKey, descriptor) => {
@@ -797,8 +805,8 @@ var query = class {
       this.and_sql = options + " = " + value;
     } else {
       const option = Object.entries(options);
-      const sql = option.join(" and ").replaceAll(",", " = ");
-      this.and_sql = sql;
+      const sql2 = option.join(" and ").replaceAll(",", " = ");
+      this.and_sql = sql2;
     }
     return this;
   }
@@ -807,8 +815,8 @@ var query = class {
       this.or_sql = options + " = " + value;
     } else {
       const option = Object.entries(options);
-      const sql = option.join(" or ").replaceAll(",", " = ");
-      this.or_sql = sql;
+      const sql2 = option.join(" or ").replaceAll(",", " = ");
+      this.or_sql = sql2;
     }
     return this;
   }
@@ -817,8 +825,8 @@ var query = class {
       this.likeor_sql = options + " like " + value;
     } else {
       const option = Object.entries(options);
-      const sql = option.join(" or ").replaceAll(",", " like ");
-      this.likeor_sql = sql;
+      const sql2 = option.join(" or ").replaceAll(",", " like ");
+      this.likeor_sql = sql2;
     }
     return this;
   }
@@ -827,8 +835,8 @@ var query = class {
       this.likeand_sql = options + " like " + value;
     } else {
       const option = Object.entries(options);
-      const sql = option.join(" or ").replaceAll(",", " like ");
-      this.likeand_sql = sql;
+      const sql2 = option.join(" or ").replaceAll(",", " like ");
+      this.likeand_sql = sql2;
     }
     return this;
   }
@@ -988,10 +996,10 @@ var update = class {
   getSql() {
     const opt = [this.options];
     console.log("this.sql", this.sql);
-    const sql = "update  " + this.Entity + " Set ? " + this.sql;
+    const sql2 = "update  " + this.Entity + " Set ? " + this.sql;
     return {
       opt,
-      sql
+      sql: sql2
     };
   }
 };
@@ -1022,10 +1030,10 @@ var save = class {
   getSql() {
     const opt = [this.options];
     console.log("this.sql", this.sql);
-    const sql = "insert into  " + this.Entity + " SET ? ";
+    const sql2 = "insert into  " + this.Entity + " SET ? ";
     return {
       opt,
-      sql
+      sql: sql2
     };
   }
 };
@@ -1264,11 +1272,11 @@ var AdoOrmBaseEntity = class {
         return data;
       }
     }
-    const sql = this[Conn].escape(val).replaceAll(",", " and ");
+    const sql2 = this[Conn].escape(val).replaceAll(",", " and ");
     return new Promise((resolve, reject) => {
       let that = this;
       this[Conn].query(
-        "select * from ?? where " + sql,
+        "select * from ?? where " + sql2,
         [this[TableName]],
         function(err, res) {
           if (err) {
@@ -1319,7 +1327,7 @@ var AdoOrmBaseEntity = class {
       );
     });
   }
-  async getMany(sql, options, cache) {
+  async getMany(sql2, options, cache) {
     if (cache) {
       const data = await this[GetCache](cache);
       if (data) {
@@ -1328,7 +1336,178 @@ var AdoOrmBaseEntity = class {
     }
     return new Promise((resolve, reject) => {
       let that = this;
-      this[Conn].query(sql, options, function(err, res) {
+      this[Conn].query(sql2, options, function(err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(res);
+          if (cache) {
+            that[Cache](cache, res);
+          }
+        }
+      });
+    });
+  }
+};
+var AdoOrmBaseView = class {
+  ViewFields;
+  ViewName;
+  [RedisClient];
+  [BASEENITY];
+  [Conn];
+  constructor() {
+    this.ViewFields = [];
+    this.ViewName = "";
+    this[RedisClient] = (0, import_redis2.createClient)();
+    this[RedisClient].connect();
+  }
+  async [RunConfig](Entity2) {
+    const inst = ref.get(Entity2.name, Entity2.prototype);
+    this.ViewName = ref.get(":view_name", Entity2.prototype);
+    this.ViewFields = Object.keys(inst);
+    this[BASEENITY] = Entity2;
+    try {
+      this[Conn] = await Connection.getConnection();
+    } catch (e) {
+      throw e;
+    }
+  }
+  async [Cache](cacheOptions2, value) {
+    const { key, timeout, cache } = cacheOptions2;
+    let tocacheVal = "";
+    if (typeof value == "string") {
+      tocacheVal = value;
+    }
+    if (typeof value == "number") {
+      tocacheVal = String(value);
+    }
+    if ((0, import_lodash.isObject)(value)) {
+      tocacheVal = JSON.stringify(value);
+    }
+    if (cache) {
+      this[RedisClient].set(key, tocacheVal);
+      if (timeout) {
+        this[RedisClient].expire(key, timeout);
+      }
+    }
+  }
+  async [GetCache](cacheOptions2) {
+    const isCache = (0, import_lodash.isObject)(cacheOptions2) && cacheOptions2.cache;
+    if (isCache) {
+      let cacheVal = await this[RedisClient].get(cacheOptions2.key);
+      if (cacheVal) {
+        return cacheVal;
+      }
+    }
+    return;
+  }
+  async getList(page, size) {
+    return new Promise((resolve, reject) => {
+      this[Conn].query(
+        " select * from ?? limit ?,? ",
+        [this.ViewName, parseInt(page), parseInt(size)],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        }
+      );
+    });
+  }
+  async getOneBy(val, cache) {
+    {
+      if (cache) {
+        const data = await this[GetCache](cache);
+        if (data) {
+          return data;
+        }
+      }
+      const index = ref.get("index", this[BASEENITY].prototype);
+      const count = getStrCount(val, ["delete", "drop"]);
+      if (count) {
+        return new ClientError("\u975E\u6CD5\u53C2\u6570,\u53EF\u80FD\u4E3A\u6076\u610Fsql\u6CE8\u5165");
+      }
+      return new Promise((resolve) => {
+        let that = this;
+        this[Conn].query(
+          `select * from ?? where ?? = ?`,
+          [this.ViewName, index, val],
+          function(err, res) {
+            if (err) {
+              resolve(new DataBaseError("\u6570\u636E\u5E93\u9519\u8BEF,\u4E5F\u8BB8\u914D\u7F6E\u9879\u662F\u975E\u6CD5\u7684", err));
+            }
+            resolve(res);
+            if (cache) {
+              that[Cache](cache, res);
+            }
+          }
+        );
+      });
+    }
+  }
+  async countBy(val, cache) {
+    if (cache) {
+      const data = await this[GetCache](cache);
+      if (data) {
+        return data;
+      }
+    }
+    let countSql = `select count(*) as total from ?? where `;
+    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let that = this;
+      this[Conn].query(
+        countSql + jonitSql,
+        [this.ViewName],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          const data = res[0];
+          resolve(data);
+          if (cache) {
+            that[Cache](cache, res);
+          }
+        }
+      );
+    });
+  }
+  async getBy(val, cache) {
+    if (cache) {
+      const data = await this[GetCache](cache);
+      if (data) {
+        return data;
+      }
+    }
+    const sql2 = this[Conn].escape(val).replaceAll(",", " and ");
+    return new Promise((resolve, reject) => {
+      let that = this;
+      this[Conn].query(
+        "select * from ?? where " + sql2,
+        [this.ViewName],
+        function(err, res) {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+          if (cache) {
+            that[Cache](cache, res);
+          }
+        }
+      );
+    });
+  }
+  async getMany(sql2, options, cache) {
+    if (cache) {
+      const data = await this[GetCache](cache);
+      if (data) {
+        return data;
+      }
+    }
+    return new Promise((resolve, reject) => {
+      let that = this;
+      this[Conn].query(sql2, options, function(err, res) {
         if (err) {
           reject(err);
         } else {
@@ -1342,20 +1521,108 @@ var AdoOrmBaseEntity = class {
   }
 };
 
-// lib/orm/index.ts
-var GetCache2 = Symbol("GetCache");
-var RunConfig2 = Symbol("RUNCONFIG");
-var BASEENITY2 = Symbol("BASEENITY");
-var Conn2 = Symbol("CONN");
-var Target2 = Symbol("TARGET");
-var GetConn2 = Symbol("GETCONN");
-var TableName2 = Symbol("TableName");
-var Cache2 = Symbol("CACHE");
-var RedisClient2 = Symbol("RedisClient");
-var BF__INSERT2 = Symbol("bf-insert");
-var BF__DELETE2 = Symbol("bf-delete");
-var BF__UPDATE2 = Symbol("bf-update");
-var VoidFunction2 = Symbol("void-function");
+// lib/orm/view.ts
+var View = (options) => {
+  const { engine } = options;
+  console.log("engine", engine);
+  return function(target) {
+    const targetInst = new target();
+    ref.def(target.name, targetInst, target.prototype);
+    ref.def(":view_name", engine.view_name, target.prototype);
+    targetInst[RunConfig](target);
+    (async function() {
+      const conn = await Connection.getConnection();
+      conn.query("show create view " + engine.view_name, function(err) {
+        if (err) {
+          conn.query(engine.engine_sql, function(err2) {
+            if (err2) {
+              console.log(err2);
+            }
+          });
+        }
+      });
+    })();
+  };
+};
+var createView = class {
+  ViewName;
+  selectOptions;
+  ViewFields;
+  OmitFields;
+  Entitys;
+  constructor(ViewName) {
+    this.ViewName = ViewName;
+    this.selectOptions = "";
+    this.ViewFields = [];
+    this.OmitFields = [];
+    this.Entitys = [];
+  }
+  [FilterFields]() {
+    let filterFields = this.ViewFields.filter((view_field) => {
+      let isOmit = this.OmitFields.some(
+        (omit_field) => omit_field.toLowerCase() == view_field.toLowerCase()
+      );
+      return !isOmit;
+    });
+    return filterFields.join(",");
+  }
+  [IsEqual](name1, name2) {
+    if (typeof name1 == "string" && typeof name2 == "string") {
+      if (name1.toLowerCase() == name2.toLocaleLowerCase()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    throw new Error("args must be string");
+  }
+  omit(options) {
+    if (typeof options == "string") {
+      this.OmitFields.push(options);
+      return this;
+    }
+    if (options instanceof Array) {
+      this.OmitFields.push(...options);
+      return this;
+    }
+    throw new Error("options must be typeof Array<string> or string");
+  }
+  create() {
+    const get_fields = this[FilterFields]();
+    const get_entitys = this.Entitys.join(",");
+    let engine_sql = `Create View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
+    return {
+      engine_sql,
+      view_name: this.ViewName
+    };
+  }
+  addEntity(Entitys) {
+    if (Entitys instanceof Array) {
+      Entitys.forEach((AdoBaseEntity) => {
+        let getFields = Object.getOwnPropertyNames(new AdoBaseEntity());
+        let tablename = ref.get(":tablename", AdoBaseEntity.prototype);
+        this.Entitys.push(tablename);
+        getFields.forEach((field) => {
+          let concrete_field = tablename + "." + field;
+          this.ViewFields.push(concrete_field);
+        });
+      });
+      return this;
+    }
+    throw new Error("Entitys must be Array<AdoOrmBaseEntity>");
+  }
+  addOptions(options) {
+    if (typeof options == "string") {
+      this.selectOptions = options;
+      return this;
+    }
+    throw new Error("options must be string");
+  }
+};
+function CreateView(ViewName) {
+  const newView = new createView(ViewName);
+  return newView;
+}
 
 // lib/params/params.ts
 function Query() {
@@ -1525,6 +1792,7 @@ var class_transform = class {
   AdoNodeController,
   AdoNodeServer,
   AdoOrmBaseEntity,
+  AdoOrmBaseView,
   All,
   AutoCreate,
   BeforeDelete,
@@ -1534,13 +1802,14 @@ var class_transform = class {
   ClientError,
   Collect,
   Controller,
+  CreateView,
   DataBaseError,
-  EnityTable,
   Entity,
   FieldError,
   GenereateRouter,
   Get,
   Headers,
+  Index,
   Inject,
   IsEmail,
   IsNumber,
@@ -1559,6 +1828,7 @@ var class_transform = class {
   UseControllerInterceptor,
   UseInterceptor,
   UsePipe,
+  View,
   class_transform,
   defineAdoNodeConfig,
   defineAdoNodeOptions,

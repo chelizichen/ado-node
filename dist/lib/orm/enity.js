@@ -4,13 +4,14 @@
  * @description 暴露实体类所需要的装饰器
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoCreate = exports.EnityTable = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = void 0;
+exports.Index = exports.AutoCreate = exports.IsNumber = exports.IsOptional = exports.IsEmail = exports.Keyword = exports.Key = exports.Entity = void 0;
 const ref_1 = require("../ioc/ref");
 const symbol_1 = require("./symbol");
 const Entity = (dbname) => {
     return function (target) {
         const targetInst = new target();
         ref_1.ref.def(target.name, targetInst, target.prototype);
+        ref_1.ref.def(":tablename", dbname, target.prototype);
         targetInst[symbol_1.RunConfig](target, dbname);
     };
 };
@@ -19,6 +20,10 @@ const Key = (target, propertyKey) => {
     ref_1.ref.def("key", propertyKey, target.constructor.prototype);
 };
 exports.Key = Key;
+const Index = (target, propertyKey) => {
+    ref_1.ref.def("index", propertyKey, target.constructor.prototype);
+};
+exports.Index = Index;
 const Keyword = (target, propertyKey) => {
     ref_1.ref.def("keyword", propertyKey, target.constructor.prototype);
 };
@@ -57,6 +62,4 @@ const IsOptional = (target, propertyKey) => {
     ref_1.ref.def(propertyKey, RetTrue, target.constructor.prototype);
 };
 exports.IsOptional = IsOptional;
-const EnityTable = new Map();
-exports.EnityTable = EnityTable;
 //# sourceMappingURL=enity.js.map

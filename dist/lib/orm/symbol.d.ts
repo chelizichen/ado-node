@@ -14,6 +14,15 @@ export declare type cacheOptions = {
     timeout?: number;
     key: string;
 };
+export declare type ViewOptions = {
+    engine: {
+        engine_sql: sql;
+        view_name: string;
+    };
+};
+export declare type sql = string;
+export declare const FilterFields: unique symbol;
+export declare const IsEqual: unique symbol;
 export declare const GetCache: unique symbol;
 export declare const RunConfig: unique symbol;
 export declare const BASEENITY: unique symbol;

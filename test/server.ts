@@ -5,9 +5,10 @@ import { AppModule } from "./routes";
 import { TestGlobalPipe } from "./pipe";
 import { AdoNodeServer } from "../index";
 import { AdoViewTest } from "./views/test";
+import { viewTestModule } from './routes/viewTest/viewTest.module';
 
 @Modules({
-  Modules: [AppModule],
+  Modules: [AppModule,viewTestModule],
   Base: "/api",
   Port: 3000,
   GlobalPipes: [TestGlobalPipe],

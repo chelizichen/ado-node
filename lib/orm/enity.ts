@@ -27,6 +27,14 @@ const Key: PropertyDecorator = (
 };
 
 
+const Index: PropertyDecorator = (
+  target: Object,
+  propertyKey: string | symbol
+) => {
+  ref.def("index", propertyKey, target.constructor.prototype);
+};
+
+
 const Keyword: PropertyDecorator = (
   target: Object,
   propertyKey: string | symbol
@@ -94,7 +102,6 @@ const IsOptional: PropertyDecorator = (
   ref.def(propertyKey as string, RetTrue, target.constructor.prototype);
 };
 
-const EnityTable = new Map();
 
 export {
   Entity,
@@ -103,6 +110,6 @@ export {
   IsEmail,
   IsOptional,
   IsNumber,
-  EnityTable,
   AutoCreate,
+  Index,
 };

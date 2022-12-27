@@ -8,9 +8,10 @@ import { Seckill } from "../routes/Seckill/seckill.enity";
 @View({
     engine: CreateView("test")
         .addEntity([Goods, Seckill])
-        .omit(["seckill.go_id", "seckill.id", "goods.sort_type_id"])
+        .omit(["seckill.go_id", "seckill.id"])
         .addOptions("seckill.go_id = goods.id")
         .create(),
+    migration:true
 })
 export class AdoViewTest extends AdoOrmBaseView {
     @Index

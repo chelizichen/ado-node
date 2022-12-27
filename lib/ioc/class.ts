@@ -1,17 +1,42 @@
+// type QueryId = {
+//   id: string;
+// }
+// @Controller("/computer")
+// class ComputerController extends AdoNodeController{
+//   @Get("/list")
+//   async getList(){
+//     return await {}
+//   }
+
+//   @Get("/one")
+//   async getOne(@Query() query:QueryId) {
+//     return await {}
+//   }
+
+//   @Post("/update")
+//   async update(@Body() body:Computer){
+//     return await {}
+//   }
+// }
+
 import { BaseController } from "./../../index.d";
 import * as express from "express";
 import { ref } from "./ref";
 import { Request, Response } from "express";
 import { AdoNodeControllerInterceptor } from "../interceptor/global";
+// import {Boost} from './symbol'
+
+export const Boost = Symbol("Boost")
+
 class AdoNodeController {
   constructor(
-    public readonly Base: string,
-    public readonly Service: Map<
+    private readonly Base: string,
+    private readonly Service: Map<
       string,
       { method: "Get" | "Post" | "All"; fn: any }
     >
   ) {}
-  Boost(Base: BaseController): express.IRouter {
+  public [Boost](Base: BaseController): express.IRouter {
     const AdoNodeGlobalInterceptor: AdoNodeControllerInterceptor = ref.get(
       Base.name,
       Base.prototype,

@@ -1,5 +1,5 @@
 import { IRouter } from "express";
-import { AdoNodeController } from "./class";
+import { AdoNodeController, Boost } from "./class";
 import { ref } from "./ref";
 
 // 创建SerivceMap
@@ -13,7 +13,7 @@ const SerivceMap = new Map<string, any>();
 function GenereateRouter(Controller: typeof AdoNodeController): IRouter {
   const URL = ref.get("BaseUrl", Controller.prototype);
   const GetService = new Controller(URL, SerivceMap);
-  return GetService.Boost(Controller);
+  return GetService[Boost](Controller);
 }
 
 export { SerivceMap, GenereateRouter };

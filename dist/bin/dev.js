@@ -67,7 +67,7 @@ program
     .action(function (args) {
     if (args == "vite") {
         previewNodeApp();
-        previewViteApp();
+        // previewViteApp()
     }
     if (args == "node") {
         previewNodeApp();

@@ -13,13 +13,10 @@ import { appModule } from "./router/app/app.module";
 class AdoNodeServerImpl extends AdoNodeServer {}
 
 AdoNodeServerImpl.runSSRServer((app: Express) => {
-  let publicPath = cwd + "/public/app"
-  
-  app.get("*", (_req, res) => {
-    res.sendFile(path.resolve(publicPath, "./index.html"));
-  });
-  
+  app.use(express.static("dist/app"));
   app.use(cors());
-  app.use("/adoserver", express.static(publicPath));
 
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(__dirname, "app/index.html"));
+  });
 });

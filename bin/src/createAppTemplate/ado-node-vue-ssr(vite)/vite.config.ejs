@@ -1,10 +1,11 @@
 import path from "path";
 import { defineConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
-import { config } from "./src/config";
 import vue from "@vitejs/plugin-vue";
+import {config} from './src/config/index'
 
 export default defineConfig({
+  root:process.cwd(),
   plugins: [
     vue(),
     createHtmlPlugin({
@@ -14,7 +15,6 @@ export default defineConfig({
       inject: {
         data: {
           title: config.title,
-          injectScript: config.injectScript,
         },
       },
     }),
@@ -30,7 +30,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "public/app",
+    outDir: "dist/app",
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {

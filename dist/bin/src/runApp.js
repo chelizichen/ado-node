@@ -54,7 +54,7 @@ function buildNodeApp() {
     });
 }
 function previewNodeApp() {
-    const currProcess = spawn("node dist/index.js", {
+    const currProcess = spawn("node dist/src/index.js", {
         stdio: "inherit",
         shell: true,
         env: process.env,

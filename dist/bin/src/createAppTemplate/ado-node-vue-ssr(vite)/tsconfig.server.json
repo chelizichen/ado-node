@@ -5,6 +5,6 @@
     "module": "commonjs",
     "noEmit": false
   },
-  "include": ["src/*.ts"],
+  "include": ["src/*.ts","ado.config.ts"],
   "exclude": ["src/client"]
 }

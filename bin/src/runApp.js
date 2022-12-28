@@ -183,9 +183,7 @@ function createTgz(tgzName, opt) {
   //   env: process.env    
   // })
 
-  console.log("如果需要使用 node_modules 强制刷新缓存，可以使用");
 
-  console.log(chalk.blue(' npm run release -- -f '));
   
 
 }
@@ -213,9 +211,12 @@ function streamMerge(sourceFiles, targetFile) {
  * @param { Stream } fileWriteStream
  */
 function streamMergeRecursive(scripts=[], fileWriteStream) {
+  // return new Promise
   // 递归到尾部情况判断
   if (!scripts.length) {
     console.log("合并完成");
+    console.log("如果需要使用 node_modules 强制刷新缓存，可以使用");
+    console.log(chalk.blue(' npm run release -- -f '));
     return fileWriteStream.end("console.log('Stream 合并完成')"); // 最后关闭可写流，防止内存泄漏
   }
 

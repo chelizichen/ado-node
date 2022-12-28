@@ -1,6 +1,15 @@
-import { defineAdoNodeConfig } from "./lib/orm/conn"
+// import { defineAdoNodeConfig } from "./lib/orm/conn"
 
-export default defineAdoNodeConfig({
+
+
+const cwd = process.cwd()
+
+const publicPath = cwd  + "/public/server"
+const type = "ssr-webpack"
+
+export default ({
+  type,
+  publicPath,
   database: {
     type: "mysql",
     host: "localhost",

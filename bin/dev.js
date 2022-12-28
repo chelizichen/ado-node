@@ -24,6 +24,9 @@ program
       runViteApp();
       runNodeApp();
     }
+    if(args == "webpack"){
+      console.log(args);
+    }
   });
 
 program

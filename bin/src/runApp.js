@@ -90,7 +90,7 @@ function runBuildApp() {
 }
 
 function createTgz(tgzName) {
-  const cmd = `tar -cvf ${tgzName} ./dist package.json node_modules`
+  const cmd = `tar -cvf ${tgzName} ./dist package.json node_modules public`
   spawn(cmd, {
     stdio: "inherit",
     shell: true,

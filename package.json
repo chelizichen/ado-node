@@ -1,6 +1,6 @@
 {
   "name": "ado-node",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",
@@ -21,7 +21,8 @@
   "scripts": {
     "test": "ts-node-dev --project tsconfig.server.json test/server",
     "build": "rm -r dist && mkdir dist && tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test",
-    "commit": "hasaky commit"
+    "commit": "hasaky commit",
+    "release": "ado-cli release --force"
   },
   "keywords": [
     "express",

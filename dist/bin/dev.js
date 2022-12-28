@@ -77,11 +77,14 @@ program
 program
     .version("1.0.0")
     .command("release  <appName>")
+    .option("-f --force", "force to update node_modules cache")
     .description("build and release ado-node app")
-    .action(function (appName) {
-    runBuildApp().then(() => {
-        createTgz(appName);
-    });
+    .action(function (appName, opt) {
+    console.log(appName);
+    console.log(opt);
+    // runBuildApp().then(() => {
+    //   createTgz(appName,opt)
+    // })
 });
 program.parse(process.argv);
 //# sourceMappingURL=dev.js.map

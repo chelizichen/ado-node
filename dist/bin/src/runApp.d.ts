@@ -4,5 +4,5 @@ export function buildViteApp(): void;
 export function buildNodeApp(): void;
 export function previewNodeApp(): void;
 export function previewViteApp(): void;
-export function createTgz(tgzName: any): void;
+export function createTgz(tgzName: any, opt: any): void;
 export function runBuildApp(): Promise<any>;

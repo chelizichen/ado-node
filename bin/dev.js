@@ -96,11 +96,9 @@ program
   .option("-f --force", "force to update node_modules cache")
   .description("build and release ado-node app")
   .action(function (appName, opt) {
-    console.log(appName);
-    console.log(opt);
-    // runBuildApp().then(() => {
-    //   createTgz(appName,opt)
-    // })
+    runBuildApp().then(() => {
+      createTgz(appName,opt)
+    })
   });
 
 program.parse(process.argv);

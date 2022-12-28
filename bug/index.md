@@ -43,7 +43,11 @@ this.cache({})
 默认是N，输入A
 ````
 
-## 3. hasaky 命令 git push 时报错的问题
+## 3 win10 系统下 使用 tgz 压缩包创建文件夹失败 CreateFile() Error: 5
+
+[解决方法链接](https://blog.csdn.net/pangc2014/article/details/121061584)
+
+## 4. hasaky 命令 git push 时报错的问题
 
 错误描述：
 在 npm publish 后执行 git push 时出错

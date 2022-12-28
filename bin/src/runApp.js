@@ -2,7 +2,7 @@ const { spawn, spawnSync } = require("child_process");
 const chalk = require("chalk");
 const fs = require("fs");
 const path = require('path');
-
+const os = require("os")
 function runViteApp() {
   const currProcess = spawn("vite", {
     stdio: "pipe",
@@ -126,6 +126,8 @@ function runBuildApp() {
 // cat server.tgz  cache_modules.tgz > merge.tgz
 function createTgz(tgzName, opt) {
 
+
+
   let tgzServerPath =  `.ado_cache/${tgzName}`;
 
   let cachedir =  ".ado_cache";
@@ -142,10 +144,7 @@ function createTgz(tgzName, opt) {
   let hasCacheDir = fs.existsSync(cachedir);
   let hasCacheModules = fs.existsSync(cachedir);
 
-
-  // 创建目录文件
-  if (!hasCacheDir) {
-    fs.mkdirSync(cachedir);
+  function winOrForceTgz(){
     const server_cmd = `tar -cvf ${tgzServerPath} ${distPath} ${pkgPath} ${nodeModulesDir} ${publicPath}`;
     console.log(server_cmd);
     spawnSync(server_cmd, {
@@ -153,7 +152,19 @@ function createTgz(tgzName, opt) {
       shell: true,
       env: process.env,
     });
+  }
+
+  // 创建目录文件
+  if (!hasCacheDir) {
+    fs.mkdirSync(cachedir);
+    winOrForceTgz()
     return;
+  }
+
+  if(os.platform == "win32"){
+    winOrForceTgz()
+    console.log("Windows 版本下的 tgz 的合并有问题");
+    return 
   }
 
   // 强制刷新缓存

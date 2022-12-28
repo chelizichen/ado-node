@@ -108,12 +108,13 @@ var ref = {
 };
 
 // lib/ioc/class.ts
+var Boost = Symbol("Boost");
 var AdoNodeController = class {
   constructor(Base, Service) {
     this.Base = Base;
     this.Service = Service;
   }
-  Boost(Base) {
+  [Boost](Base) {
     const AdoNodeGlobalInterceptor = ref.get(
       Base.name,
       Base.prototype,
@@ -195,7 +196,7 @@ var SerivceMap = /* @__PURE__ */ new Map();
 function GenereateRouter(Controller2) {
   const URL = ref.get("BaseUrl", Controller2.prototype);
   const GetService = new Controller2(URL, SerivceMap);
-  return GetService.Boost(Controller2);
+  return GetService[Boost](Controller2);
 }
 
 // lib/ioc/controller.ts
@@ -1441,10 +1442,38 @@ var AdoOrmBaseView = class {
   }
 };
 
+// lib/oper/isArrayEqual.ts
+import * as _ from "lodash";
+function isArrayEqual(array1, array2) {
+  const isequal1 = _.differenceWith(array1, array2);
+  const isequal2 = _.differenceWith(array2, array1);
+  if (isequal1.length == isequal2.length) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // lib/orm/view.ts
+import chalk from "chalk";
+function GetViewFields(str) {
+  let m;
+  const regex = /AS `([^`]*)`/g;
+  const values = [];
+  while ((m = regex.exec(str)) !== null) {
+    if (m.index === regex.lastIndex) {
+      regex.lastIndex++;
+    }
+    m.forEach((match, groupIndex) => {
+      if (groupIndex === 1) {
+        values.push(match);
+      }
+    });
+  }
+  return values;
+}
 var View = (options) => {
   const { engine } = options;
-  console.log("engine", engine);
   return function(target) {
     const targetInst = new target();
     ref.def(target.name, targetInst, target.prototype);
@@ -1452,13 +1481,35 @@ var View = (options) => {
     targetInst[RunConfig](target);
     (async function() {
       const conn = await Connection.getConnection();
-      conn.query("show create view " + engine.view_name, function(err) {
+      conn.query("show create view " + engine.view_name, function(err, res) {
         if (err) {
-          conn.query(engine.engine_sql, function(err2) {
+          conn.query(engine.type + engine.engine_sql, function(err2) {
             if (err2) {
               console.log(err2);
             }
           });
+        } else {
+          if (options.migration) {
+            const create_view_sql = res[0]["Create View"];
+            let str = create_view_sql.split("AS select ")[1].split(" from ")[0];
+            let fields = GetViewFields(str).map((el) => el.toLowerCase());
+            let views_fields = engine.filter_fields.map((el) => {
+              return el.split(".")[1];
+            }).map((el) => el.toLowerCase());
+            let isEqual = isArrayEqual(fields, views_fields);
+            if (isEqual) {
+              console.log(chalk.green("the view " + chalk.red(engine.view_name) + " does not need to migration"));
+            } else {
+              console.log(chalk.blue("the view " + chalk.red(engine.view_name) + "  need to migration"));
+              const migration_sql = "Alter" + engine.engine_sql;
+              conn.query(migration_sql, function(err2) {
+                if (err2) {
+                  throw err2;
+                }
+                console.log("the view " + chalk.red(engine.view_name) + " migration success");
+              });
+            }
+          }
         }
       });
     })();
@@ -1470,12 +1521,14 @@ var createView = class {
   ViewFields;
   OmitFields;
   Entitys;
+  FilterFields;
   constructor(ViewName) {
     this.ViewName = ViewName;
     this.selectOptions = "";
     this.ViewFields = [];
     this.OmitFields = [];
     this.Entitys = [];
+    this.FilterFields = [];
   }
   [FilterFields]() {
     let filterFields = this.ViewFields.filter((view_field) => {
@@ -1484,6 +1537,7 @@ var createView = class {
       );
       return !isOmit;
     });
+    this.FilterFields = filterFields;
     return filterFields.join(",");
   }
   [IsEqual](name1, name2) {
@@ -1510,10 +1564,12 @@ var createView = class {
   create() {
     const get_fields = this[FilterFields]();
     const get_entitys = this.Entitys.join(",");
-    let engine_sql = `Create View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
+    let engine_sql = ` View ${this.ViewName} as Select ${get_fields} FROM ${get_entitys} where ${this.selectOptions}`;
     return {
       engine_sql,
-      view_name: this.ViewName
+      view_name: this.ViewName,
+      filter_fields: this.FilterFields,
+      type: "Create"
     };
   }
   addEntity(Entitys) {

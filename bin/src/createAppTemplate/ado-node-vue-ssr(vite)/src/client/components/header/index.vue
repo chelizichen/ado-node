@@ -5,14 +5,14 @@
         <div style="width: 50px;height:50px;margin-right:20px">
           <img :src="Logo" class="logo" />
         </div>
-        <div class="cumulus">智慧医疗管理系统</div>
+        <div class="cumulus">晚风中闪过几帧从前呀</div>
       </div>
       <div>
         <el-menu mode="horizontal" :ellipsis="false" :default-active="`1`">
           <el-menu-item index="1" @click="router.push(`/home`)">首页</el-menu-item>
           <el-menu-item index="2" @click="router.push(`/news`)">新闻</el-menu-item>
           <el-menu-item index="3" @click="router.push(`/manage`)">管理</el-menu-item>
-          <el-menu-item index="3" @click="router.push(`/login`)">登陆</el-menu-item>
+          <el-menu-item index="4" @click="router.push(`/login`)">登陆</el-menu-item>
         </el-menu>
       </div>
     </div>

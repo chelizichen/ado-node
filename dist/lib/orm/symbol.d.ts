@@ -18,7 +18,10 @@ export declare type ViewOptions = {
     engine: {
         engine_sql: sql;
         view_name: string;
+        filter_fields: string[];
+        type: "Create" | "Alter";
     };
+    migration?: boolean;
 };
 export declare type sql = string;
 export declare const FilterFields: unique symbol;

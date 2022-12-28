@@ -1,5 +1,5 @@
 import { AdoOrmBaseView } from "./orm";
-import { FilterFields, IsEqual, ViewOptions, sql } from './symbol';
+import { FilterFields, IsEqual, ViewOptions, sql } from "./symbol";
 declare const View: (options: ViewOptions) => (target: typeof AdoOrmBaseView) => void;
 declare class createView {
     ViewName: string;
@@ -7,6 +7,7 @@ declare class createView {
     ViewFields: string[];
     OmitFields: string[];
     Entitys: string[];
+    FilterFields: string[];
     constructor(ViewName: string);
     [FilterFields](): string;
     /**

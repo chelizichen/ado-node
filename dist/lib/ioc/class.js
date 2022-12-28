@@ -1,4 +1,13 @@
 "use strict";
+// type QueryId = {
+//   id: string;
+// }
+// @Controller("/computer")
+// class ComputerController extends AdoNodeController{
+//   @Get("/list")
+//   async getList(){
+//     return await {}
+//   }
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -23,9 +32,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdoNodeController = void 0;
+exports.AdoNodeController = exports.Boost = void 0;
 const express = __importStar(require("express"));
 const ref_1 = require("./ref");
+// import {Boost} from './symbol'
+exports.Boost = Symbol("Boost");
 class AdoNodeController {
     Base;
     Service;
@@ -33,7 +44,7 @@ class AdoNodeController {
         this.Base = Base;
         this.Service = Service;
     }
-    Boost(Base) {
+    [exports.Boost](Base) {
         const AdoNodeGlobalInterceptor = ref_1.ref.get(Base.name, Base.prototype, ":ControllerInterceptor");
         const app = express.Router();
         this.Service.forEach((service, URL) => {

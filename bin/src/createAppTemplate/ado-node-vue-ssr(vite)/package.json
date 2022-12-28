@@ -4,12 +4,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ado-cli run-ssr vite",
-    "dev:server": "ts-node-dev --project tsconfig.server.json src/index.ts",
-    "dev:client": "vite",
-    "build": "build-ssr",
-    "build:client": "vite build",
-    "build:server": "tsc --project tsconfig.server.json",
-    "preview": "vite preview & node dist/index.js"
+    "build": "ado-cli build-ssr vite",
+    "preview": "ado-cli preview vite",
+    "release":"ado-cli release"
   },
   "dependencies": {
     "@types/cors": "^2.8.12",

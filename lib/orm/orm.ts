@@ -201,8 +201,6 @@ class AdoOrmBaseEntity {
 
       return new Promise((resolve) => {
         let that = this;
-        console.log("this[Conn]", this[Conn]);
-        
         this[Conn].query(
           `select * from ?? where ?? = ?`,
           [this[TableName], key, val],

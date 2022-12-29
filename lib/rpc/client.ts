@@ -10,30 +10,42 @@ class ArcClient {
             port,
             host
         })
-        this.Net.on("data", function (data: Buffer) {
-            // const json = JSON.stringify(data)
-            // const copy = JSON.parse(json, (key, value) => {
-            //     return value.type === 'Buffer' ?
-            //       Buffer.from(value) :
-            //       value;
-            //   });
-            console.log('data', data.toString());
-        })
+
 
         this.Net.on("error", function (err) {
             console.log(err);
         })
 
-        this.call(host+" "+ port+" good night")
+        // this.call(host+" "+ port+" good night")
         // this.Net.wr
     }
 
     call(data: any) {
-        const tojson = JSON.stringify(data)
-        const buffer = Buffer.from(tojson)
-        this.Net.write(buffer, function (err) {
-            console.log('write -err ',err);
-            
+        return new Promise((resolve,reject)=>{
+            const tojson = JSON.stringify(data)
+            const buffer = Buffer.from(tojson)
+            this.Net.write(buffer, async (err)=> {
+                if(err){
+                    console.log('write -err ',err);
+                    reject(err)
+                }
+                const res = await this.res() 
+                resolve(res)
+            })
+        })
+
+    }
+    res(){
+        return new Promise((resolve)=>{
+            this.Net.on("data", function (data: Buffer) {
+                // const json = JSON.stringify(data)
+                // const copy = JSON.parse(json, (key, value) => {
+                //     return value.type === 'Buffer' ?
+                //       Buffer.from(value) :
+                //       value;
+                //   });
+                resolve(data.toString())
+            })
         })
     }
 }

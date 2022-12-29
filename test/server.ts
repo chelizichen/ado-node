@@ -3,16 +3,17 @@ import path from "path";
 import { Modules } from "../lib/module/module";
 import { AppModule } from "./routes";
 import { TestGlobalPipe } from "./pipe";
-import { AdoNodeServer } from "../index";
+import { AdoNodeServer, ref } from "../index";
 import { viewTestModule } from './routes/viewTest/viewTest.module';
 
-import { TestRpcClientController } from "./rpc/test.rpc";
+import { TestRpcClientController, TestRpcClientController1 } from "./rpc/test.rpc";
 import { RpcClientMap } from "../lib/rpc/bind";
 @Modules({
   Modules: [AppModule,viewTestModule],
   Base: "/api",
   Port: 3000,
   GlobalPipes: [TestGlobalPipe],
+  RpcController:[TestRpcClientController,TestRpcClientController1]
 })
 class AdoNodeServerImpl extends AdoNodeServer { }
 
@@ -22,9 +23,20 @@ AdoNodeServerImpl.runSSRServer((app) => {
   
   // 下一个事件循环执行
   setImmediate(()=>{
-    const TestRpc = new TestRpcClientController()
-    console.log("TestRpc",TestRpc);
+    const BaseUrl = ref.get(TestRpcClientController.name,TestRpcClientController.prototype,":base")
+    console.log("TestRpc",BaseUrl);
     console.log('RpcClientMap',RpcClientMap);
+    for(let v in RpcClientMap){
+      // v -> "/base1"
+      let router = express.Router()
+      RpcClientMap[v].forEach(el=>{
+        let _el = Object.entries(el)[0]
+        // @ts-ignore
+        router.post(_el[0],_el[1])
+      })
+      app.use(v,router)
+      // app.use(v,createRouter)
+    }
   })
   
   // 建立TCP 连接

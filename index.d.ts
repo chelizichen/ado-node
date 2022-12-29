@@ -43,4 +43,5 @@ export type AdoModulesOptions = {
   Base: string;
   Port: number;
   Cluster?: boolean;
+  RpcController?:any[];
 };

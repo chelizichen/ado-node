@@ -23,14 +23,16 @@ type RpcClientRemote = string;
  *  method:string 远端地址
  *  data:string 传入远端的数据
  *  interFace:string 远端接口
- *  router:string 客户端接受的路由
  * }
  */
 type RpcClientValue = {
-  method:string,
-  data:any,
-  interFace:string,
-  router:string
+  [router: string]: {
+    method: string;
+    data: any;
+    interFace: string;
+    remote:string;
+  }
+
 };
 
 export { RpcClientController, RpcServerController };
@@ -44,4 +46,4 @@ export { Call, Register };
 //   }
 // }
 
-export type {  RpcClientRemote, RpcClientValue };
+export type { RpcClientRemote, RpcClientValue };

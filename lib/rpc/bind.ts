@@ -19,7 +19,7 @@ const Call = (router:string,method: string): MethodDecorator => {
       let remoteUrl = ref.get(name, prototype, ":remoteUrl");
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name,prototype,":socket") as ArcClient;
-  
+      let base = ref.get(name,prototype,":base")
 
       console.log("2",remoteUrl,interFace);
       
@@ -28,22 +28,22 @@ const Call = (router:string,method: string): MethodDecorator => {
         const args = useArgs(propertyKey as string, target, req, res);
   
         let data = await fn(...args);
-        let RemoteCallReq: RpcClientValue = {
+
+        let RemoteCallReq: RpcClientValue['router'] = {
             data,
             method,
             interFace,
-            router
+            remote:remoteUrl
         };
   
         let RpcCallRes = await socket.call(RemoteCallReq)
-        return RpcCallRes
-  
+        res.json(RpcCallRes)  
       };
   
-      if(!RpcClientMap[remoteUrl]){
-        RpcClientMap[remoteUrl] = []
+      if(!RpcClientMap[base]){
+        RpcClientMap[base] = []
       }
-      RpcClientMap[remoteUrl].push(descriptor.value)
+      RpcClientMap[base].push({[router]:descriptor.value})
 
     })
 

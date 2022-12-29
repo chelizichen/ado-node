@@ -143,9 +143,10 @@ function createTgz(tgzName, opt) {
 
   let hasCacheDir = fs.existsSync(cachedir);
   let hasCacheModules = fs.existsSync(cachedir);
+  let hasPublicDir = fs.existsSync(publicPath)
 
   function winOrForceTgz(){
-    const server_cmd = `tar -cvf ${tgzServerPath} ${distPath} ${pkgPath} ${nodeModulesDir} ${publicPath}`;
+    const server_cmd = `tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${nodeModulesDir} ${publicPath}`;
     console.log(server_cmd);
     spawnSync(server_cmd, {
       stdio: "inherit",
@@ -157,9 +158,14 @@ function createTgz(tgzName, opt) {
   // 创建目录文件
   if (!hasCacheDir) {
     fs.mkdirSync(cachedir);
-    winOrForceTgz()
-    return;
   }
+  if (!hasPublicDir) {
+    fs.mkdirSync(publicPath)
+  }
+  
+
+  winOrForceTgz()
+  return;
 
   if(os.platform == "win32"){
     winOrForceTgz()
@@ -169,14 +175,14 @@ function createTgz(tgzName, opt) {
 
   // 强制刷新缓存
   if (opt.force) {
-    const cmd = `tar -cvf ${node_modules_cache} ${nodeModulesDir}`;
+    const cmd = `tar -zcvf ${node_modules_cache} ${nodeModulesDir}`;
     spawnSync(cmd, {
       stdio: "inherit",
       shell: true,
       env: process.env,
     });
   }
-  const server_cmd = `tar -cvf ${server_cache} ${distPath} ${pkgPath} ${publicPath}`;
+  const server_cmd = `tar -zcvf ${server_cache} ${distPath} ${pkgPath} ${publicPath}`;
   spawnSync(server_cmd, {
     stdio: "inherit",
     shell: true,

@@ -78,7 +78,7 @@ program
 program
   .version("1.0.0")
   .command("preview <args>")
-  .description("preview ado-node-ssr app")
+  .description("preview ado-node app")
   .action(function (args) {
     if (args == "vite") {
       previewNodeApp()

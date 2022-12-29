@@ -63,7 +63,7 @@ program
 program
     .version("1.0.0")
     .command("preview <args>")
-    .description("preview ado-node-ssr app")
+    .description("preview ado-node app")
     .action(function (args) {
     if (args == "vite") {
         previewNodeApp();
@@ -80,11 +80,9 @@ program
     .option("-f --force", "force to update node_modules cache")
     .description("build and release ado-node app")
     .action(function (appName, opt) {
-    console.log(appName);
-    console.log(opt);
-    // runBuildApp().then(() => {
-    //   createTgz(appName,opt)
-    // })
+    runBuildApp().then(() => {
+        createTgz(appName, opt);
+    });
 });
 program.parse(process.argv);
 //# sourceMappingURL=dev.js.map

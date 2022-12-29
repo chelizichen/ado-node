@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --project tsconfig.server.json src/index.ts",
-    "build": "tsc --project tsconfig.server.json",
-    "preview":"node dist/index.js"
+    "dev": "ado-cli run-node",
+    "build": "ado-cli build-node",
+    "preview":"ado-cli preview node",
+    "release":"ado-cli preview"
   },
   "dependencies": {
     "@types/cors": "^2.8.12",

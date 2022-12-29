@@ -5,7 +5,10 @@ import { AppModule } from "./routes";
 import { TestGlobalPipe } from "./pipe";
 import { AdoNodeServer } from "../index";
 import { viewTestModule } from './routes/viewTest/viewTest.module';
+
 import * as net from 'net'
+import { TestRpcClientController } from "./rpc/test.rpc";
+import { RpcClientMap } from "../lib/rpc/bind";
 @Modules({
   Modules: [AppModule,viewTestModule],
   Base: "/api",
@@ -15,8 +18,18 @@ import * as net from 'net'
 class AdoNodeServerImpl extends AdoNodeServer { }
 
 AdoNodeServerImpl.runSSRServer((app) => {
+
   app.use("/AdoServer", express.static(path.join(__dirname, "../public")));
-  const socket = net.createConnection({
+  
+  // 下一个事件循环执行
+  setImmediate(()=>{
+    const TestRpc = new TestRpcClientController()
+    console.log("TestRpc",TestRpc);
+    console.log('RpcClientMap',RpcClientMap);
+  })
+  
+  // 建立TCP 连接
+  const socket = net.connect({
     'host': "localhost",
     'port': 9000
   })

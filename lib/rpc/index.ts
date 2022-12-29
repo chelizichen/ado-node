@@ -1,20 +1,36 @@
 import { RpcClientController, RpcServerController } from "./controller";
 import { Call, Register } from "./bind";
 
-type RpcClient = {
-  [RpcRemote: string]: {
-    [RpcInterFace: string]: {
-      [Method: string]: {
-        data: string | Buffer;
-      };
-    };
-  };
-};
+// type RpcClient = {
+//   [RpcRemote: string]: {
+//     [RpcInterFace: string]: {
+//       [Method: string]: {
+//         data: string | Buffer;
+//       };
+//     };
+//   };
+// };
+
+/**
+ * @RpcClientRemote 
+ * @type 远端服务器地址
+ */
 type RpcClientRemote = string;
+
+/**
+ * @RpcClientValue 
+ * @type { 
+ *  method:string 远端地址
+ *  data:string 传入远端的数据
+ *  interFace:string 远端接口
+ *  router:string 客户端接受的路由
+ * }
+ */
 type RpcClientValue = {
-  [Method: string]: {
-    data: string | Buffer;
-  };
+  method:string,
+  data:any,
+  interFace:string,
+  router:string
 };
 
 export { RpcClientController, RpcServerController };
@@ -29,4 +45,4 @@ export { Call, Register };
 
 // }
 
-export type { RpcClient, RpcClientRemote, RpcClientValue };
+export type {  RpcClientRemote, RpcClientValue };

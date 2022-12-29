@@ -1,5 +1,5 @@
 import { SerivceMap } from "../ioc/service";
-import { Request } from "express";
+import { Request,Response } from "express";
 import { ref } from "../ioc";
 import { AdoNodePipe } from "../pipe/pipe";
 import { AdoNodeInterceptor } from "../interceptor/interceptor";
@@ -19,7 +19,7 @@ export function useRunTimeInterceptor(
   return undefined;
 }
 
-function useArgs(
+export function useArgs(
   propertyKey: string,
   target: Object,
   req: Request,

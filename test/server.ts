@@ -6,7 +6,6 @@ import { TestGlobalPipe } from "./pipe";
 import { AdoNodeServer } from "../index";
 import { viewTestModule } from './routes/viewTest/viewTest.module';
 
-import * as net from 'net'
 import { TestRpcClientController } from "./rpc/test.rpc";
 import { RpcClientMap } from "../lib/rpc/bind";
 @Modules({
@@ -29,12 +28,12 @@ AdoNodeServerImpl.runSSRServer((app) => {
   })
   
   // 建立TCP 连接
-  const socket = net.connect({
-    'host': "localhost",
-    'port': 9000
-  })
+  // const socket = net.connect({
+  //   'host': "localhost",
+  //   'port': 9000
+  // })
 
-  socket.write("测试发送")
+  // socket.write("测试发送")
   
   // net.createServer()
   // net.connect({

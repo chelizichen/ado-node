@@ -1,40 +1,44 @@
 import { connect, Socket } from "net";
 import { ConnOpt } from "./server";
 
-class ArcClient{
-    public Net:Socket 
+class ArcClient {
+    public Net: Socket
 
-    constructor(opts:ConnOpt){
-        const {port,host} = opts
-        this.Net =  connect({
+    constructor(opts: ConnOpt) {
+        const { port, host } = opts
+        this.Net = connect({
             port,
             host
         })
-    }
-
-    call(data:any){
-        return new Promise((resolve,reject)=>{
-            const tojson = JSON.stringify(data)
-            const buffer = Buffer.from(tojson)
-            this.Net.write(buffer,function(err){
-                reject(err)
-            })
-
-            this.Net.on("data",function(data:Buffer){
-                // const json = JSON.stringify(data)
-                // const copy = JSON.parse(json, (key, value) => {
-                //     return value.type === 'Buffer' ?
-                //       Buffer.from(value) :
-                //       value;
-                //   });
-                resolve(data.toString())
-            })
+        this.Net.on("data", function (data: Buffer) {
+            // const json = JSON.stringify(data)
+            // const copy = JSON.parse(json, (key, value) => {
+            //     return value.type === 'Buffer' ?
+            //       Buffer.from(value) :
+            //       value;
+            //   });
+            console.log('data', data.toString());
         })
 
+        this.Net.on("error", function (err) {
+            console.log(err);
+        })
+
+        this.call(host+" "+ port+" good night")
+        // this.Net.wr
+    }
+
+    call(data: any) {
+        const tojson = JSON.stringify(data)
+        const buffer = Buffer.from(tojson)
+        this.Net.write(buffer, function (err) {
+            console.log('write -err ',err);
+            
+        })
     }
 }
 
-export {ArcClient}
+export { ArcClient }
 
 // var ArcClient = function ({ port, host }) {
 //     this.Net = Net.connect({

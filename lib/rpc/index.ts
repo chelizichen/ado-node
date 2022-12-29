@@ -42,7 +42,6 @@ export { Call, Register };
 //   async hello() {
 //     return "hello";
 //   }
-
 // }
 
 export type {  RpcClientRemote, RpcClientValue };

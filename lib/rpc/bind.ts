@@ -16,12 +16,10 @@ const Call = (router:string,method: string): MethodDecorator => {
     nextTick(()=>{
       let { name, prototype } = target.constructor;
       let fn = descriptor.value;
-      let remoteUrl = ref.get(name, prototype, ":remoteUrl");
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name,prototype,":socket") as ArcClient;
       let base = ref.get(name,prototype,":base")
 
-      console.log("2",remoteUrl,interFace);
       
       // Aop 处理
       descriptor.value = async function (req:Request,res:Response) {
@@ -33,7 +31,6 @@ const Call = (router:string,method: string): MethodDecorator => {
             data,
             method,
             interFace,
-            remote:remoteUrl
         };
   
         let RpcCallRes = await socket.call(RemoteCallReq)

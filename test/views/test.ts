@@ -11,7 +11,6 @@ import { Seckill } from "../routes/Seckill/seckill.enity";
         .omit(["seckill.go_id", "seckill.id","goods.sort_type_id"])
         .addOptions("seckill.go_id = goods.id")
         .create(),
-    migration:true
 })
 export class AdoViewTest extends AdoOrmBaseView {
     @Index

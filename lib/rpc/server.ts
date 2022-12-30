@@ -13,19 +13,19 @@ class ArcServer {
     createServer({ port, host }:ConnOpt) {
         this.Net = createServer(socket => {
             this.socket = socket;
-            this.socket.on("data", (buf) => {
-                console.log(buf.toString());
-            })
-            this.socket.on("error",function(err){
-                console.log("ado-rpc-err",err);
-            })
-            this.socket.on("connect",function(...args:any[]){
-                console.log("some one connected ");
-                console.log(args);
-            })
+            this.socket.on("data", this.recieve)
+            this.socket.on("error",this.error)
         })
         this.Net.listen(port, host)
         console.log('监听成功');
+    }
+
+    recieve(data:Buffer) {
+        console.log(data.toString());
+    }
+
+    error(err: Error) {
+        console.log("ado-rpc-err",err);
     }
 }
   

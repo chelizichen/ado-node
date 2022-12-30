@@ -2,41 +2,51 @@ import { connect, Socket } from "net";
 import { ConnOpt } from "./server";
 
 class ArcClient {
-    public Net: Socket
+    public Net: Socket;
 
     constructor(opts: ConnOpt) {
-        const { port, host } = opts
+        const { port, host } = opts;
         this.Net = connect({
             port,
-            host
-        })
-
+            host,
+        });
 
         this.Net.on("error", function (err) {
             console.log(err);
-        })
-
-        // this.call(host+" "+ port+" good night")
-        // this.Net.wr
+        });
     }
 
-    call(data: any) {
-        return new Promise((resolve,reject)=>{
-            const tojson = JSON.stringify(data)
-            const buffer = Buffer.from(tojson)
-            this.Net.write(buffer, async (err)=> {
-                if(err){
-                    console.log('write -err ',err);
-                    reject(err)
+    /**
+     * @call
+     * @description arc 协议 拆包解包
+     */
+    call(pkg: { method: string; data: any; interFace: string }) {
+        const { method, data, interFace } = pkg;
+
+        // 处理头部字段
+        let head = Buffer.alloc(100)
+        let head_str = "#1:" + interFace + "#2:" + method
+        head.write(head_str)
+
+        // 处理传入信息
+        // 后面会设定字段，减少开销
+        let body_str = JSON.stringify(data)
+        let body = Buffer.from("#3:"+body_str)
+        let call_buf = Buffer.concat([head, body])
+
+        return new Promise((resolve, reject) => {
+            this.Net.write(call_buf, async (err) => {
+                if (err) {
+                    console.log("write -err ", err);
+                    reject(err);
                 }
-                const res = await this.res() 
-                resolve(res)
-            })
-        })
-
+                const res = await this.res();
+                resolve(res);
+            });
+        });
     }
-    res(){
-        return new Promise((resolve)=>{
+    res() {
+        return new Promise((resolve) => {
             this.Net.on("data", function (data: Buffer) {
                 // const json = JSON.stringify(data)
                 // const copy = JSON.parse(json, (key, value) => {
@@ -44,13 +54,13 @@ class ArcClient {
                 //       Buffer.from(value) :
                 //       value;
                 //   });
-                resolve(data.toString())
-            })
-        })
+                resolve(data.toString());
+            });
+        });
     }
 }
 
-export { ArcClient }
+export { ArcClient };
 
 // var ArcClient = function ({ port, host }) {
 //     this.Net = Net.connect({
@@ -98,7 +108,6 @@ export { ArcClient }
 //     }
 
 //     this.send("#")
-
 
 //     return new Promise((reolsve) => {
 //         this.Net.on("data", (buffer) => {

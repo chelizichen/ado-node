@@ -30,7 +30,6 @@ type RpcClientValue = {
     method: string;
     data: any;
     interFace: string;
-    remote:string;
   }
 
 };

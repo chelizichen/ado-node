@@ -9,6 +9,11 @@ import { nextTick } from "process";
 export const RpcClientMap: Record<RpcClientRemote, RpcClientValue[]> = {}
 
 
+/**
+ * @description 每个使用 Call 装饰器的函数都会变成Post路由请求，并且经过 ArcServer 转发
+ * @rotuer express 代理的 http 路由地址
+ * @method 远程rpc的方法
+ */
 const Call = (router:string,method: string): MethodDecorator => {
   return function (
     target: Object,
@@ -48,12 +53,15 @@ const Call = (router:string,method: string): MethodDecorator => {
 
   };
 };
+
+
+
 /**
  * 
  * @Register 
  * @description 用于注册Rpc方法
+ * @default -> [#1]InterFace[#2]Method
  */
-// [#1]TestIntro[#2]/sayhello
 const Register = (method: string): MethodDecorator => {
   return function (target: Object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) {
     nextTick(() => {

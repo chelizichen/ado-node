@@ -1,4 +1,5 @@
 import { createServer, Server, Socket } from 'net'
+import { size } from '.';
 import { ArcEvent } from './event';
 
 export type ConnOpt = { port: number, host: string }
@@ -38,14 +39,17 @@ class ArcServer {
     }
 
     async recieve(data: Buffer) {
-        // 拿到尾地址 head 尾地址
-        let head_end = data.indexOf("[##]");
-        // 截取 head
-        let head = data.subarray(0, head_end);
-        // 截取body
-        let body = data.subarray(head_end, data.length);
 
-        let res = await this.ArcEvent.emit(head, body);
+        let head_end = data.indexOf("[##]");
+
+        let head = data.subarray(0, head_end);
+
+        let body = data.subarray(head_end + 4, data.length);
+        
+        let _body = this.unpacking(body);
+        console.log(body.toString());
+
+        let res = await this.ArcEvent.emit(head, _body);
 
         this.socket.write(res);
     };
@@ -57,6 +61,42 @@ class ArcServer {
     connection() {
         console.log("有新用户链接");
     }
+    /**
+     * 
+     * @param pkg Buffer
+     * @returns value:any[]
+     * @description 拆包 根据 start 和 end 拆包
+     */
+    unpacking(pkg:Buffer):any[]{
+        // start to split
+        let init = 0
+        let end = pkg.lastIndexOf(size[size.length-1])
+
+        // get args length
+        let argsLength = size.indexOf(pkg.subarray(end,pkg.length).toString())
+
+        let getArgs = new Array(argsLength).fill(0)
+
+        while(true){
+            if(init == argsLength){
+                break;
+            }
+            // next start location 
+            let start = pkg.indexOf(size[init])
+            let start_size = pkg.subarray(start,start+size[init].length).toString()
+            if(start_size == size[0]){
+                let split_pkg = pkg.subarray(start,end)
+                getArgs[init] = this.unpacking(split_pkg)
+            }
+            let after = pkg.indexOf(size[init+1])
+            let data_pkg = pkg.subarray(start + size[init].length,after)
+            getArgs[init] = data_pkg.toJSON()
+            init ++;
+        }
+        return getArgs
+    }
+
+    
 }
 
 export {

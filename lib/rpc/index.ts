@@ -1,15 +1,6 @@
 import { RpcClientController, RpcServerController } from "./controller";
 import { Call, Register } from "./bind";
-
-// type RpcClient = {
-//   [RpcRemote: string]: {
-//     [RpcInterFace: string]: {
-//       [Method: string]: {
-//         data: string | Buffer;
-//       };
-//     };
-//   };
-// };
+import { RpcServerModules, RpcClientModules } from "./run";
 
 /**
  * @RpcClientRemote 
@@ -34,15 +25,13 @@ type RpcClientValue = {
 
 };
 
+
+export type RpcInterface = string;
+export type RpcServerValue = any;
+
 export { RpcClientController, RpcServerController };
 export { Call, Register };
 
-// @RpcClientController("test", "localhost:6001")
-// class TestAdoRpcController {
-//   @Call("hello")
-//   async hello() {
-//     return "hello";
-//   }
-// }
-
 export type { RpcClientRemote, RpcClientValue };
+
+export { RpcServerModules, RpcClientModules };

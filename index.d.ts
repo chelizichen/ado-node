@@ -3,6 +3,7 @@ import { AdoNodeController } from ".";
 import { AdoNodeControllerInterceptor } from "./lib/interceptor/global";
 import { AdoNodeInterceptor } from "./lib/interceptor/interceptor";
 import { AdoNodePipe, AdoNodeGlobalPipe } from "./lib/pipe";
+import { RpcClientRemote, RpcClientValue } from "./lib/rpc";
 
 export type Query<T> = Request<any, any, any, T, any>;
 
@@ -43,5 +44,8 @@ export type AdoModulesOptions = {
   Base: string;
   Port: number;
   Cluster?: boolean;
-  RpcController?:any[];
 };
+
+export type RpcInterface = string;
+export type RpcServerValue = any;
+export type { RpcClientRemote, RpcClientValue };

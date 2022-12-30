@@ -1,11 +1,13 @@
 import { RpcClientRemote, RpcClientValue } from "./index"
+
 import { ref } from "../ioc";
 import { useArgs } from "../method/method";
 import  {Request,Response} from 'express'
 import { ArcClient } from "./client";
 import { nextTick } from "process";
 
-export const RpcClientMap:Record<RpcClientRemote, RpcClientValue[]> = {}
+export const RpcClientMap: Record<RpcClientRemote, RpcClientValue[]> = {}
+
 
 const Call = (router:string,method: string): MethodDecorator => {
   return function (
@@ -36,9 +38,8 @@ const Call = (router:string,method: string): MethodDecorator => {
         let RpcCallRes = await socket.call(RemoteCallReq)
         res.json(RpcCallRes)  
       };
-  
-      if(!RpcClientMap[base]){
-        RpcClientMap[base] = []
+      if (!RpcClientMap[base]) {
+        RpcClientMap[base]= []
       }
       RpcClientMap[base].push({[router]:descriptor.value})
 
@@ -47,11 +48,22 @@ const Call = (router:string,method: string): MethodDecorator => {
 
   };
 };
-
-  // @ts-ignore
+/**
+ * 
+ * @Register 
+ * @description 用于注册Rpc方法
+ */
+// [#1]TestIntro[#2]/sayhello
 const Register = (method: string): MethodDecorator => {
-  // @ts-ignore
-  return function(target: Object, propertyKey: string | symbol, descriptor:PropertyDescriptor){
+  return function (target: Object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    nextTick(() => {
+      const {name,prototype} = target.constructor
+      const Events = ref.get(name, prototype, ":events");
+      let fn = descriptor.value
+      let interFace = ref.get(name, prototype, ":interFace")
+      let fn_name = "[#1]" + interFace + "[#2]" + method
+      Events[fn_name]= fn
+    })
   }
 };
 

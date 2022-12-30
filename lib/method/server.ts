@@ -94,7 +94,6 @@ class AdoNodeServer {
   }
 
   static runServer() {
-
     // this.readConfig();
 
     const app: Express = express();
@@ -136,7 +135,6 @@ class AdoNodeServer {
   }
 
   static async runSSRServer(callBack: (app: Express) => void) {
-    
     const app: Express = express();
 
     const globalPipes = ref.get(
@@ -144,6 +142,17 @@ class AdoNodeServer {
       AdoNodeServer.prototype,
       ":globalPipes"
     );
+
+    const hasRpcClient = ref.get(
+      AdoNodeServer.name,
+      AdoNodeServer.prototype,
+      ":rpc-client"
+    );
+    console.log(hasRpcClient);
+
+    if (typeof hasRpcClient == "function") {
+      hasRpcClient(app);
+    }
 
     // 使用管道
     if (globalPipes && globalPipes.length && globalPipes instanceof Array) {

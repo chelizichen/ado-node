@@ -9,6 +9,7 @@ import { BeforeInsert, BeforeDelete, BeforeUpdate, AdoOrmBaseEntity, AutoCreate,
 import { getConnection, gerRedis, defineAdoNodeConfig } from "./lib/orm/conn";
 import { Req, Res, Params,Headers,Query,Body } from "./lib/params";
 import { class_transform, UsePipe, validate } from "./lib/pipe";
+import { Call, Register, RpcClientController, RpcClientModules, RpcServerController, RpcServerModules } from "./lib/rpc";
 
 
 export { DataBaseError };
@@ -67,3 +68,8 @@ export { class_transform };
 
 
 
+export { RpcClientController, RpcServerController };
+export { Call, Register };
+
+
+export { RpcServerModules, RpcClientModules };

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.All = exports.Post = exports.Get = exports.useRunTimeInterceptor = void 0;
+exports.All = exports.Post = exports.Get = exports.useArgs = exports.useRunTimeInterceptor = void 0;
 const service_1 = require("../ioc/service");
 const ioc_1 = require("../ioc");
 function useRunTimeInterceptor(Interceptor, time, options) {
@@ -36,6 +36,7 @@ function useArgs(propertyKey, target, req, res) {
     }
     return [req, res];
 }
+exports.useArgs = useArgs;
 /**
  * @Params Method Like GET POST
  */

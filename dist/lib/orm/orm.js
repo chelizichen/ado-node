@@ -148,7 +148,6 @@ class AdoOrmBaseEntity {
             }
             return new Promise((resolve) => {
                 let that = this;
-                console.log("this[Conn]", this[symbol_1.Conn]);
                 this[symbol_1.Conn].query(`select * from ?? where ?? = ?`, [this[symbol_1.TableName], key, val], function (err, res) {
                     if (err) {
                         resolve(new dababase_1.DataBaseError("数据库错误,也许配置项是非法的", err));

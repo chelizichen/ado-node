@@ -25,13 +25,13 @@ class ArcClient {
 
         // 处理头部字段
         let head = Buffer.alloc(100)
-        let head_str = "#1:" + interFace + "#2:" + method
+        let head_str = "[#1]" + interFace + "[#2]" + method + "[##]"
         head.write(head_str)
 
         // 处理传入信息
         // 后面会设定字段，减少开销
         let body_str = JSON.stringify(data)
-        let body = Buffer.from("#3:"+body_str)
+        let body = Buffer.from(body_str)
         let call_buf = Buffer.concat([head, body])
 
         return new Promise((resolve, reject) => {
@@ -41,6 +41,8 @@ class ArcClient {
                     reject(err);
                 }
                 const res = await this.res();
+                console.log("res",res);
+                
                 resolve(res);
             });
         });
@@ -48,12 +50,6 @@ class ArcClient {
     res() {
         return new Promise((resolve) => {
             this.Net.on("data", function (data: Buffer) {
-                // const json = JSON.stringify(data)
-                // const copy = JSON.parse(json, (key, value) => {
-                //     return value.type === 'Buffer' ?
-                //       Buffer.from(value) :
-                //       value;
-                //   });
                 resolve(data.toString());
             });
         });

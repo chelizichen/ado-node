@@ -1,0 +1,12 @@
+
+
+interface:
+  name: AnimalInterFace
+  info: "用于编写 Animal 接口的配置文档"
+  method:
+    hello:
+      req: HelloRequest
+      res: HelloResponse
+    jump: 
+      req: JumpRequest
+      res: JumpResponse

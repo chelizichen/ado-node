@@ -1,8 +1,10 @@
-const cwd = process.cwd()
-const publicPath = cwd + "/public/server"
+// const cwd = process.cwd()
+// const publicPath = cwd + ""
 
 export default ({
-  publicPath,
+  // module:[
+    // "test"
+  // ],
   database: {
     type: "mysql",
     host: "localhost",

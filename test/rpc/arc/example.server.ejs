@@ -1,0 +1,22 @@
+import { RpcServerController,Register } from "ado-node";
+
+/**
+ * @description <%= description %>
+ */
+@RpcServerController("<%= interFace  %>")
+class <%= interFace %> {
+    <% for(let v in method){%>
+
+    @Register("<%= v %>")
+    async <%= v %>(request:<%- JSON.stringify(method[v]['req']).replaceAll("\"","")  %>):Promise<<%- JSON.stringify(method[v]['res']).replaceAll("\"","") %>>{
+        throw new Error("")
+    }
+
+    <% } %>
+}
+
+
+
+export{
+    <%= interFace %>
+}

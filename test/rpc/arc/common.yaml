@@ -1,0 +1,18 @@
+struct:
+
+  HelloRequest: 
+    name: string
+    age: string
+    value: string
+  
+  HelloResponse:
+    message: string
+
+  JumpRequest: 
+    type: string
+    address: string
+    value: string
+
+  JumpResponse:
+    message: string
+  

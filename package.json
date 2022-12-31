@@ -21,7 +21,8 @@
   "scripts": {
     "test": "ts-node-dev --project tsconfig.server.json test/server",
     "test1": "ts-node-dev --project tsconfig.server.json test/rpc/server/server.ts",
-    "test2":"ts-node-dev --project tsconfig.server.json test/rpc/arc/a.ts",
+    "test2": "ts-node-dev --project tsconfig.server.json test/rpc/arc/a.ts",
+    "test3": "tsc --project test/rpc/arc/a.ts ",
     "build": "rm -r dist && mkdir dist && tsc --project tsconfig.server.json && tsup index.ts --format cjs,esm && rm -r  dist/test",
     "commit": "hasaky commit",
     "release": "ado-cli release AdoSSrServerDemo"
@@ -55,6 +56,7 @@
     "yaml": "^2.2.1"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.1",
     "@types/execa": "^2.0.0",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.9",

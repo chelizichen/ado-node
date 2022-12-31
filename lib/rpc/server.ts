@@ -47,9 +47,11 @@ class ArcServer {
         let body = data.subarray(head_end + 4, data.length);
         
         let _body = this.unpacking(body);
+        console.log('_body',_body);
+        
         console.log(body.toString());
 
-        let res = await this.ArcEvent.emit(head, _body);
+        let res = await this.ArcEvent.emit(head, ..._body);
 
         this.socket.write(res);
     };
@@ -67,35 +69,48 @@ class ArcServer {
      * @returns value:any[]
      * @description 拆包 根据 start 和 end 拆包
      */
-    unpacking(pkg:Buffer):any[]{
-        // start to split
+    unpacking(buf:Buffer):any[]{
+        let args = []
         let init = 0
-        let end = pkg.lastIndexOf(size[size.length-1])
-
-        // get args length
-        let argsLength = size.indexOf(pkg.subarray(end,pkg.length).toString())
-
-        let getArgs = new Array(argsLength).fill(0)
-
-        while(true){
-            if(init == argsLength){
-                break;
+        let start = buf.indexOf(size[init])
+        while (true) {
+            let end_str = buf.subarray(start, start + 3).toString()
+            let isEnd = end_str == size[size.length - 1]
+            if (isEnd) {
+                break
             }
-            // next start location 
-            let start = pkg.indexOf(size[init])
-            let start_size = pkg.subarray(start,start+size[init].length).toString()
-            if(start_size == size[0]){
-                let split_pkg = pkg.subarray(start,end)
-                getArgs[init] = this.unpacking(split_pkg)
+            let next = buf.indexOf(size[init + 1], start)
+            if (next == -1) {
+                let sub_pkg = buf.subarray(start, start + 6).toString()
+                let is_un_pkg = sub_pkg == size[init] + size[0]
+                // 判断是否为未分割的参数
+                if (is_un_pkg) {
+                    let un_pkg = buf.subarray(start + 3, buf.length - 3)
+                    let getargs = this.unpacking(un_pkg)
+                    args[init] = getargs
+                } else {
+                    let un_pkg = buf.subarray(start + 3, buf.length - 3).toString()
+                    args[init] = un_pkg
+                }
+                break
+            } else {
+                let isObject = buf.subarray(start, start + 6).toString() == size[init] + size[0]
+                if (isObject) {
+                    let end = buf.indexOf(size[size.length - 1] + size[init + 1])
+                    let un_pkg = buf.subarray(start + 3, end + 3)
+                    let getargs = this.unpacking(un_pkg)
+                    args[init] = getargs
+                    start = end + 3;
+                } else {
+                    let getargs = buf.subarray(start + 3, next).toString()
+                    args[init] = getargs
+                    start = next;
+                }
             }
-            let after = pkg.indexOf(size[init+1])
-            let data_pkg = pkg.subarray(start + size[init].length,after)
-            getArgs[init] = data_pkg.toJSON()
-            init ++;
+            init++
         }
-        return getArgs
+        return args
     }
-
     
 }
 

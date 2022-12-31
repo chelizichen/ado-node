@@ -9,7 +9,7 @@ export class TestGlobalPipe implements AdoNodeGlobalPipe {
     _: Response<any, Record<string, any>>,
     next: NextFunction
   ): void {
-    console.log("req.query", req.query);
+    console.log("req.body", req.body);
     next();
   }
 }

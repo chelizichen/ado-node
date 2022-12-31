@@ -9,10 +9,9 @@ class AnimalInterFace {
   }
 
   @Register("jump")
-  async test1(...args:any[]) {
-    console.log(args.toString());
+  async test1(name:string,age:string,jump:string) {
     
-    return "hello world";
+    return "hello world"+"rpc-server "+name+" : "+ age+ " : " + jump ;
   }
 }
 

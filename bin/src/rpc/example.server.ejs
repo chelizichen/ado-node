@@ -8,7 +8,7 @@ class <%= interFace %> {
     <% for(let v in method){%>
 
     @Register("<%= v %>")
-    async <%= v %>(request:<%- JSON.stringify(method[v]['req']).replaceAll("\"","")  %>):Promise<<%- JSON.stringify(method[v]['res']).replaceAll("\"","") %>>{
+    async <%= v %>(<%- JSON.stringify(method[v]['req']).replaceAll("\"","").replaceAll("\{","").replaceAll("\}","")  %>):Promise<<%- JSON.stringify(method[v]['res']).replaceAll("\"","") %>>{
         throw new Error("")
     }
 

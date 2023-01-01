@@ -7,13 +7,8 @@ interFace:
   # 注释
   description: "用于编写 Animal 接口的配置文件"
 
-  # 生成 rpc 服务文件地址
-  server:
-    path: test/rpc/arc
-
   # 生成 rpc 客户端文件地址
   client:
-    path: test/rpc/arc
     controller: animal
 method:
   hello:

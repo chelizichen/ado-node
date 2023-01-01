@@ -16,3 +16,15 @@ struct:
   JumpResponse:
     message: string
   
+  WoffRequest:
+    message: string
+
+  WoffResponse:
+    message: string
+
+  EatRequest:
+    message: string
+
+  EatResponse:
+    message: string
+

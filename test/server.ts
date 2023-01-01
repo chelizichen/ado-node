@@ -7,15 +7,14 @@ import { AdoNodeServer } from "../index";
 import { viewTestModule } from "./routes/viewTest/viewTest.module";
 
 import {
-  AnimalRpcController,
-  DogRpcController,
+  animalController,dogController
 } from "./rpc/client/client";
 
 import { RpcClientModules } from "../lib/rpc/run";
 
 
 @RpcClientModules({
-  RpcClientController: [AnimalRpcController,DogRpcController],
+  RpcClientController: [animalController,dogController],
 })
 @Modules({
   Modules: [AppModule, viewTestModule],

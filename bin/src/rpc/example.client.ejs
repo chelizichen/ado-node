@@ -1,9 +1,9 @@
 import { RpcClientController,Call, Body } from "ado-node"
 
-@RpcClientController("/<%= controller %>",{interFace:<%= interFace %>,url:<%= remote =>})
+@RpcClientController("/<%= controller %>",{interFace:"<%= interFace %>",url:"<%= remote %>"})
 class <%= controller %>Controller{
     <% for(let v in method){%>
-    @Call("/<%= v %>",<%= v %>)
+    @Call("/<%= v %>","<%= v %>")
     async <%= v %>(@Body() body:any):Promise<<%- JSON.stringify(method[v]['req']).replaceAll("\"","")  %>>{
         throw new Error("")
     }

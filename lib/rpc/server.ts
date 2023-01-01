@@ -47,13 +47,18 @@ class ArcServer {
         let body = data.subarray(head_end + 4, data.length);
         
         let _body = this.unpacking(body);
-        console.log('_body',_body);
-        
-        console.log(body.toString());
 
         let res = await this.ArcEvent.emit(head, ..._body);
 
-        this.socket.write(res);
+        let toJson = JSON.stringify(res)
+        console.log(toJson);
+        
+        this.socket.write(toJson,function(err){
+            if(err){
+                console.log("服务端写入错误",err);
+            }
+            console.log("服务端写入成功");
+        });
     };
 
     error(err: Error) {
@@ -61,7 +66,7 @@ class ArcServer {
     }
 
     connection() {
-        console.log("有新用户链接");
+        console.log("有新用户链接1");
     }
     /**
      * 

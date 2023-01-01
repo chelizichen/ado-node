@@ -1,7 +1,7 @@
-import { AnimalRpcController } from "./controller/animal.controller";
-import { DogRpcController } from "./controller/dog.controller";
+import { animalController } from "./controller/AnimalInterFace.client";
+import { dogController } from "./controller/DogInterFace.client";
 
 
 export {
-    AnimalRpcController,DogRpcController
+    animalController,dogController
 }

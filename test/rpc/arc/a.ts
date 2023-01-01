@@ -2,25 +2,9 @@ import { readFileSync, writeFileSync } from 'fs';
 import yaml from 'yaml'
 import path from 'path';
 import ejs from 'ejs'
-declare interface ArcInterFace {
-    name: string;
-    remote: string;
-    description: string;
-    server:{
-        path:string;
-    }
-    client:{
-        path:string;
-        controller:string;
-    }
-}
+import { ArcInterFace } from '../../../index.d';
+import { ArcMethod } from '../../../index.d';
 
-declare interface ArcMethod {
-    [method:string]:{
-        req:any,
-        res:any
-    }
-}
 
 class ArcYaml {
     public modules: any;
@@ -54,6 +38,7 @@ class ArcYaml {
      */
     public async read_struct(struct:string[]){
         struct.forEach(el=>{
+            // 读取目录
             const ctx = readFileSync(path.resolve(__dirname,"./"+el+".yaml"),"utf-8")
             const content = yaml.parse(ctx)
             const {struct:yamlStruct} = content;
@@ -90,6 +75,7 @@ class ArcYaml {
 
         let file_client_path = path.resolve(__dirname,"./example.server.ejs")
         let read_file_client = readFileSync(file_client_path,"utf-8")
+
         this.interFace.forEach(item=>{
             let description = item.interFace.description
             let interFace = item.interFace.name
@@ -97,6 +83,7 @@ class ArcYaml {
             let controller = item.interFace.client.controller
             let remote = item.interFace.remote
             let _path = item.interFace.server.path
+            
             let write_server_path = path.resolve(_path,`./${interFace}.server.ts`)
             let write_server_file = ejs.render(read_file_server,{
                 description,

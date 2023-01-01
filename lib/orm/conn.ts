@@ -7,6 +7,7 @@
 import * as mysql from "mysql";
 import { createClient } from "redis";
 
+
 type AdoNodeConfig = {
   database: {
     type: string;

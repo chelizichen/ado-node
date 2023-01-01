@@ -49,3 +49,23 @@ export type AdoModulesOptions = {
 export type RpcInterface = string;
 export type RpcServerValue = any;
 export type { RpcClientRemote, RpcClientValue };
+
+export declare interface ArcInterFace {
+  name: string;
+  remote: string;
+  description: string;
+  server:{
+      path:string;
+  }
+  client:{
+      path:string;
+      controller:string;
+  }
+}
+
+export declare interface ArcMethod {
+  [method:string]:{
+      req:any,
+      res:any
+  }
+}

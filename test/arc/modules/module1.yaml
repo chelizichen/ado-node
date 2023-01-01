@@ -1,0 +1,12 @@
+module:
+  # 模块接口
+  interFace:
+    - AnimalInterFace1
+    - DogInterFace1
+  # 模块需要的接口
+  struct:
+    - common
+
+  # 所包含的其他模块
+  include:
+    

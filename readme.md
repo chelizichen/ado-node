@@ -22,15 +22,15 @@
 12. 具体控制层 **After** 拦截器 在具体方法之后
 13. 全局控制层 **After** 拦截器之后
 
-*在拦截器或者管道的任何各个阶段都可以执行响应中断操作（返回不为空的值即可）*
+**注** : *在拦截器或者管道的任何各个阶段都可以执行响应中断操作（返回不为空的值即可）*
 
 ***
 
-**构建node服务所需要的额外的Package**
+packgage.json: **构建node服务所需要的额外的Package**
 
 ***
 
-````
+````json
   "dependencies": {
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
@@ -91,7 +91,7 @@ ado-node % ado create app
 * @UsePipe(Pipe:implyments AdoNodePipe)
 * @Get(url:string)
 * @Post(url:string)
-* @<i style="color:royalblue">Interface</i> AdoNodePipe
+* @**Interface**  AdoNodePipe
 * @Error({message:string;code?:Code;force?: boolean;})
 * @Query 等同于 Express -> type Request['query']
 * @Body  等同于 Express -> type Request['body']
@@ -106,7 +106,7 @@ ado-node % ado create app
 
 ### 对象关系映射(ORM)层
 
-* @**<i style="color:royalblue">Interface</i>** AdoOrmBaseEntity
+* @**Interface** AdoOrmBaseEntity
 * @Entity(tableName:string)
 * @Collect() **收集 ORM 层对象**
 * @Key 对应 关系型 数据库 的 主键
@@ -270,7 +270,7 @@ sql: 'insert into  goods SET ? '
 app.get(" * ",func(req,res,next){})
 ````
 
-*全局管道*
+-> **全局管道**
 
 ````ts
 
@@ -281,7 +281,7 @@ export class TestGlobalPipe implements AdoNodeGlobalPipe {
 }
 ````
 
-*普通管道*
+-> **普通管道**
 
 ````ts
 
@@ -315,7 +315,7 @@ class UserInfoPlainPipe implements AdoNodePipe {
 }
 ````
 
-**拦截器**
+-> **拦截器**
 
 * implyments AdoNodeInterceptor
 * UseInterceptor(new InterceptorConstructor())
@@ -601,7 +601,28 @@ class [ViewName] extends AdoOrmBaseView{
 }
 ````
 
-#### Module 模块化
+## 微服务
+
+### @Ado/Rpc - Client/Server
+
+RPC服务为 **C/S** 架构，基于TCP 之上 。Client 端 基于Express 的 HTTP 请求 进行装包后，以Buffer的形式转发给 Server 端。Server 端接受包后进行拆包，而后运行相关函数再返回给Client 端
+
+框架使用 Yaml 文件作为统一的文档，yaml 文件规定了
+
+* 一致的接口名
+* 接口描述
+* 接口所需要的参数 (request，response)
+* 服务端 IP 地址
+
+在最外层目录下规定需要定义 arc.config.yaml 作为配置文件
+该配置文件定义了
+
+* yaml 接口/参数/模块的配置路径
+* 生成 client-server 文件的目录路径
+
+框架提供了 命令行工具 可以快速的根据 arc.config.yaml 扫描  接口/参数/模块的配置路径，并生成 client 或者 server 相关的文件，帮助开发者快速开发服务
+
+## Module 模块化
 
 Provider 里 可以包含各类的 Module
 比如 一个商品 Module ： GoodsModule
@@ -617,10 +638,9 @@ Provider 里 可以包含各类的 Module
 export class AppModule {}
 ````
 
+## 启动服务
 
-### 启动服务
-
-* <i style="color:royalblue"> Extends AdoNodeServer </i>
+* Extends AdoNodeServer
 
 Modules 里面包含各种 Module
 Base 为基础的 Api路径

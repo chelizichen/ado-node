@@ -111,13 +111,27 @@ class ArcYaml {
                 let method = item.method
                 let controller = item.interFace.client.controller
                 let remote = item.interFace.remote
-                
                 let write_server_path = path.resolve(cwd(),generatePath, `${interFace}.server.ts`)
-                
+
+                function renderReq(v){
+                    let req  = JSON.stringify(method[v]['req']);
+                    req = req.replaceAll("\"","")
+                    req = req.substring(1,req.length-1)
+                    console.log(req);
+                    return req
+                }
+                function renderRes(v){
+                    let res = JSON.stringify(method[v]['res']);
+                    res = res.replaceAll("\"","")
+                    return res
+                }
+
                 let write_server_file = ejs.render(read_file_server, {
                     description,
                     interFace,
-                    method
+                    method,
+                    req:renderReq,
+                    res:renderRes
                 })
                 writeFileSync(write_server_path, write_server_file)
             })

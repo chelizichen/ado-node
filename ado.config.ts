@@ -9,18 +9,4 @@ export default ({
     port: 3306,
     connectionLimit: 10,
   },
-
-  arc:{
-    // yaml 配置文件
-    yaml:{
-      modules:"test/arc/modules",
-      interface:"test/arc/interface",
-      struct:"test/arc/struct"
-    },
-    // 生成 client-server 的路径
-    generate:{
-      server:"test/rpc/server/interface",
-      client:"test/rpc/client/controller"
-    }
-  }
 });

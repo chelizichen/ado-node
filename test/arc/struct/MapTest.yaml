@@ -1,0 +1,23 @@
+# 测试 Map 数据类型
+struct:
+  ArrayDemo:
+    message: string
+
+  MapDemo: 
+    name: string
+    age: string
+    value: string
+    info: Array<ArrayDemo>
+  
+  MapTestRequest:
+    info: Map<MapDemo>
+    message: string
+    deptIds: Array<number>
+  MapTestResponse:
+    message: string
+
+  ArrayTestRequest:
+    info: Array<MapDemo>
+    message: string
+  ArrayTestResponse:
+    message: string

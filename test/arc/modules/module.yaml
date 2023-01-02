@@ -3,11 +3,11 @@ module:
   interFace:
     - AnimalInterFace
     - DogInterFace
-  # 模块需要的接口
+    - MapTestInterFace
+  # 模块需要的结构体参数
   struct:
     - common
-
-
+    - MapTest
 
   # 所包含的其他模块
   include:

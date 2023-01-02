@@ -26,7 +26,7 @@ class ArcYaml {
 
         this.read_modules()
 
-        console.log(this.interFace);
+        // console.log(this.interFace);
         // this.read_interface()
     }
 
@@ -75,6 +75,37 @@ class ArcYaml {
                 this.struct[v] = yamlStruct[v]
             }
         })
+        this.__preTreatMent__(this.struct)
+        console.log(this.struct);
+    }
+
+    /**
+     * @description 将复杂参数预处理
+     * @example Map<Record<string,any>> Array<string>
+     */
+    async __preTreatMent__(struct){
+        for(let v in struct){
+            let _type = struct[v]
+            if(typeof _type == "object"){
+                this.__preTreatMent__(struct[v])
+            }
+            if(typeof _type == "string"){
+                // isMap
+                if(_type.startsWith("Map<") && _type.endsWith(">")){
+                    let MapStruct = _type.substring(4,_type.length-1) 
+                    struct[v] = this.struct[MapStruct]
+                }
+
+                if(_type.startsWith("Array<") && _type.endsWith(">")){
+                    let ArrayStruct = _type.substring(6,_type.length-1)
+                    if(ArrayStruct == "string" || ArrayStruct == "number"){
+
+                    }else{
+                        struct[v] = "Array<"+JSON.stringify(this.struct[ArrayStruct])+">"
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -112,28 +143,31 @@ class ArcYaml {
                 let controller = item.interFace.client.controller
                 let remote = item.interFace.remote
                 let write_server_path = path.resolve(cwd(),generatePath, `${interFace}.server.ts`)
-
-                function renderReq(v){
-                    let req  = JSON.stringify(method[v]['req']);
-                    req = req.replaceAll("\"","")
-                    req = req.substring(1,req.length-1)
-                    console.log(req);
-                    return req
+                if(!existsSync(write_server_path)){
+                    function renderReq(v){
+                        let req  = JSON.stringify(method[v]['req']);
+                        req = req.replaceAll("\"","")
+                        req = req.replaceAll("\\","")
+                        req = req.substring(1,req.length-1)
+                        console.log(req);
+                        return req
+                    }
+                    function renderRes(v){
+                        let res = JSON.stringify(method[v]['res']);
+                        res = res.replaceAll("\"","")
+                        res = res.replaceAll("\\","")
+                        return res
+                    }
+    
+                    let write_server_file = ejs.render(read_file_server, {
+                        description,
+                        interFace,
+                        method,
+                        req:renderReq,
+                        res:renderRes
+                    })
+                    writeFileSync(write_server_path, write_server_file)
                 }
-                function renderRes(v){
-                    let res = JSON.stringify(method[v]['res']);
-                    res = res.replaceAll("\"","")
-                    return res
-                }
-
-                let write_server_file = ejs.render(read_file_server, {
-                    description,
-                    interFace,
-                    method,
-                    req:renderReq,
-                    res:renderRes
-                })
-                writeFileSync(write_server_path, write_server_file)
             })
 
         }
@@ -148,15 +182,23 @@ class ArcYaml {
                 let remote = item.interFace.remote
 
                 let write_client_path = path.resolve(cwd(),generatePath,`${interFace}.client.ts`)
-                
-                let write_client_file = ejs.render(read_file_client, {
-                    description,
-                    interFace,
-                    method,
-                    controller,
-                    remote
-                })
-                writeFileSync(write_client_path, write_client_file)
+                if(!existsSync(write_client_path)){
+                    function renderRes(v){
+                        let res  = JSON.stringify(method[v]['res']);
+                        res = res.replaceAll("\"","")
+                        return res
+                    }
+    
+                    let write_client_file = ejs.render(read_file_client, {
+                        description,
+                        interFace,
+                        method,
+                        controller,
+                        remote,
+                        res:renderRes
+                    })
+                    writeFileSync(write_client_path, write_client_file)
+                }
             })
 
 

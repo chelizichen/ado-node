@@ -1,0 +1,19 @@
+interFace:
+  # 接口名称
+  name: MapTestInterFace
+  # rpc 服务 远程地址（客户端需要）
+  remote: http://127.0.0.1:9000
+  # 注释
+  description: "用于编写 MapTestInterFace 接口的配置文件"
+
+  client:
+    controller: dog
+method:
+  MapTest:
+    req: MapTestRequest
+    res: MapTestResponse
+
+  ArrayTest:
+    req: ArrayTestRequest
+    res: ArrayTestResponse
+    

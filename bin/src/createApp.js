@@ -69,7 +69,8 @@ function createQuestions() {
     choices: [
       "ado-node",
       "ado-node-vue-ssr(vite)",
-      "ado-node-react-ssr(vite)"
+      "ado-node-react-ssr(vite)",
+      "ado-rpc-server"
     ],
   })
 

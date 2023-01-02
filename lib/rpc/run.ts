@@ -9,6 +9,7 @@ import { RpcClientMap } from "./bind";
 import { ArcServer } from "./server";
 import { AdoNodeServer } from "../method";
 import { nextTick } from 'process';
+import { Connection } from "../orm/conn";
 
 type RpcServerModulesType = {
   RpcServerController: any[];
@@ -20,8 +21,15 @@ type RpcClientModulestype = {
   RpcClientController: any[];
 };
 
+/**
+ * @description 先根据 host 和 port 进行 tcp 服务创建
+ * @description 再根据每个 RpcServerController 所带有的服务端事件进行注册
+ */
 const RpcServerModules = (opt: RpcServerModulesType) => {
   return function (_: Function) {
+    (async function() {
+      await Connection.readConfig()
+    }())
     setImmediate(() => {
       const { RpcServerController, host, port } = opt;
       let events = RpcServerController.map((item) => {

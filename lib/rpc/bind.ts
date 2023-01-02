@@ -22,7 +22,7 @@ const Call = (router: string, method: string): MethodDecorator => {
   ) {
     nextTick(() => {
       let { name, prototype } = target.constructor;
-      let fn = descriptor.value;
+      let fn = descriptor.value.bind(target.constructor.prototype)
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name, prototype, ":socket") as ArcClient;
       let base = ref.get(name, prototype, ":base")
@@ -68,7 +68,7 @@ const Register = (method: string): MethodDecorator => {
     nextTick(() => {
       const { name, prototype } = target.constructor
       const Events = ref.get(name, prototype, ":events");
-      let fn = descriptor.value
+      let fn = descriptor.value.bind(target)
       let interFace = ref.get(name, prototype, ":interFace")
       let fn_name = "[#1]" + interFace + "[#2]" + method
       Events[fn_name] = fn

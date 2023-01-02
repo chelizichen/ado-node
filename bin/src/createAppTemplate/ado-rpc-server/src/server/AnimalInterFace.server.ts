@@ -1,6 +1,6 @@
 // import { RpcServerController,Register } from "ado-node"
 
-import { RpcServerController,Register } from "../../../../../..";
+import { RpcServerController,Register } from "ado-node";
 
 /**
  * @description 用于编写 Animal 接口的配置文件

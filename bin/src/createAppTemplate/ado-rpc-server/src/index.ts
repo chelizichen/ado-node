@@ -1,5 +1,5 @@
 // import { RpcServerModules } from "ado-node";
-import { RpcServerModules } from "../../../../..";
+import { RpcServerModules } from "ado-node";
 import { AnimalInterFace } from "./server/AnimalInterFace.server";
 import { DogInterFace } from "./server/DogInterFace.server";
 

@@ -2,8 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import yaml from 'yaml'
 import path from 'path';
 import ejs from 'ejs'
-import { ArcInterFace } from '../../../index.d';
-import { ArcMethod } from '../../../index.d';
+import { ArcInterFace, ArcMethod } from '../../../index.d';
 
 
 class ArcYaml {

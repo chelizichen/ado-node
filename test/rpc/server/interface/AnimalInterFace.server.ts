@@ -1,4 +1,5 @@
-import { RpcServerController,Register } from "../../../..";
+import { RpcServerController,Register, Inject } from "../../../..";
+import { AnimalService } from "../service/AniamalService";
 
 /**
  * @description 用于编写 Animal 接口的配置文件
@@ -6,6 +7,8 @@ import { RpcServerController,Register } from "../../../..";
 @RpcServerController("AnimalInterFace")
 class AnimalInterFace {
     
+    @Inject(AnimalService)
+    AnimalService!:AnimalService
 
     @Register("hello")
     async hello(name:string,age:string,value:string):Promise<{message:string,test:string}>{
@@ -14,6 +17,8 @@ class AnimalInterFace {
         console.log(name);
         console.log(age);
         console.log(value);
+
+        console.log('this.AnimalService',this.AnimalService.hello());
         
         return {
             message:"hello hello",

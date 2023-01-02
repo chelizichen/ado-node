@@ -1,8 +1,10 @@
+// @ts-nocheck
+
 import  {EventEmitter} from 'events'
 /**
  * @description Promise/A 标准 
  */
-var ArcPromise = function(asyncCallBack:(resolve:any,reject:any)=>void){
+var ArcPromise = function(asyncCallBack:(resolve,reject)=>void){
     this.state = "ready"
     this.data = ""
     this.error = ""
@@ -21,23 +23,46 @@ ArcPromise.prototype.resolve = function<T>(data:T){
     this.Events.emit("success")
 }
 
-ArcPromise.prototype.then = function(thenCallBack:any){
+ArcPromise.prototype.then = function(thenCallBack){
     this.Events.on("success", ()=> thenCallBack(this.data))
     return this
 }
 
-ArcPromise.prototype.reject = function(error:any){
+ArcPromise.prototype.reject = function(error){
     this.state = "reject"
     this.error = error
     this.Events.emit("error")
 
 }
 
-ArcPromise.prototype.catch = function(errorCallBack:any){
+ArcPromise.prototype.catch = function(errorCallBack){
     this.Events.on("error", ()=> errorCallBack(this.error))
     return this
 }
 
+ArcPromise.all = function(AsyncCallBackArray:Array<typeof ArcPromise>){
+    if(AsyncCallBackArray instanceof Array){
+        let resultArray= []
+        let len = AsyncCallBackArray.length
+        let newArcPromise = new ArcPromise((resolve)=>{
+            AsyncCallBackArray.forEach((el,index)=>{
+                if(el instanceof ArcPromise){
+                    el.then((data)=>{
+                        resultArray[index] = data
+                        len--;
+                        if(len == 0){
+                            resolve(resultArray)
+                        }
+                    })
+                }
+            })
+        })
+        return newArcPromise
+    }else{
+        throw new Error("all 方法的参数必须为 回调数组")
+    }
+
+}
 export {
     ArcPromise
 }

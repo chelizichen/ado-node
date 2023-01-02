@@ -103,6 +103,8 @@ class AdoNodeServer {
       ":globalPipes"
     );
 
+    app.use(express.json());
+
     // 使用管道
     if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
       globalPipes.forEach((pipe: any) => {
@@ -111,7 +113,6 @@ class AdoNodeServer {
       });
     }
     // 使用JSON
-    app.use(express.json());
 
     // 创建Router
     const port = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
@@ -153,6 +154,8 @@ class AdoNodeServer {
     if (typeof hasRpcClient == "function") {
       hasRpcClient(app);
     }
+    
+    app.use(express.json());
 
     // 使用管道
     if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
@@ -162,7 +165,6 @@ class AdoNodeServer {
       });
     }
     // 使用JSON
-    app.use(express.json());
 
     // 使用文件上传
     app.use(multer({ dest: "public/server" }).any());

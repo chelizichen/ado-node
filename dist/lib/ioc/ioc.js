@@ -17,7 +17,7 @@ require("reflect-metadata");
 const ref_1 = require("./ref");
 const Inject = (InjectTarget) => {
     return function (target, propertyKey) {
-        const Service = ref_1.ref.get(InjectTarget);
+        let Service = ref_1.ref.get(InjectTarget);
         target.constructor.prototype[propertyKey] = Service;
     };
 };

@@ -1,12 +1,12 @@
 {
   "name": "ado-node",
-  "version": "2.8.0",
+  "version": "2.9.1",
   "description": "ts-decorator for express server",
   "bin": {
     "ado": "bin/index.js",
     "ado-cli": "bin/dev.js",
     "hasaky": "bin/hasaky.js",
-    "arc":"bin/proto.js"
+    "arc": "bin/proto.js"
   },
   "exports": {
     ".": {

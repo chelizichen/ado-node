@@ -10,6 +10,7 @@ import { getConnection, gerRedis, defineAdoNodeConfig } from "./lib/orm/conn";
 import { Req, Res, Params,Headers,Query,Body } from "./lib/params";
 import { class_transform, UsePipe, validate } from "./lib/pipe";
 import { Call, Register, RpcClientController, RpcClientModules, RpcServerController, RpcServerModules } from "./lib/rpc";
+import { RpcServerBoost } from "./lib/rpc/run";
 
 
 export { DataBaseError };
@@ -72,4 +73,4 @@ export { RpcClientController, RpcServerController };
 export { Call, Register };
 
 
-export { RpcServerModules, RpcClientModules };
+export { RpcServerModules, RpcClientModules, RpcServerBoost };

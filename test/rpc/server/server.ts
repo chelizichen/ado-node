@@ -1,4 +1,4 @@
-import { RpcServerModules } from "../../../lib/rpc/run";
+import { RpcServerBoost, RpcServerModules } from "../../../lib/rpc/run";
 import { AnimalInterFace } from "./interface/AnimalInterFace.server";
 import { DogInterFace } from "./interface/DogInterFace.server";
 
@@ -9,5 +9,11 @@ import { DogInterFace } from "./interface/DogInterFace.server";
   port: 9000,
   RpcServerController: [AnimalInterFace, DogInterFace],
 })
-// @ts-ignore
-class TestRpcServerModules {}
+class TestRpcServerModules {
+  constructor() {
+    const boost = RpcServerBoost(TestRpcServerModules);
+    boost()
+  }
+}
+
+new TestRpcServerModules()

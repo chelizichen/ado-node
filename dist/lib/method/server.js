@@ -8,7 +8,6 @@ const express_1 = __importDefault(require("express"));
 const ref_1 = require("../ioc/ref");
 const os_1 = require("os");
 const cluster_1 = __importDefault(require("cluster"));
-const multer_1 = __importDefault(require("multer"));
 function defineAdoNodeOptions(options) {
     return options;
 }
@@ -81,6 +80,7 @@ class AdoNodeServer {
         // this.readConfig();
         const app = (0, express_1.default)();
         const globalPipes = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":globalPipes");
+        app.use(express_1.default.json());
         // 使用管道
         if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
             globalPipes.forEach((pipe) => {
@@ -89,7 +89,6 @@ class AdoNodeServer {
             });
         }
         // 使用JSON
-        app.use(express_1.default.json());
         // 创建Router
         const port = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
         const base = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
@@ -113,6 +112,7 @@ class AdoNodeServer {
         if (typeof hasRpcClient == "function") {
             hasRpcClient(app);
         }
+        app.use(express_1.default.json());
         // 使用管道
         if (globalPipes && globalPipes.length && globalPipes instanceof Array) {
             globalPipes.forEach((pipe) => {
@@ -121,9 +121,8 @@ class AdoNodeServer {
             });
         }
         // 使用JSON
-        app.use(express_1.default.json());
         // 使用文件上传
-        app.use((0, multer_1.default)({ dest: "public/server" }).any());
+        // app.use(multer({ dest: "public/server" }).any());
         const base = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
         const port = ref_1.ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
         // 创建Router

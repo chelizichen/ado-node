@@ -3,7 +3,7 @@
 import { EventEmitter } from 'events'
 
 
-var ArcPromise = function (asyncCallBack) {
+var ArcPromise:PromiseLike = function (asyncCallBack) {
     this.state = "ready";
     this.data = "";
     this.error = "";
@@ -36,8 +36,17 @@ ArcPromise.prototype.then = function (thenCallBack) {
 ArcPromise.prototype.reject = function (error) {
     this.state = "reject";
     this.error = error;
-    this.Events.emit("error");
+    this.emitError()
 };
+
+/**
+ * @description 触发错误事件
+ */
+ArcPromise.prototype.emitError = function(){
+    if( this.Event && this.Events.eventNames().some(el=>el=="error")){
+        this.Events.emit("error")
+    }  
+}
 
 /**
  * @description 如果状态已经变更为 reject 则直接执行 callback 回调函数
@@ -79,6 +88,7 @@ ArcPromise.all = function (AsyncCallBackArray) {
 /**
  * @description 异步竞速 第一个成功或者失败回调
  * @param {Array<ArcPromise>} AsyncCallBackArray
+ * @returns {ArcPromise}
  */
 ArcPromise.race = function (AsyncCallBackArray) {
     let is_resolve = false;
@@ -99,7 +109,7 @@ ArcPromise.race = function (AsyncCallBackArray) {
                             if(index != race_index){
                                 el.error = "不调用"
                                 el.state = "reject"
-                                el.Events.emit("error")
+                                el.emitError()
                             }
                         })
                     }
@@ -115,7 +125,7 @@ ArcPromise.race = function (AsyncCallBackArray) {
                             if(index != race_index){
                                 el.error = "不调用"
                                 el.state = "reject"
-                                el.Events.emit("error")
+                                el.emitError()
                             }
                         })
                     }
@@ -177,6 +187,11 @@ ArcPromise.any = function(AsyncCallBackArray){
         throw new Error("all 方法的参数必须为 回调数组");
     }
 }
+
+function isArcPromise(obj:any){
+    return obj instanceof ArcPromise
+}
+
 export {
-    ArcPromise
+    ArcPromise,isArcPromise
 }

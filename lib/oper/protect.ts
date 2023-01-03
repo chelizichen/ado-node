@@ -1,4 +1,3 @@
-// 得到sql 注入的次数
 export function getStrCount<T extends string | string[]>(
   aStr: string,
   aChar: T

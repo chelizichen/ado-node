@@ -1,10 +1,9 @@
 import { ref } from "../ioc";
-
 import { Request } from "express";
-// 整个路由匹配拦截
-// 拦截器会在守卫之后执行
-// 单独路由拦截
 
+/**
+ * @description 使用路由拦截器
+ */
 const UseInterceptor = (fn: AdoNodeInterceptor): MethodDecorator => {
   return function (target: Object, propertyKey: string | symbol) {
     ref.def(
@@ -16,6 +15,9 @@ const UseInterceptor = (fn: AdoNodeInterceptor): MethodDecorator => {
   };
 };
 
+/**
+ * @description 路由拦截器接口
+ */
 interface AdoNodeInterceptor {
   before(req: Request):any;
   hack(req: Request): any;

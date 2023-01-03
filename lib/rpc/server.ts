@@ -40,32 +40,26 @@ class ArcServer {
 
     async recieve(data: Buffer) {
         let head_end = data.indexOf("[##]");
-
         let timeout = Number(this.unpkgHead(2, data, true));
         let head = data.subarray(0, data.indexOf(proto[2]));
-
         let body = data.subarray(head_end + 4, data.length);
-
         let _body = this.unpacking(body);
-        console.log("this.ArcEvent.events", this.ArcEvent.events);
-        console.log(head);
 
-        console.log(timeout);
-
-        let res = await Promise.race([
+        Promise.race([
             this.timeout(timeout),
             this.ArcEvent.emit(head, ..._body),
-        ]);
+        ]).then(res=>{
+            let toJson = JSON.stringify(res);
+            this.socket.write(toJson, function (err) {
+                if (err) {
+                    console.log("服务端写入错误", err);
+                }
+                console.log("服务端写入成功");
+            });
+        })
 
-        let toJson = JSON.stringify(res);
-        console.log(toJson);
 
-        this.socket.write(toJson, function (err) {
-            if (err) {
-                console.log("服务端写入错误", err);
-            }
-            console.log("服务端写入成功");
-        });
+
     }
 
     error(err: Error) {

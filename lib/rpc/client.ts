@@ -39,8 +39,9 @@ class ArcClient {
                     console.log("write -err ", err);
                     reject(err);
                 }
-                const res = await Promise.race([this.timeout(timeout), this.res()]);
-                resolve(res);
+                Promise.race([this.timeout(timeout), this.res()]).then(res=>{
+                    resolve(res);
+                })
             });
         });
     }

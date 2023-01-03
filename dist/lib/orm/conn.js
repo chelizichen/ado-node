@@ -38,7 +38,7 @@ exports.defineAdoNodeConfig = defineAdoNodeConfig;
 class Connection {
     static connectionPool;
     static async readConfig() {
-        const config = process.cwd() + "/ado.config.ts";
+        const config = process.cwd() + "/ado.config.js";
         const data = await Promise.resolve().then(() => __importStar(require(config)));
         await Connection.createConnection(data);
     }

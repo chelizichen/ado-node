@@ -1,4 +1,4 @@
-import { RpcClientController,Call, Body, Inject } from "../../../.."
+import { RpcClientController,Call, Body, Inject, Timeout } from "../../../.."
 import { AnimalService } from "../service/AniamalService"
 
 
@@ -8,17 +8,16 @@ class animalController{
     @Inject(AnimalService)
     AnimalService!:AnimalService
 
-    @Call("/hello","hello")
+    @Call("/hello", "hello")
+    @Timeout(5000)
     async hello(@Body() body:{name:string,age:string,value:string}):Promise<{name:string,age:string,value:string}>{
         const {name,age,value} = body
         console.log(this.AnimalService.hello());
-        
         return {
             name,
             age,
             value
         }
-
     }
     
     @Call("/jump","jump")

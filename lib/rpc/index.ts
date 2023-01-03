@@ -21,8 +21,8 @@ type RpcClientValue = {
     method: string;
     data: any;
     interFace: string;
-  }
-
+    timeout: number;
+  };
 };
 
 // 数据包

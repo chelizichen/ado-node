@@ -26,7 +26,7 @@ const Call = (router: string, method: string): MethodDecorator => {
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name, prototype, ":socket") as ArcClient;
       let base = ref.get(name, prototype, ":base")
-
+      let timeout = ref.get(propertyKey as string,prototype,":timeout")
 
       // Aop 处理
       descriptor.value = async function (req: Request, res: Response) {
@@ -34,10 +34,11 @@ const Call = (router: string, method: string): MethodDecorator => {
 
         let data = await fn(...args);
 
-        let RemoteCallReq: RpcClientValue['router'] = {
+        let RemoteCallReq: RpcClientValue["router"] = {
           data,
           method,
           interFace,
+          timeout:timeout?timeout:3000,
         };
 
         let RpcCallRes = await socket.call(RemoteCallReq)
@@ -55,7 +56,12 @@ const Call = (router: string, method: string): MethodDecorator => {
   };
 };
 
-
+const Timeout = (timeout:number):MethodDecorator => {
+  return function (target: Object, propertyKey: string | symbol, _: PropertyDescriptor) {
+    const {prototype} = target.constructor
+    ref.def(propertyKey as string,timeout,prototype,":timeout")
+  }
+}
 
 /**
  * 
@@ -76,4 +82,4 @@ const Register = (method: string): MethodDecorator => {
   }
 };
 
-export { Call, Register }
+export { Call, Register, Timeout };

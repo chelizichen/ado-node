@@ -5,7 +5,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ado-cli run-node",
     "build": "ado-cli build-node",
-    "preview":"ado-cli preview node",
+    "preview":"ado-cli preview rpc-server",
     "release":"ado-cli preview",
     "generate":"arc generate server"
 

@@ -11,7 +11,8 @@ const {
   previewNodeApp,
   previewViteApp,
   createTgz,
-  runBuildApp
+  runBuildApp,
+  previewRpcServer
 } = require("./src/runApp.js");
 const chalk = require("chalk")
 
@@ -86,6 +87,9 @@ program
     }
     if (args == "node") {
       previewNodeApp()
+    }
+    if (args == "rpc-server") {
+      previewRpcServer()
     }
   });
 

@@ -102,6 +102,14 @@ function previewNodeApp() {
   });
 }
 
+function previewRpcServer() {
+  const currProcess = spawn("node dist/src/index.js", {
+    stdio: "inherit",
+    shell: true,
+    env: process.env,
+  });
+}
+
 function previewViteApp() {
   const currProcess = spawn("vite preview", {
     stdio: "inherit",
@@ -109,6 +117,7 @@ function previewViteApp() {
     env: process.env,
   });
 }
+
 
 function runBuildApp() {
   return new Promise((resolve) => {
@@ -260,4 +269,5 @@ module.exports = {
   previewViteApp,
   createTgz,
   runBuildApp,
+  previewRpcServer
 };

@@ -1,0 +1,41 @@
+struct:
+
+  TestTable:
+    id: string
+    goods_name: string
+    goods_price: string
+    goods_rest_num: string
+    seller_id: string
+    sort_child_id: string
+    sk_price: string
+    sk_status: string
+
+  HelloRequest: 
+    name: string
+    age: string
+    value: string
+
+  
+  HelloResponse:
+    message: string
+    data: Array<TestTable>
+  JumpRequest: 
+    type: string
+    address: string
+    value: string
+
+  JumpResponse:
+    message: string
+  
+  WoffRequest:
+    message: string
+
+  WoffResponse:
+    message: string
+
+  EatRequest:
+    message: string
+
+  EatResponse:
+    message: string
+

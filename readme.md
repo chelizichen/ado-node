@@ -623,6 +623,31 @@ RPC服务为 **C/S** 架构，基于TCP 之上 。Client 端 基于Express 的 H
 
 框架提供了 命令行工具 可以快速的根据 arc.config.yaml 扫描  接口/参数/模块的配置路径，并生成 client 或者 server 相关的文件，帮助开发者快速开发服务
 
+### arc.config.yaml
+
+````shell
+    用于配制 RpcServer 相关信息
+    生成目录文件
+
+    命令行 arc generate server 即可生成文件
+````
+
+````yaml
+# rpc 配置
+arc:
+  # yaml 配置文件
+  yaml: 
+    modules: src/yaml/modules
+    interface: src/yaml/interface
+    struct: src/yaml/struct
+  #  生成 client-server 的路径
+  generate: 
+    # 客户端生成rpc 接口文件需要的路径
+    server: src/server
+    # 服务端生成rpc 接口文件需要的路径
+    client: src/rpc/client
+````
+
 ## Module 模块化
 
 Provider 里 可以包含各类的 Module

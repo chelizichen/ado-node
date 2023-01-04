@@ -35,7 +35,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdoNodeController = exports.Boost = void 0;
 const express = __importStar(require("express"));
 const ref_1 = require("./ref");
-// import {Boost} from './symbol'
 exports.Boost = Symbol("Boost");
 class AdoNodeController {
     Base;

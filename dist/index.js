@@ -1915,8 +1915,11 @@ var ArcClient = class {
           console.log("write -err ", err);
           reject(err);
         }
-        const res = await Promise.race([this.timeout(timeout), this.res()]);
-        resolve(res);
+        Promise.race([this.timeout(timeout), this.res()]).then((res) => {
+          resolve(res);
+        }).catch((err2) => {
+          reject(err2);
+        });
       });
     });
   }
@@ -1956,9 +1959,9 @@ var ArcClient = class {
     return head;
   }
   timeout(timeout) {
-    return new Promise((res) => {
+    return new Promise((_2, rej) => {
       let _time = setTimeout(() => {
-        res("\u8BF7\u6C42\u8D85\u65F6");
+        rej("\u8BF7\u6C42\u8D85\u65F6");
         clearTimeout(_time);
       }, timeout);
     });
@@ -2010,8 +2013,12 @@ var Call = (router, method) => {
           interFace,
           timeout: timeout ? timeout : 3e3
         };
-        let RpcCallRes = await socket.call(RemoteCallReq);
-        res.json(RpcCallRes);
+        try {
+          let RpcCallRes = await socket.call(RemoteCallReq);
+          res.json(RpcCallRes);
+        } catch (e) {
+          console.log(e);
+        }
       };
       if (!RpcClientMap[base]) {
         RpcClientMap[base] = [];
@@ -2078,20 +2085,24 @@ var ArcServer = class {
     let head = data.subarray(0, data.indexOf(proto[2]));
     let body = data.subarray(head_end + 4, data.length);
     let _body = this.unpacking(body);
-    console.log("this.ArcEvent.events", this.ArcEvent.events);
-    console.log(head);
-    console.log(timeout);
-    let res = await Promise.race([
+    Promise.race([
       this.timeout(timeout),
       this.ArcEvent.emit(head, ..._body)
-    ]);
-    let toJson = JSON.stringify(res);
-    console.log(toJson);
-    this.socket.write(toJson, function(err) {
-      if (err) {
-        console.log("\u670D\u52A1\u7AEF\u5199\u5165\u9519\u8BEF", err);
-      }
-      console.log("\u670D\u52A1\u7AEF\u5199\u5165\u6210\u529F");
+    ]).then((res) => {
+      let toJson = JSON.stringify(res);
+      this.socket.write(toJson, function(err) {
+        if (err) {
+          console.log("\u670D\u52A1\u7AEF\u5199\u5165\u9519\u8BEF", err);
+        }
+        console.log("\u670D\u52A1\u7AEF\u5199\u5165\u6210\u529F");
+      });
+    }).catch((err) => {
+      this.socket.write(err, function(err2) {
+        if (err2) {
+          console.log("\u670D\u52A1\u7AEF\u5199\u5165\u9519\u8BEF", err2);
+        }
+        console.log("\u670D\u52A1\u7AEF\u5199\u5165\u6210\u529F");
+      });
     });
   }
   error(err) {
@@ -2153,9 +2164,9 @@ var ArcServer = class {
     return timeout;
   }
   timeout(time) {
-    return new Promise((res) => {
+    return new Promise((_2, rej) => {
       let _time = setTimeout(() => {
-        res("\u8BF7\u6C42\u8D85\u65F6");
+        rej("\u8BF7\u6C42\u8D85\u65F6");
         clearTimeout(_time);
       }, time);
     });

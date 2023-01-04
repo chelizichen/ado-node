@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStrCount = void 0;
-// 得到sql 注入的次数
 function getStrCount(aStr, aChar) {
     let result;
     let count = 0;

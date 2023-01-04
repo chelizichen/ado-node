@@ -1,6 +1,5 @@
 import { createServer, Server, Socket } from "net";
 import { size, proto } from ".";
-import { ArcPromise } from "../oper/promise";
 import { ArcEvent } from "./event";
 
 export type ConnOpt = { port: number; host: string };
@@ -46,7 +45,7 @@ class ArcServer {
         let body = data.subarray(head_end + 4, data.length);
         let _body = this.unpacking(body);
 
-        ArcPromise.race([
+        Promise.race([
             this.timeout(timeout),
             this.ArcEvent.emit(head, ..._body),
         ]).then((res:any)=>{
@@ -150,7 +149,7 @@ class ArcServer {
     }
 
     timeout(time: number) {
-        return new ArcPromise((_:any,rej:any) => {
+        return new Promise((_:any,rej:any) => {
             let _time = setTimeout(() => {
                 rej("请求超时");
                 clearTimeout(_time);

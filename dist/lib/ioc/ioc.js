@@ -1,18 +1,6 @@
 "use strict";
-/**
- * @Author chelizichen
- * @description  DI 的 实现
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Collect = exports.Inject = void 0;
-// @Controller("/user")
-// class UserController extends AdoNodeController{
-//   @Inject(UserService)
-//   UserService!: UserService;
-// }
-// @Collect()
-// class UserService{
-// }
 require("reflect-metadata");
 const ref_1 = require("./ref");
 const Inject = (InjectTarget) => {

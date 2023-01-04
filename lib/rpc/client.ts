@@ -2,7 +2,6 @@ import { Socket } from "net";
 import { proto, RpcClientValue, size } from ".";
 import { ConnOpt } from "./server";
 import { ArcEvent } from "./event";
-import { ArcPromise } from "../oper/promise";
 
 class ArcClient {
     public Net: Socket;
@@ -34,13 +33,13 @@ class ArcClient {
 
         let call_buf = Buffer.concat([head, body]);
 
-        return new ArcPromise((resolve:any, reject:any) => {
+        return new Promise((resolve:any, reject:any) => {
             this.Net.write(call_buf, async (err) => {
                 if (err) {
                     console.log("write -err ", err);
                     reject(err);
                 }
-                ArcPromise.race([this.timeout(timeout), this.res()]).then((res:any)=>{
+                Promise.race([this.timeout(timeout), this.res()]).then((res:any)=>{
                     resolve(res);
                 }).catch((err:any)=>{
                     reject(err)
@@ -52,7 +51,7 @@ class ArcClient {
      * @description 得到会无端传输过来的数据
      */
     res() {
-        return new ArcPromise((resolve:any) => {
+        return new Promise((resolve:any) => {
             this.Net.on("data", function (data: Buffer) {
                 console.log("data", data);
                 resolve(data.toString());
@@ -98,7 +97,7 @@ class ArcClient {
         return head;
     }
     timeout(timeout: number) {
-        return new ArcPromise((_:any,rej:any) => {
+        return new Promise((_:any,rej:any) => {
             let _time = setTimeout(() => {
                 rej("请求超时");
                 clearTimeout(_time);

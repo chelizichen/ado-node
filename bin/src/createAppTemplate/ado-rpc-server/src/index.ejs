@@ -11,8 +11,10 @@ import { DogInterFace } from "./server/DogInterFace.server";
 })
 class TestRpcServerModules {
   constructor() {
-    const boost = RpcServerBoost(TestRpcServerModules);
-    boost()
+    setTimeout(()=>{
+      const boost = RpcServerBoost(TestRpcServerModules);
+      boost()
+    },0)
   }
 }
 

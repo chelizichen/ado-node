@@ -2,18 +2,18 @@ import { readFileSync } from 'fs';
 import yaml from 'yaml'
 import path from 'path';
 
-declare interface ArcInterFace {
-    name: string;
-    remote: string;
-    description: string;
-}
+// declare interface ArcInterFace {
+//     name: string;
+//     remote: string;
+//     description: string;
+// }
 
-declare interface ArcMethod {
-    [method:string]:{
-        req:string,
-        res:string
-    }
-}
+// declare interface ArcMethod {
+//     [method:string]:{
+//         req:string,
+//         res:string
+//     }
+// }
 
 class ArcYaml {
     public content: any;

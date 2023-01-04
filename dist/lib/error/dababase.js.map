@@ -1,1 +1,0 @@
-{"version":3,"file":"dababase.js","sourceRoot":"","sources":["../../../lib/error/dababase.ts"],"names":[],"mappings":";;;AAAA,mDAA4C;AAE5C,QAAQ;AACR,MAAM,aAAc,SAAQ,KAAK;IACxB,IAAI,GAAG,eAAe,CAAC;IACvB,IAAI,GAAG,eAAI,CAAC,KAAK,CAAC;IAClB,MAAM,CAAC;IACd,YAAY,OAAe,EAAE,MAAW;QACtC,KAAK,CAAC,OAAO,CAAC,CAAC;QACf,IAAI,CAAC,MAAM,GAAG,MAAM,CAAC;IACvB,CAAC;CACF;AAEQ,sCAAa"}

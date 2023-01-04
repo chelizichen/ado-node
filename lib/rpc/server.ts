@@ -1,5 +1,5 @@
 import { createServer, Server, Socket } from "net";
-import { size, proto } from ".";
+import { size, proto } from "./index";
 import { ArcEvent } from "./event";
 
 export type ConnOpt = { port: number; host: string };

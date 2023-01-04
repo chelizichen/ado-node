@@ -2,6 +2,8 @@
   "name": "ado-node",
   "version": "3.0.0",
   "description": "ts-decorator for express server",
+  "main":"./dist/index.js",
+  "module": "./dist/index.mjs",
   "bin": {
     "ado": "bin/index.js",
     "ado-cli": "bin/dev.js",

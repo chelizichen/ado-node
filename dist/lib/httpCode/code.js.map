@@ -1,1 +1,0 @@
-{"version":3,"file":"code.js","sourceRoot":"","sources":["../../../lib/httpCode/code.ts"],"names":[],"mappings":";;;AAAA,uCAAkC;AAElC,MAAM,IAAI,GAAG,CAAC,MAAc,EAAmB,EAAE;IAC/C,OAAO,UAAU,MAAc,EAAE,WAA4B;QAC3D,WAAG,CAAC,GAAG,CACL,WAAqB,EACrB,MAAM,EACN,MAAM,CAAC,WAAW,CAAC,SAAS,EAC5B,SAAS,CACV,CAAC;IACJ,CAAC,CAAC;AACJ,CAAC,CAAC;AAEO,oBAAI"}

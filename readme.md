@@ -5,6 +5,9 @@
 ## 快速构建 基于Express 之上的 Node ｜ SSR 服务
 
     npm install ado-node@latest -g
+
+**注**： 使用 @Ado/Rpc Server 时 ，node 的版本最好在14
+
 ***
 设计思想：
   **高度使用 IOC 和 AOP， 将 请求 - 响应分为不同的生命周期 每个生命周期实现不同的逻辑功能**

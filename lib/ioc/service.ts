@@ -1,8 +1,6 @@
 import { IRouter } from "express";
 import { AdoNodeController, Boost } from "./class";
 import { ref } from "./ref";
-
-// 创建SerivceMap
 const SerivceMap = new Map<string, any>();
 
 /**

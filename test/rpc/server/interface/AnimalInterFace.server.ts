@@ -17,8 +17,8 @@ class AnimalInterFace {
         console.log(name);
         console.log(age);
         console.log(value);
-        const data = await this.AnimalService.hello()
-        console.log(data);
+        // const data = await this.AnimalService.hello()
+        // console.log('data',data);
                 
         return {
             message:"hello hello",

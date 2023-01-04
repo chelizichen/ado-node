@@ -1,12 +1,16 @@
-// 整个路由匹配拦截
-// 拦截器会在守卫之后执行
-// 单独路由拦截
 import { ref } from "../ioc";
 import { Request } from "express";
+
+/**
+ * @description 控制层拦截器
+ */
 interface AdoNodeControllerInterceptor {
   before?(req: Request): Promise<any>;
   after?(req: Request): Promise<any>;
 }
+/**
+ * @description 使用控制层拦截器
+ */
 const UseControllerInterceptor = (
   fn: AdoNodeControllerInterceptor
 ): ClassDecorator => {

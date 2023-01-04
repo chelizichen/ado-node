@@ -24,7 +24,6 @@ import * as express from "express";
 import { ref } from "./ref";
 import { Request, Response } from "express";
 import { AdoNodeControllerInterceptor } from "../interceptor/global";
-// import {Boost} from './symbol'
 
 export const Boost = Symbol("Boost")
 

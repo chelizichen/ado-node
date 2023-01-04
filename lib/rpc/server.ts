@@ -1,5 +1,6 @@
 import { createServer, Server, Socket } from "net";
 import { size, proto } from ".";
+import { ArcPromise } from "../oper/promise";
 import { ArcEvent } from "./event";
 
 export type ConnOpt = { port: number; host: string };
@@ -40,32 +41,33 @@ class ArcServer {
 
     async recieve(data: Buffer) {
         let head_end = data.indexOf("[##]");
-
         let timeout = Number(this.unpkgHead(2, data, true));
         let head = data.subarray(0, data.indexOf(proto[2]));
-
         let body = data.subarray(head_end + 4, data.length);
-
         let _body = this.unpacking(body);
-        console.log("this.ArcEvent.events", this.ArcEvent.events);
-        console.log(head);
 
-        console.log(timeout);
-
-        let res = await Promise.race([
+        ArcPromise.race([
             this.timeout(timeout),
             this.ArcEvent.emit(head, ..._body),
-        ]);
+        ]).then((res:any)=>{
+            let toJson = JSON.stringify(res);
+            this.socket.write(toJson, function (err) {
+                if (err) {
+                    console.log("服务端写入错误", err);
+                }
+                console.log("服务端写入成功");
+            });
+        }).catch((err:any)=>{
+            this.socket.write(err, function (err) {
+                if (err) {
+                    console.log("服务端写入错误", err);
+                }
+                console.log("服务端写入成功");
+            });
+        })
 
-        let toJson = JSON.stringify(res);
-        console.log(toJson);
 
-        this.socket.write(toJson, function (err) {
-            if (err) {
-                console.log("服务端写入错误", err);
-            }
-            console.log("服务端写入成功");
-        });
+
     }
 
     error(err: Error) {
@@ -148,9 +150,9 @@ class ArcServer {
     }
 
     timeout(time: number) {
-        return new Promise((res) => {
+        return new ArcPromise((_:any,rej:any) => {
             let _time = setTimeout(() => {
-                res("请求超时");
+                rej("请求超时");
                 clearTimeout(_time);
             }, time);
         });

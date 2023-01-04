@@ -28,7 +28,11 @@ type RpcClientModulestype = {
 const RpcServerModules = (opt: RpcServerModulesType) => {
   return function (target: Function) {
     (async function () {
-      await Connection.readConfig();
+      try{
+        await Connection.readConfig();
+      }catch(e){
+        throw e
+      }
     })();
     function boost() {
       setImmediate(() => {

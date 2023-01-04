@@ -29,8 +29,12 @@ class Connection {
 
   static async readConfig() {
     const config = process.cwd() + "/ado.config.js";
-    const data = await import(config);
-    await Connection.createConnection(data);
+    try{
+      const data = await import(config);
+      await Connection.createConnection(data);
+    }catch(e){
+      throw e
+    }
   }
 
   static async createConnection(configInfo: any) {

@@ -6,3 +6,4 @@ export function previewNodeApp(): void;
 export function previewViteApp(): void;
 export function createTgz(tgzName: any, opt: any): void;
 export function runBuildApp(): Promise<any>;
+export function previewRpcServer(): void;

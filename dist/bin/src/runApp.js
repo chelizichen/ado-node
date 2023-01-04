@@ -63,6 +63,13 @@ function previewNodeApp() {
         env: process.env,
     });
 }
+function previewRpcServer() {
+    const currProcess = spawn("node dist/src/index.js", {
+        stdio: "inherit",
+        shell: true,
+        env: process.env,
+    });
+}
 function previewViteApp() {
     const currProcess = spawn("vite preview", {
         stdio: "inherit",
@@ -185,5 +192,6 @@ module.exports = {
     previewViteApp,
     createTgz,
     runBuildApp,
+    previewRpcServer
 };
 //# sourceMappingURL=runApp.js.map

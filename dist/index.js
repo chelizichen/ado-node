@@ -73,6 +73,7 @@ __export(ado_node_exports, {
   RpcServerController: () => RpcServerController,
   RpcServerModules: () => RpcServerModules,
   SerivceMap: () => SerivceMap,
+  Timeout: () => Timeout,
   TypesError: () => TypesError,
   UseControllerInterceptor: () => UseControllerInterceptor,
   UseInterceptor: () => UseInterceptor,
@@ -1901,9 +1902,9 @@ var ArcClient = class {
     });
   }
   call(pkg) {
-    const { method, data, interFace } = pkg;
+    const { method, data, interFace, timeout } = pkg;
     let head = Buffer.alloc(100);
-    let head_str = this.getRequestHead(interFace, method);
+    let head_str = this.getRequestHead(interFace, method, String(timeout));
     head.write(head_str);
     let getRequestArgs = this.getRequestArgs(data);
     let body = Buffer.from(getRequestArgs);
@@ -1914,9 +1915,7 @@ var ArcClient = class {
           console.log("write -err ", err);
           reject(err);
         }
-        console.log("\u5BA2\u6237\u7AEF\u5DF2\u5199\u5165\uFF0C\u7B49\u5F85\u54CD\u5E94");
-        const res = await this.res();
-        console.log("res", res);
+        const res = await Promise.race([this.timeout(timeout), this.res()]);
         resolve(res);
       });
     });
@@ -1956,6 +1955,14 @@ var ArcClient = class {
     head += proto[proto.length - 1];
     return head;
   }
+  timeout(timeout) {
+    return new Promise((res) => {
+      let _time = setTimeout(() => {
+        res("\u8BF7\u6C42\u8D85\u65F6");
+        clearTimeout(_time);
+      }, timeout);
+    });
+  }
 };
 
 // lib/rpc/controller.ts
@@ -1993,13 +2000,15 @@ var Call = (router, method) => {
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name, prototype, ":socket");
       let base = ref.get(name, prototype, ":base");
+      let timeout = ref.get(propertyKey, prototype, ":timeout");
       descriptor.value = async function(req, res) {
         const args = useArgs(propertyKey, target, req, res);
         let data = await fn(...args);
         let RemoteCallReq = {
           data,
           method,
-          interFace
+          interFace,
+          timeout: timeout ? timeout : 3e3
         };
         let RpcCallRes = await socket.call(RemoteCallReq);
         res.json(RpcCallRes);
@@ -2009,6 +2018,12 @@ var Call = (router, method) => {
       }
       RpcClientMap[base].push({ [router]: descriptor.value });
     });
+  };
+};
+var Timeout = (timeout) => {
+  return function(target, propertyKey, _2) {
+    const { prototype } = target.constructor;
+    ref.def(propertyKey, timeout, prototype, ":timeout");
   };
 };
 var Register = (method) => {
@@ -2059,10 +2074,17 @@ var ArcServer = class {
   }
   async recieve(data) {
     let head_end = data.indexOf("[##]");
-    let head = data.subarray(0, head_end);
+    let timeout = Number(this.unpkgHead(2, data, true));
+    let head = data.subarray(0, data.indexOf(proto[2]));
     let body = data.subarray(head_end + 4, data.length);
     let _body = this.unpacking(body);
-    let res = await this.ArcEvent.emit(head, ..._body);
+    console.log("this.ArcEvent.events", this.ArcEvent.events);
+    console.log(head);
+    console.log(timeout);
+    let res = await Promise.race([
+      this.timeout(timeout),
+      this.ArcEvent.emit(head, ..._body)
+    ]);
     let toJson = JSON.stringify(res);
     console.log(toJson);
     this.socket.write(toJson, function(err) {
@@ -2118,6 +2140,25 @@ var ArcServer = class {
       init++;
     }
     return args;
+  }
+  unpkgHead(start, data, end) {
+    let start_index = data.indexOf(proto[start]);
+    let start_next = 0;
+    if (end) {
+      start_next = data.indexOf(proto[proto.length - 1]);
+    } else {
+      start_next = data.indexOf(proto[start + 1]);
+    }
+    let timeout = data.subarray(start_index + proto[start].length, start_next).toString("utf-8");
+    return timeout;
+  }
+  timeout(time) {
+    return new Promise((res) => {
+      let _time = setTimeout(() => {
+        res("\u8BF7\u6C42\u8D85\u65F6");
+        clearTimeout(_time);
+      }, time);
+    });
   }
 };
 
@@ -2262,6 +2303,7 @@ var proto = [
   RpcServerController,
   RpcServerModules,
   SerivceMap,
+  Timeout,
   TypesError,
   UseControllerInterceptor,
   UseInterceptor,

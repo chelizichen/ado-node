@@ -3,7 +3,7 @@
 const program = require("commander");
 const fs = require("fs");
 const fse = require("fs-extra");
-const { runViteApp, runNodeApp, buildNodeApp, buildViteApp, previewNodeApp, previewViteApp, createTgz, runBuildApp } = require("./src/runApp.js");
+const { runViteApp, runNodeApp, buildNodeApp, buildViteApp, previewNodeApp, previewViteApp, createTgz, runBuildApp, previewRpcServer } = require("./src/runApp.js");
 const chalk = require("chalk");
 // 得到当前命令执行目录
 const generatePath = process.cwd();
@@ -71,6 +71,9 @@ program
     }
     if (args == "node") {
         previewNodeApp();
+    }
+    if (args == "rpc-server") {
+        previewRpcServer();
     }
 });
 // npm run build && tar -cvf AdoTest001.tgz ./dist package.json node_modules

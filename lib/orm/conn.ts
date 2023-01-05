@@ -32,7 +32,6 @@ class Connection {
       const config = process.cwd() + "/ado.config.js";
       try {
         const data = require(config);
-        console.log('data',data);
         await Connection.createConnection(data);
       } catch (e) {
         throw e;
@@ -41,7 +40,7 @@ class Connection {
   }
 
   static async createConnection(configInfo: any) {
-    const config = configInfo.default.database;
+    const config = configInfo.database || configInfo.default.database;
     Connection.connectionPool = await mysql.createPool({
       host: config.host,
       user: config.username,

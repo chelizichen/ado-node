@@ -31,7 +31,8 @@ class Connection {
     if (!Connection.connectionPool) {
       const config = process.cwd() + "/ado.config.js";
       try {
-        const data = await import(config);
+        const data = require(config);
+        console.log('data',data);
         await Connection.createConnection(data);
       } catch (e) {
         throw e;

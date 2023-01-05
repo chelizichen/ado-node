@@ -1,5 +1,5 @@
 import { IRouter, Request } from "express";
-import { AdoNodeController } from ".";
+import { AdoNodeController } from "./index";
 import { AdoNodeControllerInterceptor } from "./lib/interceptor/global";
 import { AdoNodeInterceptor } from "./lib/interceptor/interceptor";
 import { AdoNodePipe, AdoNodeGlobalPipe } from "./lib/pipe";

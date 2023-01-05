@@ -5,8 +5,15 @@ import { useArgs } from "../method/method";
 import { Request, Response } from 'express'
 import { ArcClient } from "./client";
 import { nextTick } from "process";
+import { ArcList } from "./list";
 
-export const RpcClientMap: Record<RpcClientRemote, RpcClientValue[]> = {}
+
+export function CreateClientMap(): Record<RpcClientRemote, RpcClientValue[]> {
+  const RpcClientMap: Record<RpcClientRemote, RpcClientValue[]> = {};
+  return RpcClientMap;
+}
+
+
 
 
 /**
@@ -26,34 +33,28 @@ const Call = (router: string, method: string): MethodDecorator => {
       let interFace = ref.get(name, prototype, ":interFace");
       let socket = ref.get(name, prototype, ":socket") as ArcClient;
       let base = ref.get(name, prototype, ":base")
+      let RpcClientMap = ref.get(name, prototype, ":clientMap");
       let timeout = ref.get(propertyKey as string, prototype, ":timeout")
-
-      // Aop 处理
+      let ArcList = ref.get(ArcClient.name, ArcClient.prototype, ":arcList") as ArcList
       descriptor.value = async function (req: Request, res: Response) {
-        const args = useArgs(propertyKey as string, target, req, res);
-
-        let data = await fn(...args);
-
-        let RemoteCallReq: RpcClientValue["router"] = {
-          data,
-          method,
-          interFace,
-          timeout: timeout ? timeout : 3000,
-        };
-        try {
-          let RpcCallRes = await socket.call(RemoteCallReq)
-          res.json(RpcCallRes)
-        } catch (e) {
-          console.log(e);
-        }
-
+        ArcList.push(async () => {
+          const args = useArgs(propertyKey as string, target, req, res);
+          let data = await fn(...args);
+          let RemoteCallReq: RpcClientValue["router"] = {
+            data,
+            method,
+            interFace,
+            timeout: timeout ? timeout : 3000,
+          };
+          return socket.call(RemoteCallReq).then((RpcCallRes) => {
+            res.json(RpcCallRes);
+          });
+        })
       };
-
       if (!RpcClientMap[base]) {
         RpcClientMap[base] = []
       }
       RpcClientMap[base].push({ [router]: descriptor.value })
-
     })
 
 

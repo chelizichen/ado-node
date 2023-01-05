@@ -28,12 +28,14 @@ class Connection {
   static connectionPool: mysql.Pool;
 
   static async readConfig() {
-    const config = process.cwd() + "/ado.config.js";
-    try{
-      const data = await import(config);
-      await Connection.createConnection(data);
-    }catch(e){
-      throw e
+    if (!Connection.connectionPool) {
+      const config = process.cwd() + "/ado.config.js";
+      try {
+        const data = await import(config);
+        await Connection.createConnection(data);
+      } catch (e) {
+        throw e;
+      }
     }
   }
 

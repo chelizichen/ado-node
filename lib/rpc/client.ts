@@ -2,14 +2,20 @@ import { Socket } from "net";
 import { proto, RpcClientValue, size } from ".";
 import { ConnOpt } from "./server";
 import { ArcEvent } from "./event";
-
+import { ArcList } from "./list";
+import { ref } from "../ioc/ref";
 class ArcClient {
     public Net: Socket;
-
+    public ArcList;
     constructor(opts: ConnOpt) {
         const { port, host } = opts;
-
+        this.ArcList = new ArcList();
         this.Net = ArcEvent.getTcpConn(JSON.stringify({ port, host }));
+        
+        const { name, prototype } = ArcClient
+        if (!ref.get(name, prototype, ":arcList")) {
+            ref.def(name,this.ArcList,prototype,":arcList")
+        }
 
         this.Net.on("error", function (err) {
             console.log(err);
@@ -33,17 +39,19 @@ class ArcClient {
 
         let call_buf = Buffer.concat([head, body]);
 
-        return new Promise((resolve:any, reject:any) => {
+        return new Promise((resolve: any, reject: any) => {
             this.Net.write(call_buf, async (err) => {
                 if (err) {
                     console.log("write -err ", err);
                     reject(err);
                 }
-                Promise.race([this.timeout(timeout), this.res()]).then((res:any)=>{
-                    resolve(res);
-                }).catch((err:any)=>{
-                    reject(err)
-                })
+                Promise.race([this.timeout(timeout), this.res()])
+                    .then((res: any) => {
+                        resolve(res);
+                    })
+                    .catch((err: any) => {
+                        reject(err);
+                    });
             });
         });
     }
@@ -51,9 +59,8 @@ class ArcClient {
      * @description 得到会无端传输过来的数据
      */
     res() {
-        return new Promise((resolve:any) => {
+        return new Promise((resolve: any) => {
             this.Net.on("data", function (data: Buffer) {
-                console.log("data", data);
                 resolve(data.toString());
             });
         });
@@ -97,7 +104,7 @@ class ArcClient {
         return head;
     }
     timeout(timeout: number) {
-        return new Promise((_:any,rej:any) => {
+        return new Promise((_: any, rej: any) => {
             let _time = setTimeout(() => {
                 rej("请求超时");
                 clearTimeout(_time);

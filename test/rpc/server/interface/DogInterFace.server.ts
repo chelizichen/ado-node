@@ -14,7 +14,7 @@ class DogInterFace {
     async woff(message: string): Promise<{ message: string }> {
         console.log(message);
         try {
-            const data = await this.AnimalService.hello(100);
+            const data = await this.AnimalService.hello(0);
             console.log("data", data);
         } catch (e) {
             console.log(e);
@@ -30,7 +30,7 @@ class DogInterFace {
     async eat(message: string): Promise<{ message: string }> {
         console.log(message);
         try {
-            const data = await this.AnimalService.hello(100);
+            const data = await this.AnimalService.hello(0);
             console.log("data", data);
         } catch (e) {
             console.log(e);

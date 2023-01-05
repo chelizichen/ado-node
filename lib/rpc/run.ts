@@ -5,7 +5,6 @@
 
 import express, { Express } from "express";
 import { ref } from "../ioc";
-import { RpcClientMap } from "./bind";
 import { ArcServer } from "./server";
 import { AdoNodeServer } from "../method";
 import { nextTick } from "process";
@@ -28,9 +27,9 @@ type RpcClientModulestype = {
 const RpcServerModules = (opt: RpcServerModulesType) => {
   return function (target: Function) {
     (async function () {
-      try{
+      try {
         await Connection.readConfig();
-      }catch(e){
+      } catch (e) {
         throw e
       }
     })();
@@ -46,32 +45,40 @@ const RpcServerModules = (opt: RpcServerModulesType) => {
         server.registEvents(...events);
       });
     }
-    ref.def(target.name,boost,target.prototype,":boost")
+    ref.def(target.name, boost, target.prototype, ":boost")
   };
 };
 
-function RpcServerBoost(RpcServerClass:Function) {
-      const { name, prototype } = RpcServerClass;
-      const boost = ref.get(name, prototype, ":boost");
+function RpcServerBoost(RpcServerClass: Function) {
+  const { name, prototype } = RpcServerClass;
+  const boost = ref.get(name, prototype, ":boost");
   return boost
 }
 
-const RpcClientModules = (_: RpcClientModulestype) => {
+const RpcClientModules = (RpcClientOptions: RpcClientModulestype) => {
   return function (_: typeof AdoNodeServer) {
     const { name, prototype } = AdoNodeServer;
     function RpcClient(app: Express) {
       let router = express.Router();
+      let clientMap = {}
+
       nextTick(() => {
-        console.log("RpcClientMap", RpcClientMap);
-        for (let v in RpcClientMap) {
-          RpcClientMap[v].forEach((el) => {
+        RpcClientOptions.RpcClientController.forEach((controller) => {
+          const { name, prototype } = controller;
+          const Map = ref.get(name, prototype, ":clientMap");
+          clientMap = Object.assign(clientMap, Map);
+        });
+        for (let v in clientMap) {
+          //  @ts-ignore
+          clientMap[v].forEach((el) => {
             let toarray = Object.entries(el)[0];
-            //@ts-ignore
+            //  @ts-ignore
             router.post(toarray[0], toarray[1]);
           });
           app.use(v, router);
         }
-      });
+        console.log("clientMap", clientMap);
+      })
     }
     ref.def(name, RpcClient, prototype, ":rpc-client");
   };

@@ -5,7 +5,7 @@ import {
   Inject,
   Post,
   UsePipe,
-} from "../../../../ado-node";
+} from "../../../index";
 import { UseInterceptor } from "../../../lib/interceptor/interceptor";
 import { Body, Query } from "../../../lib/params/params";
 import { TokenInterceptor } from "../../interceptor/header";

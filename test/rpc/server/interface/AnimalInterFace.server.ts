@@ -18,7 +18,7 @@ class AnimalInterFace {
         console.log(age);
         console.log(value);
         try {
-            const data = await this.AnimalService.hello(100)
+            const data = await this.AnimalService.hello(0)
             console.log('data', data);
         } catch (e) {
             console.log(e);
@@ -38,7 +38,7 @@ class AnimalInterFace {
         console.log("address", address);
         console.log("value", value);
         try {
-            const data = await this.AnimalService.hello(100);
+            const data = await this.AnimalService.hello(0);
             console.log("data", data);
         } catch (e) {
             console.log(e);

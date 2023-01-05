@@ -1,6 +1,5 @@
-// import { connect } from "net";
-// import { Call, RpcClientRemote, RpcClientValue } from ".";
 import { ref } from "../ioc";
+import { CreateClientMap } from "./bind";
 import { ArcClient } from "./client";
 
 /**
@@ -21,16 +20,21 @@ const RpcClientController = (
 
   let new_url = new URL(url);
 
+  const clientMap = CreateClientMap();
+
   let socket = new ArcClient({
     host: String(new_url.hostname),
     port: Number(new_url.port),
   });
 
   return function (target: Function) {
-    ref.def(target.name, interFace, target.prototype, ":interFace");
-    ref.def(target.name, url, target.prototype, ":remoteUrl");
-    ref.def(target.name, base, target.prototype, ":base");
-    ref.def(target.name, socket, target.prototype, ":socket");
+    const { name, prototype } = target
+    
+    ref.def(name, interFace, prototype, ":interFace");
+    ref.def(name, url, prototype, ":remoteUrl");
+    ref.def(name, base, prototype, ":base");
+    ref.def(name, socket, prototype, ":socket");
+    ref.def(name,clientMap,prototype,":clientMap")
   };
 };
 

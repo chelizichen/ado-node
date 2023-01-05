@@ -1,4 +1,6 @@
-import { RpcClientController,Call, Body, Inject, Timeout } from "../../../.."
+import { Inject } from "../../../../lib/ioc/ioc";
+import { Body } from "../../../../lib/params";
+import { RpcClientController,Call,Timeout } from "../../../../lib/rpc/index"
 import { AnimalService } from "../service/AniamalService"
 
 

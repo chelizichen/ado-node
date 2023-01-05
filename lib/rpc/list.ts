@@ -36,6 +36,7 @@ class ArcList {
             this.TaskList.push({ callback, flag });
             this.run()
         }
+        console.log("this.TaskList.length", this.TaskList.length);
     }
     /**
      * @description 给予是否执行标记 保证Promise只执行一次
@@ -77,23 +78,7 @@ class ArcList {
         if (flag == false) {
             this.TaskList[index].flag = true;
             callback()
-                .then((res: any) => {
-                    let toJson = JSON.stringify(res);
-                    this.socket.write(toJson, function (err) {
-                        if (err) {
-                            console.log("服务端写入错误", err);
-                        }
-                        console.log("服务端写入成功");
-                    });
-                })
-                .catch((err: any) => {
-                    this.socket.write(err, function (err) {
-                        if (err) {
-                            console.log("服务端写入错误", err);
-                        }
-                        console.log("服务端写入成功");
-                    });
-                })
+              
                 .finally(() => {
                     this.TaskList.splice(index, 1);
                     this.next();
@@ -102,5 +87,6 @@ class ArcList {
         }
     }
 }
+
 
 export { ArcList };

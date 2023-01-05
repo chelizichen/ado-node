@@ -1,19 +1,19 @@
 import { createServer, Server, Socket } from "net";
 import { size, proto } from "./index";
 import { ArcEvent } from "./event";
-import {ArcList} from './list'
+import { ArcList } from "./list";
 export type ConnOpt = { port: number; host: string };
 
 class ArcServer {
     public Net!: Server;
     public socket!: Socket;
     public ArcEvent!: ArcEvent;
-    public ArcList!:ArcList
+    public ArcList!: ArcList;
     constructor(opts: ConnOpt) {
         const { port, host } = opts;
         this.createServer({ port, host });
         this.ArcEvent = new ArcEvent();
-        this.ArcList = new ArcList()
+        this.ArcList = new ArcList();
         console.log("server start at " + host + ":" + port);
     }
 
@@ -31,6 +31,7 @@ class ArcServer {
 
         this.Net = createServer((socket) => {
             this.socket = socket;
+            this.ArcList.socket = this.socket;
             this.socket.on("data", bind_recieve);
             this.socket.on("error", this.error);
             this.socket.on("connection", this.connection);
@@ -45,27 +46,12 @@ class ArcServer {
         let head = data.subarray(0, data.indexOf(proto[2]));
         let body = data.subarray(head_end + 4, data.length);
         let _body = this.unpacking(body);
-        this.ArcList.push(()=>{
+        this.ArcList.push(() => {
             return Promise.race([
                 this.timeout(timeout),
                 this.ArcEvent.emit(head, ..._body),
-            ]).then((res:any)=>{
-                let toJson = JSON.stringify(res);
-                this.socket.write(toJson, function (err) {
-                    if (err) {
-                        console.log("服务端写入错误", err);
-                    }
-                    console.log("服务端写入成功");
-                });
-            }).catch((err:any)=>{
-                this.socket.write(err, function (err) {
-                    if (err) {
-                        console.log("服务端写入错误", err);
-                    }
-                    console.log("服务端写入成功");
-                });
-            })
-        })
+            ])
+        });
     }
 
     error(err: Error) {
@@ -148,7 +134,7 @@ class ArcServer {
     }
 
     timeout(time: number) {
-        return new Promise((_:any,rej:any) => {
+        return new Promise((_: any, rej: any) => {
             let _time = setTimeout(() => {
                 rej("请求超时");
                 clearTimeout(_time);

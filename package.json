@@ -1,8 +1,8 @@
 {
   "name": "ado-node",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "ts-decorator for express server",
-  "main":"./dist/index.js",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "bin": {
     "ado": "bin/index.js",

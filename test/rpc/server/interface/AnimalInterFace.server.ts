@@ -1,4 +1,4 @@
-import { RpcServerController,Register, Inject } from "../../../..";
+import { RpcServerController, Register, Inject } from "../../../..";
 import { AnimalService } from "../service/AniamalService";
 
 /**
@@ -6,48 +6,53 @@ import { AnimalService } from "../service/AniamalService";
  */
 @RpcServerController("AnimalInterFace")
 class AnimalInterFace {
-    
+
     @Inject(AnimalService)
-    AnimalService!:AnimalService
+    AnimalService!: AnimalService
 
     @Register("hello")
-    async hello(name:string,age:string,value:string):Promise<{message:string,test:string}>{
+    async hello(name: string, age: string, value: string): Promise<{ message: string, test: string }> {
         console.log("hello 远端方法被调用");
-        
+
         console.log(name);
         console.log(age);
         console.log(value);
         try {
-            const data = await this.AnimalService.hello()
-            console.log('data',data);
+            const data = await this.AnimalService.hello(100)
+            console.log('data', data);
         } catch (e) {
             console.log(e);
         }
-                
+
         return {
-            message:"hello hello",
-            test:"1221"
+            message: "hello hello",
+            test: "1221"
         }
     }
 
-    
+
 
     @Register("jump")
-    async jump(type:string,address:string,value:string):Promise<{message:string}>{
-        console.log("type",type);
-        console.log("address",address);
-        console.log("value",value);
-        
+    async jump(type: string, address: string, value: string): Promise<{ message: string }> {
+        console.log("type", type);
+        console.log("address", address);
+        console.log("value", value);
+        try {
+            const data = await this.AnimalService.hello(100);
+            console.log("data", data);
+        } catch (e) {
+            console.log(e);
+        }
         return {
-            message:"hello world"
+            message: "hello world"
         }
     }
 
-    
+
 }
 
 
 
-export{
+export {
     AnimalInterFace
 }

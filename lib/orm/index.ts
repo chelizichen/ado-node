@@ -19,6 +19,13 @@ import { AdoOrmBaseEntity, AdoOrmBaseView } from "./orm";
 import { query, update, del, save } from "./sql";
 import { View, CreateView } from "./view";
 
+
+export type _Entity_ = {
+  (tbname: string): (target: typeof AdoOrmBaseEntity) => any;
+  (tbname: string, database: string): (target: typeof AdoOrmBaseEntity) => any;
+  (tbname: string, database?: string): (target: typeof AdoOrmBaseEntity) => any;
+};
+
 export enum ENTITY_CONSTANT {
   Key = "keys",
   Keyword = "keyword",

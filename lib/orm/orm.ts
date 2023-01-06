@@ -97,8 +97,10 @@ class AdoOrmBaseEntity {
 
 
   public async [RunConfig](BaseEnity: Function, dbname: string) {
+    const has_database_name = ref.get(":database_name", BaseEnity.prototype);
+
     try {
-      this[Conn] = await Connection.getConnection();
+      this[Conn] = await Connection.getConnection(has_database_name?has_database_name:undefined);
     } catch (e) {
       throw e
     }

@@ -3,18 +3,22 @@
  * @description 暴露实体类所需要的装饰器
  */
 
+import { _Entity_ } from "./index";
 import { ref } from "../ioc/ref";
 import { AdoOrmBaseEntity } from "./orm";
 import { ENTITY_CONSTANT, RunConfig } from "./symbol";
 
 
 
-const Entity = (dbname: string) => {
+
+const Entity: _Entity_ = (tbname: string,database?:string) => {
   return function (target: typeof AdoOrmBaseEntity) {
     const targetInst = new target();
-    ref.def(target.name, targetInst, target.prototype);
-    ref.def(":tablename",dbname,target.prototype);
-    targetInst[RunConfig](target, dbname);
+    const { name, prototype } = target
+    ref.def(name, targetInst, prototype);
+    ref.def(":tablename", tbname, prototype);
+    ref.def(":database_name",database,prototype)
+    targetInst[RunConfig](target, tbname);
   };
 };
 

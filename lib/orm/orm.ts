@@ -22,7 +22,7 @@ import { ClientError } from "../error/client";
 import { DataBaseError } from "../error/dababase";
 import { getStrCount } from "../oper/protect";
 import { RedisClientType, createClient } from "redis";
-import {  isObject } from "lodash";
+import { isObject } from "lodash";
 import * as __ from "lodash";
 import { query, update, del, save } from "./sql";
 import { transaction } from "./transaction";
@@ -100,7 +100,7 @@ class AdoOrmBaseEntity {
     const has_database_name = ref.get(":database_name", BaseEnity.prototype);
 
     try {
-      this[Conn] = await Connection.getConnection(has_database_name?has_database_name:undefined);
+      this[Conn] = await Connection.getConnection(has_database_name ? has_database_name : undefined);
     } catch (e) {
       throw e
     }
@@ -131,7 +131,7 @@ class AdoOrmBaseEntity {
     );
     this[BF__UPDATE] = bf_update != undefined ? bf_update : void_fn;
 
-    
+
   }
 
   public async [Cache](cacheOptions: cacheOptions, value: any): Promise<void> {
@@ -161,11 +161,28 @@ class AdoOrmBaseEntity {
    * @method getList
    * @description 获取所有的数据
    */
-  public async getList(page: string, size: string) {
+  public async getList(page: string, size: string, keyword: string): Promise<any>;
+
+  public async getList(page: string, size: string): Promise<any>;
+
+  public async getList(page: string, size: string, keyword?: string): Promise<any> {
+    const _keyword = ref.get("keyword", this[BASEENITY].prototype);
+
+    let sql: string = "";
+    if (keyword) {
+      sql = `select * from user ?? where ?? like ? limit ?,?`
+    } else {
+      sql = `select * from user limit ?,?`
+    }
+
     return new Promise((resolve, reject) => {
+      let option = [this[TableName], parseInt(page), parseInt(size)]
+      if (keyword) {
+        option = option.splice(1, 0, _keyword, keyword)
+      }
       this[Conn].query(
-        " select * from ?? limit ?,? ",
-        [this[TableName], parseInt(page), parseInt(size)],
+        sql,
+        option,
         function (err, res) {
           if (err) {
             reject(err);
@@ -474,12 +491,27 @@ class AdoOrmBaseView {
     }
     return;
   }
+  public async getList(page: string, size: string, keyword: string): Promise<any>;
 
-  public async getList(page: string, size: string) {
+  public async getList(page: string, size: string): Promise<any>;
+
+  public async getList(page: string, size: string, keyword?: string): Promise<any> {
+    const _keyword = ref.get("keyword", this[BASEENITY].prototype);
+
+    let sql: string = "";
+    if (keyword) {
+      sql = `select * from user ?? where ?? like ? limit ?,?`
+    } else {
+      sql = `select * from user limit ?,?`
+    }
+
     return new Promise((resolve, reject) => {
-      this[Conn].query(
-        " select * from ?? limit ?,? ",
-        [this.ViewName, parseInt(page), parseInt(size)],
+      let option = [this.ViewName, parseInt(page), parseInt(size)]
+      if (keyword) {
+        option = option.splice(1, 0, _keyword, keyword)
+      }
+
+      this[Conn].query(sql, option,
         function (err, res) {
           if (err) {
             reject(err);
@@ -603,17 +635,17 @@ class AdoOrmBaseView {
     });
   }
 
-  public async getMany(val: string, options?: string[]): Promise<any>;
+  public async getMany(val: string, options?: string | number[]): Promise<any>;
 
-  public async getMany(val: string, options: string[]): Promise<any>;
+  public async getMany(val: string, options: string | number[]): Promise<any>;
 
   public async getMany(
     val: string,
-    options: string[],
+    options: string | number[],
     cache: cacheOptions
   ): Promise<any>;
 
-  public async getMany(sql: string, options?: string[], cache?: cacheOptions) {
+  public async getMany(sql: string, options?: string | number[], cache?: cacheOptions) {
     if (cache) {
       const data = await this[GetCache](cache);
       if (data) {

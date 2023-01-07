@@ -18,8 +18,6 @@ import { RpcClientModules } from "../lib/rpc/run";
 })
 @Modules({
   Modules: [AppModule, viewTestModule],
-  Base: "/api",
-  Port: 3000,
   GlobalPipes: [TestGlobalPipe],
 })
 class AdoNodeServerImpl extends AdoNodeServer {}

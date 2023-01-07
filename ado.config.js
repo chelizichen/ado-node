@@ -18,4 +18,8 @@ module.exports = ({
     port: 3306,
     connectionLimit: 10,
   }],
+  server:{
+    base: "/api",
+    port: 3000,
+  }
 });

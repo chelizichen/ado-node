@@ -41,8 +41,6 @@ export type AdoModuleOptions = {
 export type AdoModulesOptions = {
   Modules: any[];
   GlobalPipes: any[];
-  Base: string;
-  Port: number;
   Cluster?: boolean;
 };
 

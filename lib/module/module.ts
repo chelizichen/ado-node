@@ -32,22 +32,42 @@ const Modules = (modules: AdoModulesOptions): ClassDecorator => {
     if (!isModule) {
       throw new Error(`${el.name} is Not a Moudle`);
     }
+    
   });
   return function () {
+    const config = process.cwd() + "/ado.config.js";
+    try {
+      const _config = require(config);
+      let server;
+      if (_config) {
+        // ESM 下 export default
+        if (_config && _config.default) {
+          server = _config.default.server;
+        }
+        // CommonJS 下 module.export
+        else {
+          server = _config.server;
+        }
+      }
+      ref.def(AdoNodeServer.name, server.base, AdoNodeServer.prototype, ":base");
+      ref.def(AdoNodeServer.name, server.port, AdoNodeServer.prototype, ":port");
+    } catch (e) {
+      throw e;
+    }
     ref.def(
       AdoNodeServer.name,
       modules.Modules,
       AdoNodeServer.prototype,
       ":modules"
     );
-    ref.def(AdoNodeServer.name, modules.Base, AdoNodeServer.prototype, ":base");
+
+    
     ref.def(
       AdoNodeServer.name,
       modules.GlobalPipes,
       AdoNodeServer.prototype,
       ":globalPipes"
     );
-    ref.def(AdoNodeServer.name, modules.Port, AdoNodeServer.prototype, ":port");
     ref.def(
       AdoNodeServer.name,
       modules.Cluster,

@@ -57,7 +57,7 @@ class AdoOrmBaseEntity {
   public [BF__DELETE]!: Function;
   public [BF__INSERT]!: Function;
   public [BF__UPDATE]!: Function;
-  public [VoidFunction]() { }
+  public [VoidFunction]() {}
 
   constructor() {
     this[Target] = AdoOrmBaseEntity.name;
@@ -95,18 +95,18 @@ class AdoOrmBaseEntity {
     return;
   }
 
-
   public async [RunConfig](BaseEnity: Function, dbname: string) {
     const has_database_name = ref.get(":database_name", BaseEnity.prototype);
 
     try {
-      this[Conn] = await Connection.getConnection(has_database_name ? has_database_name : undefined);
+      this[Conn] = await Connection.getConnection(
+        has_database_name ? has_database_name : undefined
+      );
     } catch (e) {
-      throw e
+      throw e;
     }
     this[BASEENITY] = BaseEnity;
     this[TableName] = dbname;
-
 
     const bf_destory = ref.get(
       "monitor",
@@ -130,8 +130,6 @@ class AdoOrmBaseEntity {
       ":before-update"
     );
     this[BF__UPDATE] = bf_update != undefined ? bf_update : void_fn;
-
-
   }
 
   public async [Cache](cacheOptions: cacheOptions, value: any): Promise<void> {
@@ -161,35 +159,39 @@ class AdoOrmBaseEntity {
    * @method getList
    * @description 获取所有的数据
    */
-  public async getList(page: string, size: string, keyword: string): Promise<any>;
+  public async getList(
+    page: string,
+    size: string,
+    keyword: string
+  ): Promise<any>;
 
   public async getList(page: string, size: string): Promise<any>;
 
-  public async getList(page: string, size: string, keyword?: string): Promise<any> {
+  public async getList(
+    page: string,
+    size: string,
+    keyword?: string
+  ): Promise<any> {
     const _keyword = ref.get("keyword", this[BASEENITY].prototype);
 
     let sql: string = "";
     if (keyword) {
-      sql = `select * from user ?? where ?? like ? limit ?,?`
+      sql = `select * from user ?? where ?? like ? limit ?,?`;
     } else {
-      sql = `select * from user limit ?,?`
+      sql = `select * from user limit ?,?`;
     }
 
     return new Promise((resolve, reject) => {
-      let option = [this[TableName], parseInt(page), parseInt(size)]
+      let option = [this[TableName], parseInt(page), parseInt(size)];
       if (keyword) {
-        option = option.splice(1, 0, _keyword, keyword)
+        option = option.splice(1, 0, _keyword, keyword);
       }
-      this[Conn].query(
-        sql,
-        option,
-        function (err, res) {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
+      this[Conn].query(sql, option, function (err, res) {
+        if (err) {
+          reject(err);
         }
-      );
+        resolve(res);
+      });
     });
   }
 
@@ -395,17 +397,21 @@ class AdoOrmBaseEntity {
     });
   }
 
-  public async getMany(val: string, options?: string|number[]): Promise<any>;
+  public async getMany(val: string, options?: Array<any>): Promise<any>;
 
-  public async getMany(val: string, options: string|number[]): Promise<any>;
+  public async getMany(val: string, options: Array<any>): Promise<any>;
 
   public async getMany(
     val: string,
-    options: string|number[],
+    options: Array<any>,
     cache: cacheOptions
   ): Promise<any>;
 
-  public async getMany(sql: string, options?: string|number[], cache?: cacheOptions) {
+  public async getMany(
+    sql: string,
+    options?: Array<any>,
+    cache?: cacheOptions
+  ) {
     if (cache) {
       const data = await this[GetCache](cache);
       if (data) {
@@ -635,17 +641,17 @@ class AdoOrmBaseView {
     });
   }
 
-  public async getMany(val: string, options?: string | number[]): Promise<any>;
+  public async getMany(val: string, options?: Array<any>): Promise<any>;
 
-  public async getMany(val: string, options: string | number[]): Promise<any>;
+  public async getMany(val: string, options: Array<any>): Promise<any>;
 
   public async getMany(
     val: string,
-    options: string | number[],
+    options: Array<any>,
     cache: cacheOptions
   ): Promise<any>;
 
-  public async getMany(sql: string, options?: string | number[], cache?: cacheOptions) {
+  public async getMany(sql: string, options?: Array<any>, cache?: cacheOptions) {
     if (cache) {
       const data = await this[GetCache](cache);
       if (data) {

@@ -25,9 +25,6 @@ class ArcYaml {
         this.read_config()
 
         this.read_modules()
-
-        // console.log(this.interFace);
-        // this.read_interface()
     }
 
     // 读取配置文件
@@ -145,17 +142,18 @@ class ArcYaml {
                 let write_server_path = path.resolve(cwd(),generatePath, `${interFace}.server.ts`)
                 if(!existsSync(write_server_path)){
                     function renderReq(v){
+                        // 3.1.3 版本 replaceAll 会出现bug
                         let req  = JSON.stringify(method[v]['req']);
-                        req = req.replaceAll("\"","")
-                        req = req.replaceAll("\\","")
+                        req = req.split("\"").join("")
+                        req = req.split("\\").join("")
                         req = req.substring(1,req.length-1)
                         console.log(req);
                         return req
                     }
                     function renderRes(v){
                         let res = JSON.stringify(method[v]['res']);
-                        res = res.replaceAll("\"","")
-                        res = res.replaceAll("\\","")
+                        res = res.split("\"").join("")
+                        res = res.split("\\").join("")
                         return res
                     }
     
@@ -185,7 +183,7 @@ class ArcYaml {
                 if(!existsSync(write_client_path)){
                     function renderRes(v){
                         let res  = JSON.stringify(method[v]['res']);
-                        res = res.replaceAll("\"","")
+                        res = res.split("\"","").join("")
                         return res
                     }
     

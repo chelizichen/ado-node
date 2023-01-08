@@ -395,17 +395,17 @@ class AdoOrmBaseEntity {
     });
   }
 
-  public async getMany(val: string, options?: string[]): Promise<any>;
+  public async getMany(val: string, options?: string|number[]): Promise<any>;
 
-  public async getMany(val: string, options: string[]): Promise<any>;
+  public async getMany(val: string, options: string|number[]): Promise<any>;
 
   public async getMany(
     val: string,
-    options: string[],
+    options: string|number[],
     cache: cacheOptions
   ): Promise<any>;
 
-  public async getMany(sql: string, options?: string[], cache?: cacheOptions) {
+  public async getMany(sql: string, options?: string|number[], cache?: cacheOptions) {
     if (cache) {
       const data = await this[GetCache](cache);
       if (data) {

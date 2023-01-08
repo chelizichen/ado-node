@@ -85,6 +85,30 @@ class Connection {
       Connection.connectionPool = pool;
     }
   }
+
+  static async PromiseQuery(
+    conn: mysql.Connection,
+    sql: string,
+    options: number | string[]
+  ): Promise<any>;
+  static async PromiseQuery(
+    conn: mysql.Connection,
+    sql: string,
+  ): Promise<any>;
+  static async PromiseQuery(
+    conn: mysql.Connection,
+    sql: string,
+    options?: number | string[]
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      conn.query(sql, options, function (err, resu) {
+        if (err) {
+          reject(err);
+        }
+        resolve(resu);
+      });
+    });
+  }
   static async getConnection(name: string): Promise<mysql.PoolConnection>;
   static async getConnection(): Promise<mysql.PoolConnection>;
   static async getConnection(name?: string): Promise<mysql.PoolConnection> {
@@ -129,8 +153,27 @@ function getConnection(database?: string) {
   }
 }
 
+async function PromiseQuery(
+  conn: mysql.Connection,
+  sql: string,
+  options?: number | string[]
+) {
+  if (options) {
+    return await Connection.PromiseQuery(conn, sql, options);
+  } else {
+    return await Connection.PromiseQuery(conn, sql);
+
+  }
+}
+
 async function gerRedis() {
   return await createClient();
 }
 
-export { getConnection, Connection, gerRedis, defineAdoNodeConfig };
+export {
+  getConnection,
+  Connection,
+  gerRedis,
+  defineAdoNodeConfig,
+  PromiseQuery,
+};

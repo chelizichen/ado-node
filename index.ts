@@ -6,7 +6,7 @@ import { AdoNodeController, Controller, Inject, Collect, ref, SerivceMap, Genere
 import { AdoNodeServer, All, defineAdoNodeOptions, Get, Post } from "./lib/method";
 import { Module, Modules } from "./lib/module";
 import { BeforeInsert, BeforeDelete, BeforeUpdate, AdoOrmBaseEntity, AutoCreate, del, Entity, IsEmail, IsNumber, IsOptional, Key, Keyword, query, save, update, AdoOrmBaseView, CreateView, Index, View } from "./lib/orm";
-import { getConnection, gerRedis, defineAdoNodeConfig } from "./lib/orm/conn";
+import { getConnection, gerRedis, defineAdoNodeConfig, PromiseQuery } from "./lib/orm/conn";
 import { Req, Res, Params,Headers,Query,Body } from "./lib/params";
 import { class_transform, UsePipe, validate } from "./lib/pipe";
 import { ArcClient, ArcEvent, Call, Register, RpcClientController, RpcClientModules, RpcServerBoost, RpcServerController, RpcServerModules, Timeout } from "./lib/rpc";
@@ -54,7 +54,7 @@ export { AdoOrmBaseEntity, AdoOrmBaseView };
 
 export { query, del, update, save };
 
-export { getConnection, gerRedis, defineAdoNodeConfig };
+export { getConnection, gerRedis, defineAdoNodeConfig, PromiseQuery };
 
 export { View, CreateView };
 

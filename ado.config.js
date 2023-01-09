@@ -1,4 +1,3 @@
-
 module.exports = ({
   database: [{
     default:true,
@@ -21,5 +20,6 @@ module.exports = ({
   server:{
     base: "/api",
     port: 3000,
+    upload:"public/server"
   }
 });

@@ -3,6 +3,7 @@ import { ref } from "../ioc/ref";
 import { AdoNodeOptions } from "../../index.d";
 import { cpus } from "os";
 import cluster from "cluster";
+import multer from "multer";
 
 function defineAdoNodeOptions(options: AdoNodeOptions) {
   return options;
@@ -164,12 +165,13 @@ class AdoNodeServer {
       });
     }
     // 使用JSON
-
-    // 使用文件上传
-    // app.use(multer({ dest: "public/server" }).any());
-
     const base = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":base");
     const port = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":port");
+    const upload = ref.get(AdoNodeServer.name, AdoNodeServer.prototype, ":upload");
+    
+    // 使用文件上传
+    app.use(multer({ dest: upload }).any());
+
     // 创建Router
     const controller = this.createControllers();
     controller.forEach((el) => {

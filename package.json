@@ -1,12 +1,12 @@
 {
   "name": "ado-node",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "description": "ts-decorator for express server",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "bin": {
     "ado": "bin/index.js",
-    "ado-cli": "bin/dev.js", 
+    "ado-cli": "bin/dev.js",
     "hasaky": "bin/hasaky.js",
     "arc": "bin/proto.js"
   },

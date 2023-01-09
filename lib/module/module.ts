@@ -51,6 +51,8 @@ const Modules = (modules: AdoModulesOptions): ClassDecorator => {
       }
       ref.def(AdoNodeServer.name, server.base, AdoNodeServer.prototype, ":base");
       ref.def(AdoNodeServer.name, server.port, AdoNodeServer.prototype, ":port");
+      ref.def(AdoNodeServer.name, server.upload, AdoNodeServer.prototype, ":load");
+
     } catch (e) {
       throw e;
     }

@@ -38,8 +38,6 @@ class ArcCache {
    * @description 定时为
    */
   set(key: string, value: string) {
-    console.log(this.cache.toString());
-    
     if (this.curr_size > ArcCache.proto.length - 1) {
       return;
     }
@@ -57,13 +55,15 @@ class ArcCache {
         let find_end = this.cache.lastIndexOf(">")
         let _cache =
           ArcCache.proto[_index + 1] + "<" + key + ">" + "<" + value + ">";
-        this.splice(find_end, 0, _cache)
+        this.splice(find_end+1, 1, _cache)
+        this.curr_size++
         break;
       }
       let split_buffer = this.cache.subarray(curr_item_index, next_item_index);
       if (split_buffer.length == proto_len) {
         let _cache =
           ArcCache.proto[_index] + "<" + key + ">" + "<" + value + ">";
+        this.curr_size++
         this.splice(curr_item_index + proto_len, 0, _cache);
         break;
       }
@@ -82,6 +82,7 @@ class ArcCache {
       let proto_len = item.length;
       let curr_item_index = this.cache.indexOf(item) + proto_len;
       let next_item_index = this.cache.indexOf(next_item);
+      
       if (next_item_index == -1) next_item_index = this.cache.length;
       split_buffer = this.cache.subarray(curr_item_index, next_item_index);
       let { key: _key, value: _value } = this.unpacking(split_buffer);
@@ -108,7 +109,7 @@ class ArcCache {
   } {
     let obj = buffer.toString();
     let array = obj.match(/<(.*?)>/g);
-    if (array && array.length > 2) {
+    if (array && array.length == 2) {
       let key = array[0];
       let value = array[1];
       key = key.substring(1, key.length - 1);
@@ -157,7 +158,7 @@ class ArcCache {
       // 交换到前面
       this.splice(
         symmetry_buf_index + len,
-        symmetry_buf_index + len + sp_buffer.length,
+        sp_buffer.length,
         sp_buffer
       );
 
@@ -195,12 +196,22 @@ class ArcCache {
 }
 
 let a = new ArcCache(20, 100)
-a.set("a", "1");
-a.set("b", "1");
-a.set("c", "1");
-a.set("d", "1");
-a.set("e", "1");
 
+a.set("a", "a");
+a.set("b", "b");
+a.set("c", "c");
+a.set("d", "d");
+a.set("e", "e");
+a.set("f", "f");
+a.set("g", "g");
+a.set("h", "h");
+a.set("i", "i");
+a.set("j", "j");
+a.set("k", "k");
+a.set("l", "l");
+a.set("m", "m");
+// a.get("k")
+// a.get("m")
 console.log(a.cache.toString());
 
 

@@ -261,8 +261,8 @@ a.set("j", "j");
 a.set("k", "k");
 a.set("l", "l");
 a.set("m", "m");
-// a.get("k")
-// a.get("m")
+a.get("k")
+a.get("m")
 
 
 export {

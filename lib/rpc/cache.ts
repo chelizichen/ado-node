@@ -57,7 +57,7 @@ class ArcCache {
           ArcCache.proto[_index + 1] + "<" + key + ">" + "<" + value + ">";
         this.splice(find_end+1, 1, _cache)
         this.curr_size++
-        this.del(key,_index)
+        this.del(key,_index+1)
         break;
       }
       let split_buffer = this.cache.subarray(curr_item_index, next_item_index);
@@ -113,7 +113,6 @@ class ArcCache {
   del(key:string,index:number):void;
   del(key:string,index:number,isGet?:boolean):void{
     setTimeout(()=>{
-      console.log("执行");
       let item = ArcCache.proto[index]
       let len = ArcCache.proto[index].length
       let next = ArcCache.proto[index+1]
@@ -122,14 +121,15 @@ class ArcCache {
       let next_index = this.cache.indexOf(next)
 
       if(next_index == -1){
-        next_index = this.cache.lastIndexOf(">")
+        next_index = this.cache.lastIndexOf(">")+1
       }
       
       let sub_cache = this.cache.subarray(curr_index+len,next_index)
       let { key:_key} = this.unpacking(sub_cache)
+      
       // 如果key 值相等 则删除
       if(_key == key){
-        this.splice(curr_index+len,next_index)
+        this.splice(curr_index+len,next_index);
         this.curr_size--;
       }
     },isGet?this.timeout*2:this.timeout)
@@ -137,7 +137,11 @@ class ArcCache {
   /**
    * @description 定时删除
    */
-  regular() { }
+  regular() { 
+    setInterval(()=>{
+      console.log(this.cache.toString());
+    },3000)
+  }
 
   private unpacking(buffer: Buffer): {
     key: string;
@@ -257,19 +261,9 @@ a.set("j", "j");
 a.set("k", "k");
 a.set("l", "l");
 a.set("m", "m");
-console.log(a.cache.toString());
-a.get("k")
-console.log(a.cache.toString());
-a.get("m")
-console.log(a.cache.toString());
-let arr = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n"]
-setInterval(()=>{
-  const random = Math.floor(Math.random()*10)
-  let val = arr[random]
-  console.log('随即删的数为',val);
-  a.get(val)
-  console.log(a.cache.toString());
-},5000)
+// a.get("k")
+// a.get("m")
+
 
 export {
   ArcCache

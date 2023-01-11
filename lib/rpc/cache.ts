@@ -1,15 +1,44 @@
 let cache_buffer = [
   // head 为头
-  "#",
-  "1", "2", "3", "4", "5", "6", "7", "8", "9",
-  "a", "b", "c", "d", "e", "f", "g", "h", "i",
-  "j", "k", "l", "m", "n", "o", "p", "q", "r",
-  "s", "t", "u", "v", "w", "x", "y", "A", "B", "C",
-  "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-  "X", "Y", "Z", "<", ">", ",", ".", ";", ":"
+  "##",
+  "01", "02", "03", "04", "05", "06", "07", "08", "09",
+  "0a", "0b", "0c", "0d", "0e", "0f", "0g", "0h", "0i",
+  "0j", "0k", "0l", "0m", "0n", "0o", "0p", "0q", "0r",
+  "0s", "0t", "0u", "0v", "0w", "0x", "0y", "0A", "0B", "0C",
+  "0D", "0E", "0F", "0G", "0H", "0I", "0J", "0K", "0L", "0M",
+  "0N", "0O", "0P", "0Q", "0R", "0S", "0T", "0U", "0V", "0W",
+  "0X", "0Y", "0Z",
+  "11", "12", "13", "14", "15", "16", "17", "18", "19",
+  "1a", "1b", "1c", "1d", "1e", "1f", "1g", "1h", "1i",
+  "1j", "1k", "1l", "1m", "1n", "1o", "1p", "1q", "1r",
+  "1s", "1t", "1u", "1v", "1w", "1x", "1y", "1A", "1B", "1C",
+  "1D", "1E", "1F", "1G", "1H", "1I", "1J", "1K", "1L", "1M",
+  "1N", "1O", "1P", "1Q", "1R", "1S", "1T", "1U", "1V", "1W",
+  "1X", "1Y", "1Z",
+  "21", "22", "23", "24", "25", "26", "27", "28", "29",
+  "2a", "2b", "2c", "2d", "2e", "2f", "2g", "2h", "2i",
+  "2j", "2k", "2l", "2m", "2n", "2o", "2p", "2q", "2r",
+  "2s", "2t", "2u", "2v", "2w", "2x", "2y", "2A", "2B", "2C",
+  "2D", "2E", "2F", "2G", "2H", "2I", "2J", "2K", "2L", "2M",
+  "2N", "2O", "2P", "2Q", "2R", "2S", "2T", "2U", "2V", "2W",
+  "2X", "2Y", "2Z",
+  "31", "32", "33", "34", "35", "36", "37", "38", "39",
+  "3a", "3b", "3c", "3d", "3e", "3f", "3g", "3h", "3i",
+  "3j", "3k", "3l", "3m", "3n", "3o", "3p", "3q", "3r",
+  "3s", "3t", "3u", "3v", "3w", "3x", "3y", "3A", "3B", "3C",
+  "3D", "3E", "3F", "3G", "3H", "3I", "3J", "3K", "3L", "3M",
+  "3N", "3O", "3P", "3Q", "3R", "3S", "3T", "3U", "3V", "3W",
+  "3X", "3Y", "3Z",
+  "41", "42", "43", "44", "45", "46", "47", "48", "49",
+  "4a", "4b", "4c", "4d", "4e", "4f", "4g", "4h", "4i",
+  "4j", "4k", "4l", "4m", "4n", "4o", "4p", "4q", "4r",
+  "4s", "4t", "4u", "4v", "4w", "4x", "4y", "4A", "4B", "4C",
+  "4D", "4E", "4F", "4G", "4H", "4I", "4J", "4K", "4L", "4M",
+  "4N", "4O", "4P", "4Q", "4R", "4S", "4T", "4U", "4V", "4W",
+  "4X", "4Y", "4Z",
+
 ].map(item => {
-  return "[#" + item + "]"
+  return "[" + item + "]"
 })
 // [##]head:head[#1]key1:value1[#2]key2:value2"
 
@@ -31,17 +60,33 @@ class ArcCache {
       this.unchange_size = 1;
     }
     this.cache = Buffer.alloc(16384);
-    this.cache.write(ArcCache.proto[0] + "<arc><cache>");
+    this.cache.write(ArcCache.proto[0] + "<@Arc/Cache><V3.0.0>");
   }
   /**
    * @method set 为内存中设置 <key> <value>
    * @description 定时为
    */
   set(key: string, value: string) {
-    if (this.curr_size > ArcCache.proto.length - 1) {
+    if (this.curr_size > this.size) {
+      // 走随机删除
+      let luck_item = Math.floor(Math.random() * this.size)
+      if (luck_item < this.unchange_size) {
+        luck_item += this.unchange_size;
+      }
+      let len = ArcCache.proto[luck_item].length
+      let luck_item_index = this.cache.indexOf(ArcCache.proto[luck_item]);
+      let next_item = this.cache.indexOf(ArcCache.proto[luck_item + 1])
+      if (next_item == -1) {
+        // 寻找最后一个元素
+        next_item = this.cache.lastIndexOf(">")+1
+      }
+      let _cache ="<" + key + ">" + "<" + value + ">";
+      this.splice(luck_item_index + len, next_item - len - luck_item_index, _cache)
+      this.del(key, luck_item);
       return;
     }
-    for (let _index = 0; _index < ArcCache.proto.length; _index++) {
+    // 找已经被删除的最近的
+    for (let _index = 0; _index <= this.size; _index++) {
       let item = ArcCache.proto[_index];
       let next_item = ArcCache.proto[_index + 1];
       let proto_len = item.length;
@@ -78,7 +123,7 @@ class ArcCache {
     let index;
     let value;
     let split_buffer;
-    for (let _index = 1; _index < ArcCache.proto.length; _index++) {
+    for (let _index = 1; _index <= this.size; _index++) {
       let item = ArcCache.proto[_index];
       let next_item = ArcCache.proto[_index + 1];
       let proto_len = item.length;
@@ -103,7 +148,7 @@ class ArcCache {
       this.tansfer(index, split_buffer as Buffer);
       return value;
     }
-    return "";
+    return "数据不存在";
   }
   /**
    * @description 删除键
@@ -115,7 +160,7 @@ class ArcCache {
     setTimeout(() => {
       // 不善前面的
 
-      if (this.curr_size < this.middle || this.unchange_size > index) {
+      if (this.unchange_size > index) {
         return;
       }
       let item = ArcCache.proto[index]
@@ -134,10 +179,9 @@ class ArcCache {
 
       // 如果key 值相等 则删除
       if (_key == key) {
-        console.log("删除完之后", this.cache.toString());
+        console.log("删除完之后 还剩 ", this.curr_size," 个数据 ",this.cache.toString());
         this.splice(curr_index + len, next_index - curr_index - len);
         this.curr_size--;
-        console.log(this.curr_size);
       }
     }, isGet ? this.timeout * 2 : this.timeout)
   }
@@ -145,9 +189,13 @@ class ArcCache {
    * @description 定时删除
    */
   regular() {
-    setInterval(() => {
-      console.log(this.cache.toString());
-    }, 3000)
+    // setInterval(() => {
+      // for (let i = 0; i < this.size; i++) {
+        // this.del()
+      // }
+    // }, 3000);
+
+
   }
 
   private unpacking(buffer: Buffer): {
@@ -253,7 +301,7 @@ class ArcCache {
   }
 }
 
-let a = new ArcCache(20, 2000)
+let a = new ArcCache(10, 2000)
 
 a.set("a", "a");
 a.set("b", "b");
@@ -268,10 +316,8 @@ a.set("j", "j");
 a.set("k", "k");
 a.set("l", "l");
 a.set("m", "m");
-a.get("b")
-a.get("c");
-a.get("d");
-
+const data = a.get("g")
+console.log("data", data);
 export {
   ArcCache
 }

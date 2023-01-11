@@ -90,7 +90,8 @@ function createTgz(tgzName, opt) {
 
   let nodeModulesDir =  "node_modules";
 
-  let pkgPath =  "package.json";
+  let pkgPath = "package.json";
+  let ado_config_path = "ado.config.js"
   let distPath =  "dist";
   let publicPath = "public";
 
@@ -99,7 +100,7 @@ function createTgz(tgzName, opt) {
   let hasPublicDir = fs.existsSync(publicPath)
 
   function winOrForceTgz(){
-    const server_cmd = `tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${nodeModulesDir} ${publicPath}`;
+    const server_cmd = `tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${ado_config_path} ${nodeModulesDir} ${publicPath}`;
     console.log(server_cmd);
     spawnSync(server_cmd, {
       stdio: "inherit",

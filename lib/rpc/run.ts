@@ -12,8 +12,6 @@ import { Connection } from "../orm/conn";
 
 type RpcServerModulesType = {
   RpcServerController: any[];
-  host: string;
-  port: number;
 };
 
 type RpcClientModulestype = {
@@ -34,14 +32,28 @@ const RpcServerModules = (opt: RpcServerModulesType) => {
       }
     })();
     function boost() {
-      setImmediate(() => {
-        const { RpcServerController, host, port } = opt;
+      setImmediate(async () => {
+        const config = process.cwd() + "/ado.config.js";
+        const _config = require(config);
+        let server_config;
+        if (_config) {
+          // ESM 下 export default
+          if (_config && _config.default) {
+            server_config = _config.default.server;
+          }
+          // CommonJS 下 module.export
+          else {
+            server_config = _config.server;
+          }
+        }
+
+        const { RpcServerController } = opt;
         let events = RpcServerController.map((item) => {
           const { name, prototype } = item;
           const event = ref.get(name, prototype, ":events");
           return event;
         });
-        let server = new ArcServer({ host, port });
+        let server = new ArcServer({ host:server_config.host, port:server_config.port });
         server.registEvents(...events);
       });
     }

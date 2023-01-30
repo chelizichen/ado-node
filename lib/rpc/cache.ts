@@ -303,23 +303,23 @@ class ArcCache {
   }
 }
 
-let a = new ArcCache(10, 2000)
+// let a = new ArcCache(10, 2000)
 
-a.set("a", "a");
-a.set("b", "b");
-a.set("c", "c");
-a.set("d", "d");
-a.set("e", "e");
-a.set("f", "f");
-a.set("g", "g");
-a.set("h", "h");
-a.set("i", "i");
-a.set("j", "j");
-a.set("k", "k");
-a.set("l", "l");
-a.set("m", "m");
-const data = a.get("g")
-console.log("data", data);
+// a.set("a", "a");
+// a.set("b", "b");
+// a.set("c", "c");
+// a.set("d", "d");
+// a.set("e", "e");
+// a.set("f", "f");
+// a.set("g", "g");
+// a.set("h", "h");
+// a.set("i", "i");
+// a.set("j", "j");
+// a.set("k", "k");
+// a.set("l", "l");
+// a.set("m", "m");
+// const data = a.get("g")
+// console.log("data", data);
 export {
   ArcCache
 }

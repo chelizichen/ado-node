@@ -5,8 +5,6 @@ import { DogInterFace } from "./interface/DogInterFace.server";
 
 
 @RpcServerModules({
-  host: "127.0.0.1",
-  port: 9000,
   RpcServerController: [AnimalInterFace, DogInterFace],
 })
 class TestRpcServerModules {

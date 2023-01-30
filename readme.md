@@ -165,6 +165,11 @@ export default defineAdoNodeConfig({
     port: 3306,
     connectionLimit: 10,
   },
+  server:{
+    base: "/api", // 后端基础的Api路由
+    port: 3000, // 后端基础端口号
+    upload:"public/server" // 上传文件的路径
+  }
 });
 ````
 
@@ -680,8 +685,6 @@ GlobalPipes 为全局管道
 
 @Modules({
   Modules: [AppModule],
-  Base: "/api",
-  Port: 3000,
   GlobalPipes: [TestGlobalPipe],
 })
 class AdoNodeServerImpl extends AdoNodeServer { }

@@ -98,6 +98,7 @@ program
   .version("1.0.0")
   .command("release  <appName>")
   .option("-f --force", "force to update node_modules cache")
+  .option("-r --rpc","add rpc server to tgz")
   .description("build and release ado-node app")
   .action(function (appName, opt) {
     runBuildApp().then(() => {

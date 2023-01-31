@@ -1,0 +1,10 @@
+struct:
+
+  HelloRequest: 
+    name: string
+    age: string
+    value: string
+  
+  HelloResponse:
+    message: string
+

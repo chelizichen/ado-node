@@ -3,7 +3,7 @@
  * @description 对外暴露方法和装饰器
  */
 
-import { defineAdoNodeConfig, gerRedis, getConnection } from "./conn";
+import { defineAdoNodeConfig, getRedis, getConnection } from "./conn";
 import {
   Entity,
   Key,
@@ -65,6 +65,6 @@ export { AdoOrmBaseEntity, AdoOrmBaseView };
 
 export { query, del, update, save };
 
-export { getConnection, gerRedis, defineAdoNodeConfig };
+export { getConnection, getRedis, defineAdoNodeConfig };
 
 export { View, CreateView };

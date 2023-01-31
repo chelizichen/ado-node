@@ -166,14 +166,14 @@ async function PromiseQuery(
   }
 }
 
-async function gerRedis() {
+async function getRedis() {
   return await createClient();
 }
 
 export {
   getConnection,
   Connection,
-  gerRedis,
+  getRedis,
   defineAdoNodeConfig,
   PromiseQuery,
 };

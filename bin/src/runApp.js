@@ -103,16 +103,8 @@ function createTgz(tgzName, opt) {
   let hasPublicDir = fs.existsSync(publicPath)
 
   function winOrForceTgz(){
-    const server_cmd = `
-      tar -zcvf
-      ${tgzServerPath} 
-      ${distPath} 
-      ${pkgPath} 
-      ${ado_config_path} 
-      ${nodeModulesDir} 
-      ${publicPath?publicPath:""}
-      ${hasRpc_Config?hasRpc_Config:""}
-    `;
+    const server_cmd =
+      ` tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${ado_config_path} ${nodeModulesDir} ${publicPath ? publicPath : ""} ${hasRpc_Config ? hasRpc_Config : ""}`;
     console.log(server_cmd);
     spawnSync(server_cmd, {
       stdio: "inherit",

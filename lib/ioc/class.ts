@@ -19,14 +19,13 @@
 //   }
 // }
 
-import { BaseController } from "./../../index.d";
 import * as express from "express";
 import { ref } from "./ref";
 import { Request, Response } from "express";
 import { AdoNodeControllerInterceptor } from "../interceptor/global";
+import { BaseController } from "./type";
 
 export const Boost = Symbol("Boost")
-
 class AdoNodeController {
   constructor(
     private readonly Base: string,

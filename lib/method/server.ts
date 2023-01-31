@@ -1,9 +1,18 @@
 import express, { Express } from "express";
 import { ref } from "../ioc/ref";
-import { AdoNodeOptions } from "../../index.d";
 import { cpus } from "os";
 import cluster from "cluster";
 import multer from "multer";
+import { BaseController } from "../ioc/type";
+
+export type AdoNodeOptions = {
+  controller: Array<BaseController>;
+  base: string;
+  port: number;
+  staticDist: string;
+  globalPipes?: any[];
+  cluster?: boolean;
+};
 
 function defineAdoNodeOptions(options: AdoNodeOptions) {
   return options;

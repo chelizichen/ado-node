@@ -181,8 +181,9 @@ class ArcYaml {
 
                 let write_client_path = path.resolve(cwd(),generatePath,`${interFace}.client.ts`)
                 if(!existsSync(write_client_path)){
-                    function renderRes(v){
-                        let res  = JSON.stringify(method[v]['res']);
+                    function renderRes(v) {
+                        // 远程调用接口时传入参数应为 req
+                        let res  = JSON.stringify(method[v]['req']);
                         res = res.split("\"","").join("")
                         return res
                     }

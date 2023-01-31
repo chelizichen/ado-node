@@ -1,5 +1,16 @@
 import { AdoNodeServer, ref } from "../../index";
-import { AdoModuleOptions, AdoModulesOptions } from "../../index.d";
+import { BaseController } from "../ioc/type";
+
+type AdoModuleOptions = {
+  Controller: BaseController[];
+  Provider: any[];
+};
+
+type AdoModulesOptions = {
+  Modules: any[];
+  GlobalPipes: any[];
+  Cluster?: boolean;
+};
 
 // @Module({
 // 	Controller:[],

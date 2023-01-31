@@ -104,7 +104,7 @@ function createTgz(tgzName, opt) {
 
   function winOrForceTgz(){
     const server_cmd =
-      ` tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${ado_config_path} ${nodeModulesDir} ${publicPath ? publicPath : ""} ${hasRpc_Config ? hasRpc_Config : ""}`;
+      ` tar -zcvf ${tgzServerPath} ${distPath} ${pkgPath} ${ado_config_path} ${nodeModulesDir} ${hasPublicDir ? publicPath : ""} ${hasRpc_Config ? rpc_config : ""}`;
     console.log(server_cmd);
     spawnSync(server_cmd, {
       stdio: "inherit",

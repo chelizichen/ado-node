@@ -39,11 +39,11 @@ const RpcServerModules = (opt: RpcServerModulesType) => {
         if (_config) {
           // ESM 下 export default
           if (_config && _config.default) {
-            server_config = _config.default.server;
+            server_config = _config.default.microService;
           }
           // CommonJS 下 module.export
           else {
-            server_config = _config.server;
+            server_config = _config.microService;
           }
         }
 

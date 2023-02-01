@@ -41,7 +41,7 @@ class ArcEvent {
       return ArcEvent.tcpConn[key]
     }
 
-    const {port,host} = JSON.parse(key)
+    const { port, host } = JSON.parse(key)
     const conn = connect({
       port,
       host

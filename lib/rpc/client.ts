@@ -11,10 +11,10 @@ class ArcClient {
         const { port, host } = opts;
         this.ArcList = new ArcList();
         this.Net = ArcEvent.getTcpConn(JSON.stringify({ port, host }));
-        
+
         const { name, prototype } = ArcClient
         if (!ref.get(name, prototype, ":arcList")) {
-            ref.def(name,this.ArcList,prototype,":arcList")
+            ref.def(name, this.ArcList, prototype, ":arcList")
         }
 
         this.Net.on("error", function (err) {
@@ -28,15 +28,19 @@ class ArcClient {
      */
     call(pkg: RpcClientValue["router"]) {
         const { method, data, interFace, timeout } = pkg;
-
         // 处理头部字段
-        let head = Buffer.alloc(100);
-        let head_str = this.getRequestHead(interFace, method, String(timeout));
-        head.write(head_str);
-
         let getRequestArgs = this.getRequestArgs(data);
         let body: Buffer = Buffer.from(getRequestArgs);
-
+        let body_len = body.length;
+        
+        let head_str = this.getRequestHead(
+          interFace,
+          method,
+          String(timeout),
+          String(body_len)
+        );
+        let head = Buffer.from(head_str);
+        
         let call_buf = Buffer.concat([head, body]);
 
         return new Promise((resolve: any, reject: any) => {

@@ -22,5 +22,9 @@ module.exports = ({
     port: 3000,
     host:"127.0.0.1",
     upload:"public/server"
+  },
+  microService: {
+    port: 9000,
+    host:"127.0.0.1",
   }
 });

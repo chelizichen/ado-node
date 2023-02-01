@@ -38,34 +38,32 @@ class ArcServer {
 
     async recieve(data: Buffer) {
         let head_end = data.indexOf("[##]");
-        let timeout = Number(this.unpkgHead(2, data, true));
+        let timeout = Number(this.unpkgHead(2, data));
+        let body_len = Number(this.unpkgHead(3, data, true));
         let head = data.subarray(0, data.indexOf(proto[2]));
-        let body = data.subarray(head_end + 4, data.length);
+        let body = data.subarray(head_end + 4, body_len + head_end + 4);
+        console.log("data.length", data.length);
+        console.log('add length',body_len + head_end + 4);
+
         let _body = this.unpacking(body);
-        // this.ArcList.push(() => {
-        // return
-        Promise.race([
-          this.timeout(timeout),
-          this.ArcEvent.emit(head, ..._body),
-        ])
-          .then((res: any) => {
-            let toJson = JSON.stringify(res);
-            this.socket.write(toJson, function (err) {
-              if (err) {
-                console.log("服务端写入错误", err);
-              }
-              console.log("服务端写入成功");
+        Promise.race([this.timeout(timeout), this.ArcEvent.emit(head, ..._body)])
+            .then((res: any) => {
+                let toJson = JSON.stringify(res);
+                this.socket.write(toJson, function (err) {
+                    if (err) {
+                        console.log("服务端写入错误", err);
+                    }
+                    console.log("服务端写入成功");
+                });
+            })
+            .catch((err: any) => {
+                this.socket.write(err, function (err) {
+                    if (err) {
+                        console.log("服务端写入错误", err);
+                    }
+                    console.log("服务端写入成功");
+                });
             });
-          })
-          .catch((err: any) => {
-            this.socket.write(err, function (err) {
-              if (err) {
-                console.log("服务端写入错误", err);
-              }
-              console.log("服务端写入成功");
-            });
-          });
-        // });
     }
 
     error(err: Error) {
@@ -127,6 +125,8 @@ class ArcServer {
 
     /**
      * @description 首部拆包得到字段
+     * @param {number} start  根据协议头部定义得到相关字段
+     * @summary 目前协议定义 1 interFace 接口 2 method 方法 3 timeout 超时时间 4 body_len 方法体的长度
      */
 
     unpkgHead(start: number, data: Buffer): string;

@@ -4,7 +4,7 @@ import { RpcClientController,Call,Timeout } from "../../../../lib/rpc/index"
 import { AnimalService } from "../service/AniamalService"
 
 
-@RpcClientController("/animal",{interFace:"AnimalInterFace",url:"http://127.0.0.1:9000"})
+@RpcClientController("/animal", { interFace: "AnimalInterFace", url: "http://127.0.0.1:9000" })
 class animalController{
     
     @Inject(AnimalService)

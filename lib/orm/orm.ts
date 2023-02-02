@@ -285,7 +285,7 @@ class AdoOrmBaseEntity {
     }
 
     let countSql = `select count(*) as total from ?? where `;
-    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    const jonitSql = this[Conn].escape(val).replace(/, `/g, " and `");
     return new Promise((resolve, reject) => {
       let that = this;
       this[Conn].query(
@@ -321,19 +321,17 @@ class AdoOrmBaseEntity {
         return data;
       }
     }
-
-    const sql = this[Conn].escape(val).replaceAll(",", " and ");
+    let jointSql = this[Conn].escape(val).replace(/, `/g, " and \`")
     return new Promise((resolve, reject) => {
       let that = this;
       this[Conn].query(
-        "select * from ?? where " + sql,
+        "select * from ?? where " + jointSql,
         [this[TableName]],
         function (err, res) {
           if (err) {
             reject(err);
           }
           resolve(res);
-
           if (cache) {
             that[Cache](cache, res);
           }
@@ -583,7 +581,8 @@ class AdoOrmBaseView {
     }
 
     let countSql = `select count(*) as total from ?? where `;
-    const jonitSql = this[Conn].escape(val).replaceAll(",", " and ");
+    let jonitSql = this[Conn].escape(val).replace(/, `/g, " and `");
+
     return new Promise((resolve, reject) => {
       let that = this;
       this[Conn].query(

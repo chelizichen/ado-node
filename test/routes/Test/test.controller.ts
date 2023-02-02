@@ -44,4 +44,18 @@ export class TestController extends AdoNodeController {
 
     return {data,data1};
   }
+
+  @Get("/c1")
+  public async escapeTest() {
+    const data = await this.OtherTableMenu.getBy({
+      m_component: "ADMIN",
+      m_root_id: "0",
+      m_permission:'9,10'
+    })
+    return {
+      message: "ok",
+      code: 0,
+      data
+    }
+  }
 }

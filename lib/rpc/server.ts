@@ -1,6 +1,10 @@
 import { createServer, Server, Socket } from "net";
 import { size, proto } from "./index";
 import { ArcEvent } from "./event";
+import path from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+import yaml from 'yaml';
+
 export type ConnOpt = { port: number; host: string };
 
 class ArcServer {
@@ -25,13 +29,14 @@ class ArcServer {
     createServer({ port, host }: ConnOpt) {
         // 绑定this
         let bind_recieve = this.recieve.bind(this);
+        let bind_connection = this.connection.bind(this)
+        let bind_err = this.error.bind(this)
 
         this.Net = createServer((socket) => {
             this.socket = socket;
             this.socket.on("data", bind_recieve);
-            this.socket.on("error", this.error);
-            this.socket.on("connection", this.connection);
-            console.log("有新用户链接");
+            this.socket.on("error", bind_err);
+            this.Net.on("connection", bind_connection);
         });
         this.Net.listen(port, host);
     }
@@ -42,9 +47,6 @@ class ArcServer {
         let body_len = Number(this.unpkgHead(3, data, true));
         let head = data.subarray(0, data.indexOf(proto[2]));
         let body = data.subarray(head_end + 4, body_len + head_end + 4);
-        console.log("data.length", data.length);
-        console.log('add length',body_len + head_end + 4);
-
         let _body = this.unpacking(body);
         Promise.race([this.timeout(timeout), this.ArcEvent.emit(head, ..._body)])
             .then((res: any) => {
@@ -71,7 +73,37 @@ class ArcServer {
     }
 
     connection() {
-        console.log("有新用户链接1");
+        console.log("有新用户链接");
+        let mirco_service_infos = this.__read_rpc__()
+        let _to_json_ = JSON.stringify(mirco_service_infos)
+        let _info_ = '[info]';
+
+        let { from, concat } = Buffer
+        let _buf_ = concat([from(_info_), from(_to_json_)]);
+        this.socket.write(_buf_, (err) => {
+            if (err) {
+                throw new Error("服务接口信息未能正常转发");
+            }
+            console.log("服务接口信息正常发送");
+        });
+    }
+
+    __read_rpc__() {
+        let cwd = process.cwd();
+        let interface_path = path.resolve(
+            cwd,
+            "rpc/interface"
+        );
+        let files = readdirSync(interface_path);
+        let contents = [] as any[];
+        // 读取接口文件
+        files.forEach((el) => {
+            let _path = path.resolve(interface_path, el);
+            const ctx = readFileSync(_path, "utf-8");
+            const content = yaml.parse(ctx);
+            contents.push(content);
+        });
+        return contents;
     }
     /**
      *

@@ -34,7 +34,7 @@ export let size = ["a",
   "j", "k", "l", "m",
   "n", "o", "p", "q", "r", 's',
   't', 'u', "v", "w", "x", "y",
-  "z","-","=","/",".",","].map(item => {
+  "z"].map(item => {
     return "#" + item + "#"
   })
 
